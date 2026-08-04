@@ -29,6 +29,13 @@ check("operationId 在站点数据中唯一", new Set(catalog.operations.map((op
 const assetRefs = [...html.matchAll(/(?:src|href)="(\.\/[^"#?]+)"/g)].map((match) => match[1]);
 const missingAssets = assetRefs.filter((reference) => !fs.existsSync(path.resolve(siteDir, reference)));
 check("HTML 本地资源引用有效", missingAssets.length === 0, missingAssets.join(", "));
+const appVersion = sha256(app).slice(0, 12);
+const stylesVersion = sha256(css).slice(0, 12);
+check(
+  "页面资源使用内容哈希避免旧目录名称缓存",
+  html.includes(`./assets/app.js?v=${appVersion}`)
+    && html.includes(`./assets/styles.css?v=${stylesVersion}`)
+);
 
 const generatorMarkers = [
   'session.post(',
@@ -52,6 +59,7 @@ const tagOperations = catalog.operations.filter((operation) => operation.domain 
 check(
   "标签业务域统一显示为 Alpha List",
   app.includes('tags: "Alpha List"')
+    && !app.includes('tags: "标签"')
     && tagOperations.length > 0
     && tagOperations.every((operation) => operation.summary.includes("Alpha List") && !operation.summary.includes("标签"))
 );

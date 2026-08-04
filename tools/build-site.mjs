@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -29,6 +30,20 @@ for (const operation of catalog.operations) {
 
 fs.mkdirSync(dataDir, { recursive: true });
 fs.copyFileSync(catalogPath, path.join(dataDir, "api-catalog.json"));
+
+const assetVersion = (relativePath) => crypto
+  .createHash("sha256")
+  .update(fs.readFileSync(path.join(siteDir, relativePath)))
+  .digest("hex")
+  .slice(0, 12);
+const indexPath = path.join(siteDir, "index.html");
+const appVersion = assetVersion(path.join("assets", "app.js"));
+const stylesVersion = assetVersion(path.join("assets", "styles.css"));
+const versionedIndex = fs.readFileSync(indexPath, "utf8")
+  .replace(/\.\/assets\/styles\.css(?:\?v=[^"']+)?/g, `./assets/styles.css?v=${stylesVersion}`)
+  .replace(/\.\/assets\/app\.js(?:\?v=[^"']+)?/g, `./assets/app.js?v=${appVersion}`);
+fs.writeFileSync(indexPath, versionedIndex, "utf8");
+
 fs.writeFileSync(path.join(dataDir, "site-meta.json"), `${JSON.stringify({
   generatedAt: new Date().toISOString(),
   catalogVersion: catalog.catalogVersion,
@@ -40,5 +55,6 @@ process.stdout.write(`${JSON.stringify({
   output: path.relative(rootDir, siteDir).replaceAll("\\", "/"),
   catalogVersion: catalog.catalogVersion,
   operations: catalog.operations.length,
+  assetVersions: { app: appVersion, styles: stylesVersion },
   assets: requiredFiles.length + 3
 }, null, 2)}\n`);
