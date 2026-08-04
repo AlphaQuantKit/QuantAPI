@@ -154,6 +154,18 @@ check(
     && css.includes(".meta-help-wrap:focus-within .meta-tooltip")
     && css.includes(".meta-help:focus-visible")
 );
+check(
+  "可信度、响应证据与敏感等级全部使用中文展示",
+  generator.confidenceLabel("high") === "高可信度"
+    && generator.confidenceLabel("medium") === "中等可信度"
+    && generator.confidenceLabel("low") === "低可信度"
+    && generator.evidenceLabel("live_response_confirmed") === "实测响应确认"
+    && generator.evidenceLabel("consumer_confirmed") === "消费代码确认"
+    && generator.sensitivityLabel("none") === "无额外敏感项"
+    && generator.sensitivityLabel("personal_data") === "个人数据"
+    && !app.includes("operation.confidence)} confidence")
+    && !app.includes("example.evidenceLevel)}</strong>")
+);
 const generated = [];
 for (const operation of catalog.operations) {
   generator.state.operationValues.clear();

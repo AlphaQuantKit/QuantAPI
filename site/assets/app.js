@@ -30,6 +30,22 @@ const SENSITIVITY_DESCRIPTIONS = {
   legal: "涉及协议接受、法律声明或合规状态；操作前应人工确认内容。"
 };
 
+const SENSITIVITY_LABELS = {
+  none: "无额外敏感项",
+  credential: "认证凭据",
+  personal_data: "个人数据",
+  research: "研究内容",
+  submission: "提交操作",
+  destructive: "高风险操作",
+  legal: "协议与法律"
+};
+
+const CONFIDENCE_LABELS = {
+  high: "高可信度",
+  medium: "中等可信度",
+  low: "低可信度"
+};
+
 const elements = typeof document === "undefined" ? {} : {
   workspace: document.querySelector("#workspace"),
   search: document.querySelector("#global-search"),
@@ -169,6 +185,18 @@ const SCHEMA_CONFIDENCE = {
   inferred: ["代码推断", "根据调用逻辑、命名或上下文推断，尚未被真实响应确认"],
   unknown: ["尚未确认", "目前没有足够证据确定该结构"]
 };
+
+function evidenceLabel(value) {
+  return (SCHEMA_CONFIDENCE[value] ?? [value])[0];
+}
+
+function sensitivityLabel(value) {
+  return SENSITIVITY_LABELS[value] ?? value;
+}
+
+function confidenceLabel(value) {
+  return CONFIDENCE_LABELS[value] ?? value;
+}
 
 function operationResponseSchema(operation) {
   if (operation.response.schemaRef) return { $ref: `#/schemas/${operation.response.schemaRef}` };
@@ -379,7 +407,7 @@ function schemaBlock(schema, label, fallbackConfidence = "unknown") {
     <div class="schema-block">
       <div class="schema-label"><span>${escapeHtml(label)}</span><span>${escapeHtml(schemaNote)}</span></div>
       <pre>${escapeHtml(JSON.stringify(shown, null, 2))}</pre>
-      <p class="schema-confidence"><strong>文档可信度：${escapeHtml(confidenceLabel)}</strong><span><code>${escapeHtml(confidence)}</code> · ${escapeHtml(confidenceDescription)}；文档证据，不属于实际请求或响应。</span></p>
+      <p class="schema-confidence"><strong>文档可信度：${escapeHtml(confidenceLabel)}</strong><span>${escapeHtml(confidenceDescription)}；文档证据，不属于实际请求或响应。</span></p>
     </div>
   `;
 }
@@ -393,7 +421,7 @@ function responseExampleBlock(exampleRef) {
     <div class="response-example">
       <div class="schema-label"><span>去敏响应示例</span><span>${escapeHtml(confidenceLabel)}</span></div>
       <pre>${escapeHtml(JSON.stringify(example.value, null, 2))}</pre>
-      <p class="example-note"><strong>证据：${escapeHtml(example.evidenceLevel)}</strong><span>${escapeHtml(example.sanitization ?? "示例已去敏；原始响应未进入公开文档。")} 来源：${escapeHtml(example.source)}。</span></p>
+      <p class="example-note"><strong>证据：${escapeHtml(confidenceLabel)}</strong><span>${escapeHtml(example.sanitization ?? "示例已去敏；原始响应未进入公开文档。")} 来源：${escapeHtml(example.source)}。</span></p>
     </div>
   `;
 }
@@ -432,20 +460,22 @@ function renderDoc(operation) {
     : (operation.apiVersions ?? [operation.apiVersion]).map((version) => `application/json;version=${version}`);
   const evidenceDescription = state.catalog?.evidenceLevels?.[operation.response.evidenceLevel] ?? "当前目录尚未提供该证据等级的补充说明。";
   const sensitivityDescription = SENSITIVITY_DESCRIPTIONS[operation.sensitivity] ?? "当前目录尚未提供该敏感等级的补充说明。";
+  const evidenceDisplay = evidenceLabel(operation.response.evidenceLevel);
+  const sensitivityDisplay = sensitivityLabel(operation.sensitivity);
 
   elements.docPane.innerHTML = `
     <div class="breadcrumbs"><span>WQ API</span><span>/</span><span>${escapeHtml(DOMAIN_LABELS[operation.domain] ?? operation.domain)}</span></div>
     <div class="operation-title">
       <h1>${escapeHtml(operation.summary)}</h1>
-      <span class="confidence-stamp">${escapeHtml(operation.confidence)} confidence</span>
+      <span class="confidence-stamp">${escapeHtml(confidenceLabel(operation.confidence))}</span>
     </div>
     <p class="operation-id">operationId: ${escapeHtml(operation.operationId)}</p>
     <div class="route-card">${methodBadge(operation.method)}<code>${escapeHtml(operation.path)}</code></div>
     <div class="meta-grid">
       <div class="meta-card"><span>鉴权</span><strong>${escapeHtml(authModes(operation).join(" / "))}</strong></div>
       <div class="meta-card"><span>Accept</span><strong title="${escapeHtml(accepts.join(" / "))}">${escapeHtml(accepts.join(" / "))}</strong></div>
-      <div class="meta-card"><span class="meta-label">响应证据 ${helpTooltip("response-evidence-help", "响应证据", operation.response.evidenceLevel, evidenceDescription)}</span><strong>${escapeHtml(operation.response.evidenceLevel)}</strong></div>
-      <div class="meta-card"><span class="meta-label">敏感等级 ${helpTooltip("sensitivity-help", "敏感等级", operation.sensitivity, sensitivityDescription)}</span><strong>${escapeHtml(operation.sensitivity)}</strong></div>
+      <div class="meta-card"><span class="meta-label">响应证据 ${helpTooltip("response-evidence-help", "响应证据", evidenceDisplay, evidenceDescription)}</span><strong>${escapeHtml(evidenceDisplay)}</strong></div>
+      <div class="meta-card"><span class="meta-label">敏感等级 ${helpTooltip("sensitivity-help", "敏感等级", sensitivityDisplay, sensitivityDescription)}</span><strong>${escapeHtml(sensitivityDisplay)}</strong></div>
     </div>
 
     <section class="doc-section">
@@ -493,7 +523,7 @@ function renderDoc(operation) {
       <section class="doc-section">
         <div class="section-heading"><h2>实测验证</h2><span>${escapeHtml(operation.verification.verifiedAt)}</span></div>
         <div class="verification-card">
-          <div><span>状态</span><strong>${escapeHtml(operation.verification.status)}</strong></div>
+          <div><span>状态</span><strong>${escapeHtml(evidenceLabel(operation.verification.status))}</strong></div>
           <div><span>原始样本入库</span><strong>${operation.verification.rawSampleStored ? "是" : "否"}</strong></div>
           ${operation.verification.observedItemCount != null ? `<div><span>观察项数</span><strong>${escapeHtml(operation.verification.observedItemCount)}</strong></div>` : ""}
           <p>${escapeHtml(operation.verification.sanitization)}</p>
@@ -1194,4 +1224,4 @@ async function initialize() {
 
 if (typeof document !== "undefined") initialize();
 
-export { buildJavascript, buildPython, defaultOperationValues, expandSchemaRefs, helpTooltip, responseExampleBlock, responseExampleForOperation, sampleFromSchema, schemaExampleBlock, state, stripSchemaMetadata };
+export { buildJavascript, buildPython, confidenceLabel, defaultOperationValues, evidenceLabel, expandSchemaRefs, helpTooltip, responseExampleBlock, responseExampleForOperation, sampleFromSchema, schemaExampleBlock, sensitivityLabel, state, stripSchemaMetadata };
