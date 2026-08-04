@@ -99,6 +99,16 @@ check(
     && html.includes('src="./assets/github-invertocat.svg"')
     && css.includes(".github-link")
 );
+check(
+  "页头提供全部可见接口 Markdown 下载按钮",
+  html.includes('id="download-markdown"')
+    && html.includes('aria-label="下载全部可见接口的 Markdown 文档"')
+    && html.includes('title="下载 Markdown"')
+    && html.includes('id="download-markdown" type="button"')
+    && app.includes('elements.downloadMarkdown.addEventListener("click", downloadVisibleCatalogMarkdown)')
+    && app.includes('elements.downloadMarkdown.disabled = false')
+    && css.includes(".catalog-download")
+);
 check("页面已移除 QUICK TEST 与本地测试器", !html.includes("QUICK TEST") && !html.includes("LOCAL ONLY") && !app.includes("LocalTester"));
 check(
   "右侧代码面板使用统一浅色主题",
@@ -751,13 +761,34 @@ const superSelectionOperation = catalog.operations.find((operation) => operation
 const createProtoUserOperation = catalog.operations.find((operation) => operation.operationId === "createProtoUser");
 const searchPlatformOperation = catalog.operations.find((operation) => operation.operationId === "searchPlatform");
 check(
-  "catalog 1.15.1 固化本轮实测覆盖率与剩余接口",
-  catalog.catalogVersion === "1.15.1"
+  "catalog 1.15.2 固化本轮实测覆盖率与剩余接口",
+  catalog.catalogVersion === "1.15.2"
     && visibleOperations.length === 93
     && liveConfirmedVisibleOperations.length === 92
     && JSON.stringify(remainingVisibleOperationIds) === JSON.stringify(["searchPlatform"])
     && createProtoUserOperation?.visibility === "hidden"
     && !visibleOperations.some((operation) => operation.operationId === "createProtoUser")
+);
+const visibleCatalogMarkdown = generator.buildVisibleCatalogMarkdown();
+const markdownAnchor = (value) => String(value).trim().toLowerCase().replace(/[^a-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "") || "section";
+const visibleMarkdownSections = visibleOperations.filter((operation) =>
+  visibleCatalogMarkdown.includes(`<a id="operation-${markdownAnchor(operation.operationId)}"></a>`)
+);
+const hiddenMarkdownSections = hiddenOperations.filter((operation) =>
+  visibleCatalogMarkdown.includes(`<a id="operation-${markdownAnchor(operation.operationId)}"></a>`)
+);
+check(
+  "Markdown 下载内容完整且排除隐藏接口",
+  visibleCatalogMarkdown.startsWith("# WQ API Catalog 1.15.2")
+    && visibleCatalogMarkdown.includes("共 93 个前端可见接口")
+    && visibleMarkdownSections.length === visibleOperations.length
+    && hiddenMarkdownSections.length === 0
+    && visibleCatalogMarkdown.includes("| 名称 | 位置 | 必填 | 类型 | 默认值 / 可行域 | 说明 |")
+    && visibleCatalogMarkdown.includes("#### 请求体")
+    && visibleCatalogMarkdown.includes("#### 响应")
+    && visibleCatalogMarkdown.includes("响应 Schema：")
+    && visibleCatalogMarkdown.includes("#### 源码证据")
+    && !visibleCatalogMarkdown.includes('"x-wq-confidence"')
 );
 check(
   "Simulation 创建、删除与 Super Selection 实测约束完整",

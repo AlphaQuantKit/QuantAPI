@@ -57,6 +57,7 @@ const elements = typeof document === "undefined" ? {} : {
   catalogVersion: document.querySelector("#catalog-version"),
   catalogStatus: document.querySelector("#catalog-status"),
   statusDot: document.querySelector(".status-dot"),
+  downloadMarkdown: document.querySelector("#download-markdown"),
   docPane: document.querySelector("#doc-pane"),
   parameterForm: document.querySelector("#parameter-form"),
   parameterSummary: document.querySelector("#parameter-summary"),
@@ -1157,6 +1158,189 @@ function downloadGeneratedCode() {
   showToast(`${isJavascript ? "JavaScript" : "Python"} 文件已生成`);
 }
 
+function markdownCell(value) {
+  const text = value === undefined || value === null || value === ""
+    ? "—"
+    : typeof value === "object" ? JSON.stringify(value) : String(value);
+  return text.replaceAll("|", "\\|").replace(/\r?\n/g, "<br>");
+}
+
+function markdownAnchor(value) {
+  return String(value ?? "section")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "section";
+}
+
+function markdownJsonBlock(value) {
+  return `\`\`\`json\n${JSON.stringify(value ?? null, null, 2)}\n\`\`\``;
+}
+
+function markdownSchemaConstraints(schema = {}) {
+  const constraints = [];
+  if (schema.default !== undefined) constraints.push(`默认 ${schema.default}`);
+  if (schema.enum?.length) constraints.push(`枚举 ${schema.enum.join(" / ")}`);
+  if (schema.const !== undefined) constraints.push(`固定 ${schema.const}`);
+  if (schema.minimum !== undefined || schema.maximum !== undefined) {
+    constraints.push(`范围 ${schema.minimum ?? "-∞"}..${schema.maximum ?? "+∞"}`);
+  }
+  if (schema.minLength !== undefined || schema.maxLength !== undefined) {
+    constraints.push(`长度 ${schema.minLength ?? 0}..${schema.maxLength ?? "∞"}`);
+  }
+  if (schema.format) constraints.push(`格式 ${schema.format}`);
+  if (schema.pattern) constraints.push(`模式 ${schema.pattern}`);
+  return constraints.join("；") || "—";
+}
+
+function schemaForMarkdown(schema) {
+  return stripSchemaMetadata(expandSchemaRefs(schema));
+}
+
+function responseExampleForMarkdown(operation) {
+  const example = state.catalog?.examples?.[operation.response.exampleRef];
+  if (example) return { label: "去敏响应示例", value: example.value };
+  if (["empty", "headers"].includes(operation.response.mode) || operation.response.statuses?.every((status) => status === 204)) return null;
+  return { label: "响应结构示例", value: sampleFromSchema(operationResponseSchema(operation), "response") };
+}
+
+function buildVisibleCatalogMarkdown() {
+  const operations = visibleOperations();
+  if (!state.catalog || !operations.length) return "";
+  const groups = DOMAIN_ORDER
+    .map((domain) => ({ domain, operations: operations.filter((operation) => operation.domain === domain) }))
+    .filter((group) => group.operations.length);
+  const lines = [
+    `# WQ API Catalog ${state.catalog.catalogVersion}`,
+    "",
+    `共 ${operations.length} 个前端可见接口。本文档由当前网站 Catalog 自动生成，不包含标记为 \`visibility: hidden\` 的接口。`,
+    "",
+    "> 文档来自前端代码分析与去敏实测结果，不代表 WorldQuant 官方 API 承诺。",
+    "",
+    "## 接口索引",
+    ""
+  ];
+
+  for (const { domain, operations: domainOperations } of groups) {
+    lines.push(`- [${DOMAIN_LABELS[domain] ?? domain}](#domain-${markdownAnchor(domain)})`);
+    for (const operation of domainOperations) {
+      lines.push(`  - [${operation.operationId} · ${operation.method} ${operation.path}](#operation-${markdownAnchor(operation.operationId)})`);
+    }
+  }
+
+  for (const { domain, operations: domainOperations } of groups) {
+    lines.push("", `<a id="domain-${markdownAnchor(domain)}"></a>`, `## ${DOMAIN_LABELS[domain] ?? domain}`, "");
+    for (const operation of domainOperations) {
+      const parameters = operation.parameters ?? [];
+      const definitions = requestDefinitions(operation);
+      const successStatuses = operation.response.statuses ?? [];
+      const errorStatuses = operation.response.errorStatuses ?? [];
+      const accepts = operation.accept
+        ? [operation.accept]
+        : (operation.apiVersions ?? [operation.apiVersion]).filter(Boolean).map((version) => `application/json;version=${version}`);
+      lines.push(
+        `<a id="operation-${markdownAnchor(operation.operationId)}"></a>`,
+        `### ${operation.summary}`,
+        "",
+        `\`${operation.method} ${operation.path}\``,
+        "",
+        `- operationId：\`${operation.operationId}\``,
+        `- 鉴权：${authModes(operation).map((mode) => `\`${mode}\``).join(" / ")}`,
+        `- Accept：${accepts.map((accept) => `\`${accept}\``).join(" / ") || "—"}`,
+        `- 响应证据：${evidenceLabel(operation.response.evidenceLevel)}`,
+        `- 敏感等级：${sensitivityLabel(operation.sensitivity)}`,
+        "",
+        "#### 参数",
+        ""
+      );
+      if (parameters.length) {
+        lines.push(
+          "| 名称 | 位置 | 必填 | 类型 | 默认值 / 可行域 | 说明 |",
+          "| --- | --- | --- | --- | --- | --- |",
+          ...parameters.map((parameter) => `| \`${markdownCell(parameter.name)}\` | ${markdownCell(parameter.in)} | ${parameter.required ? "是" : "否"} | ${markdownCell(parameter.schema?.type ?? "unknown")} | ${markdownCell(markdownSchemaConstraints(parameter.schema))} | ${markdownCell(parameter.description)} |`)
+        );
+      } else {
+        lines.push("无路径或查询参数。");
+      }
+
+      lines.push("", "#### 请求体", "");
+      if (!definitions.length) {
+        lines.push("无请求体。");
+      } else {
+        for (const { contentType, definition } of definitions) {
+          const requestSchema = schemaForMarkdown(definitionSchema(definition));
+          lines.push(
+            `##### ${contentType}`,
+            "",
+            `必填：${operation.requestBody?.required === false ? "否" : "是"}`,
+            "",
+            "Schema：",
+            "",
+            markdownJsonBlock(requestSchema),
+            "",
+            definition.exampleRef ? "去敏请求示例：" : "请求结构示例：",
+            "",
+            markdownJsonBlock(bodySample(operation, contentType))
+          );
+        }
+      }
+
+      lines.push(
+        "",
+        "#### 响应",
+        "",
+        `- 成功状态：${successStatuses.map((status) => `\`HTTP ${status}\``).join("、") || "—"}`,
+        `- 错误状态：${errorStatuses.map((status) => `\`HTTP ${status}\``).join("、") || "—"}`,
+        `- 响应模式：\`${operation.response.mode ?? "json"}\``,
+        "",
+        "响应 Schema：",
+        "",
+        markdownJsonBlock(schemaForMarkdown(operationResponseSchema(operation)))
+      );
+      const responseExample = responseExampleForMarkdown(operation);
+      if (responseExample) {
+        lines.push("", `${responseExample.label}：`, "", markdownJsonBlock(responseExample.value));
+      }
+
+      const behaviorEntries = Object.entries(operation.behavior ?? {});
+      lines.push("", "#### 运行行为", "");
+      if (behaviorEntries.length) {
+        lines.push(markdownJsonBlock(Object.fromEntries(behaviorEntries)));
+      } else {
+        lines.push("没有从前端确认到额外的分页、轮询或重定向规则。");
+      }
+
+      const evidence = operation.evidence ?? [];
+      lines.push("", "#### 源码证据", "");
+      if (evidence.length) {
+        for (const item of evidence) {
+          const location = `${item.source}${item.line ? `:${item.line}` : ""}${item.offset != null ? ` · offset ${item.offset}` : ""}`;
+          const extras = [item.moduleId ? `Webpack module ${item.moduleId}` : "", item.note ?? ""].filter(Boolean).join("；");
+          lines.push(`- \`${location}\`${extras ? ` — ${extras.replace(/\r?\n/g, " ")}` : ""}`);
+        }
+      } else {
+        lines.push("当前目录没有记录源码位置。");
+      }
+      lines.push("", "---", "");
+    }
+  }
+  return `${lines.join("\n").trim()}\n`;
+}
+
+function downloadVisibleCatalogMarkdown() {
+  const markdown = buildVisibleCatalogMarkdown();
+  if (!markdown) return;
+  const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `wqapi-visible-catalog-${state.catalog.catalogVersion}.md`;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(link.href), 0);
+  showToast(`${visibleOperations().length} 个接口的 Markdown 已生成`);
+}
+
 function bindEvents() {
   elements.domainNav.addEventListener("click", (event) => {
     const button = event.target.closest("[data-domain]");
@@ -1221,6 +1405,7 @@ function bindEvents() {
 
   elements.copyCode.addEventListener("click", copyGeneratedCode);
   elements.downloadCode.addEventListener("click", downloadGeneratedCode);
+  elements.downloadMarkdown.addEventListener("click", downloadVisibleCatalogMarkdown);
   elements.languageSelect.addEventListener("change", () => {
     state.language = elements.languageSelect.value === "javascript" ? "javascript" : "python";
     const operation = selectedOperation();
@@ -1238,6 +1423,7 @@ async function initialize() {
     elements.operationCount.textContent = operations.length;
     elements.catalogVersion.textContent = `catalog ${state.catalog.catalogVersion}`;
     elements.catalogStatus.textContent = `${operations.length} operations`;
+    elements.downloadMarkdown.disabled = false;
     elements.statusDot.classList.add("ready");
     elements.workspace.setAttribute("aria-busy", "false");
     renderDomains();
@@ -1257,4 +1443,4 @@ async function initialize() {
 
 if (typeof document !== "undefined") initialize();
 
-export { buildJavascript, buildPython, confidenceLabel, defaultOperationValues, evidenceLabel, expandSchemaRefs, helpTooltip, operationConfidenceLabel, responseExampleBlock, responseExampleForOperation, sampleFromSchema, schemaBlock, schemaExampleBlock, sensitivityLabel, state, stripSchemaMetadata, visibleOperations };
+export { buildJavascript, buildPython, buildVisibleCatalogMarkdown, confidenceLabel, defaultOperationValues, evidenceLabel, expandSchemaRefs, helpTooltip, operationConfidenceLabel, responseExampleBlock, responseExampleForOperation, sampleFromSchema, schemaBlock, schemaExampleBlock, sensitivityLabel, state, stripSchemaMetadata, visibleOperations };

@@ -197,7 +197,8 @@ kbd {
   border-right: 1px solid var(--line);
 }
 
-.github-link {
+.github-link,
+.catalog-download {
   display: grid;
   flex: none;
   width: 40px;
@@ -210,10 +211,31 @@ kbd {
   transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
 }
 
-.github-link:hover {
+.catalog-download {
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.github-link:hover,
+.catalog-download:hover:not(:disabled) {
   border-color: #c9dcd7;
   background: var(--accent-soft);
   transform: translateY(-1px);
+}
+
+.catalog-download:disabled {
+  cursor: wait;
+  opacity: 0.38;
+}
+
+.catalog-download svg {
+  width: 23px;
+  height: 23px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
 }
 
 .github-link img {

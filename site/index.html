@@ -10,7 +10,7 @@
     <title>WQ API Workbench</title>
     <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32.png?v=ac9ae6d6875f" />
     <link rel="apple-touch-icon" href="./assets/quantapi-logo.png?v=19fd43f07782" />
-    <link rel="stylesheet" href="./assets/styles.css?v=9f91585142cd" />
+    <link rel="stylesheet" href="./assets/styles.css?v=ad6ae40216fa" />
   </head>
   <body>
     <header class="topbar">
@@ -33,6 +33,11 @@
           <span class="status-dot" aria-hidden="true"></span>
           <span id="catalog-status">正在载入</span>
         </div>
+        <button class="catalog-download" id="download-markdown" type="button" aria-label="下载全部可见接口的 Markdown 文档" title="下载 Markdown" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 3.75h7l3 3v7.5M14 3.75v3h3M12 10v8m0 0-3-3m3 3 3-3M6 20.25h12" />
+          </svg>
+        </button>
         <a class="github-link" href="https://github.com/AlphaQuantKit/QuantAPI" target="_blank" rel="noopener noreferrer" aria-label="在新标签页打开 QuantAPI GitHub 仓库" title="GitHub 仓库">
           <img src="./assets/github-invertocat.svg" alt="" aria-hidden="true" />
         </a>
@@ -108,6 +113,6 @@
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <noscript>此页面需要 JavaScript 才能读取接口目录并生成请求代码。</noscript>
-    <script type="module" src="./assets/app.js?v=3d066c3cecf5"></script>
+    <script type="module" src="./assets/app.js?v=b9a62316b7f3"></script>
   </body>
 </html>
