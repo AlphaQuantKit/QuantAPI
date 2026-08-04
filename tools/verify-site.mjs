@@ -118,6 +118,7 @@ check(
     && css.includes(".schema-confidence")
 );
 const achievementsOperation = catalog.operations.find((operation) => operation.operationId === "getUserAchievements");
+const ordinaryHighConfidenceOperation = catalog.operations.find((operation) => operation.confidence === "high" && operation.response.evidenceLevel !== "live_response_confirmed");
 const achievementsExample = catalog.examples?.userAchievements;
 const achievementsExampleHtml = generator.responseExampleBlock(achievementsOperation?.response?.exampleRef);
 check(
@@ -167,6 +168,8 @@ check(
     && generator.evidenceLabel("consumer_confirmed") === "消费代码确认"
     && generator.sensitivityLabel("none") === "无额外敏感项"
     && generator.sensitivityLabel("personal_data") === "个人数据"
+    && generator.operationConfidenceLabel(achievementsOperation) === "实测已确认"
+    && generator.operationConfidenceLabel(ordinaryHighConfidenceOperation) === "高可信度"
     && !app.includes("operation.confidence)} confidence")
     && !app.includes("example.evidenceLevel)}</strong>")
 );

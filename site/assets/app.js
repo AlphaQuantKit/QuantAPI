@@ -198,6 +198,11 @@ function confidenceLabel(value) {
   return CONFIDENCE_LABELS[value] ?? value;
 }
 
+function operationConfidenceLabel(operation) {
+  if (operation.response?.evidenceLevel === "live_response_confirmed") return "实测已确认";
+  return confidenceLabel(operation.confidence);
+}
+
 function operationResponseSchema(operation) {
   if (operation.response.schemaRef) return { $ref: `#/schemas/${operation.response.schemaRef}` };
   return operation.response.schema ?? { type: "object", additionalProperties: true };
@@ -467,7 +472,7 @@ function renderDoc(operation) {
     <div class="breadcrumbs"><span>WQ API</span><span>/</span><span>${escapeHtml(DOMAIN_LABELS[operation.domain] ?? operation.domain)}</span></div>
     <div class="operation-title">
       <h1>${escapeHtml(operation.summary)}</h1>
-      <span class="confidence-stamp">${escapeHtml(confidenceLabel(operation.confidence))}</span>
+      <span class="confidence-stamp">${escapeHtml(operationConfidenceLabel(operation))}</span>
     </div>
     <p class="operation-id">operationId: ${escapeHtml(operation.operationId)}</p>
     <div class="route-card">${methodBadge(operation.method)}<code>${escapeHtml(operation.path)}</code></div>
@@ -1223,4 +1228,4 @@ async function initialize() {
 
 if (typeof document !== "undefined") initialize();
 
-export { buildJavascript, buildPython, confidenceLabel, defaultOperationValues, evidenceLabel, expandSchemaRefs, helpTooltip, responseExampleBlock, responseExampleForOperation, sampleFromSchema, schemaBlock, schemaExampleBlock, sensitivityLabel, state, stripSchemaMetadata };
+export { buildJavascript, buildPython, confidenceLabel, defaultOperationValues, evidenceLabel, expandSchemaRefs, helpTooltip, operationConfidenceLabel, responseExampleBlock, responseExampleForOperation, sampleFromSchema, schemaBlock, schemaExampleBlock, sensitivityLabel, state, stripSchemaMetadata };
