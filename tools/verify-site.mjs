@@ -129,7 +129,7 @@ check(
 const expectedLeadingDomainOrder = ["authentication", "account", "data", "operators", "simulation", "alpha", "events", "messages"];
 const visibleDomains = new Set(visibleOperations.map((operation) => operation.domain));
 check(
-  "接口目录按认证、账户、Data、Operator、Simulation、Alpha、Event、Message 排序",
+  "接口目录按 Authentication、Account、Data、Operator、Simulation、Alpha、Event、Message 排序",
   expectedLeadingDomainOrder.every((domain, index) =>
     app.indexOf(`${domain}:`) >= 0
       && (index === 0 || app.indexOf(`${expectedLeadingDomainOrder[index - 1]}:`) < app.indexOf(`${domain}:`))
@@ -137,19 +137,40 @@ check(
     && expectedLeadingDomainOrder.every((domain) => visibleDomains.has(domain))
     && app.includes('events: "Event"')
     && app.includes('messages: "Message"')
+    && app.includes('authentication: "Authentication"')
+    && app.includes('account: "Account"')
+    && app.includes('competitions: "Competition"')
+    && app.includes('consultant: "Consultant"')
+    && app.includes('search: "Search"')
+    && app.includes('tutorials: "Tutorial"')
     && !app.includes('events: "事件"')
     && !app.includes('messages: "消息"')
+    && !app.includes('authentication: "认证"')
+    && !app.includes('account: "账户"')
+    && !app.includes('competitions: "比赛"')
+    && !app.includes('consultant: "顾问"')
+    && !app.includes('search: "搜索"')
+    && !app.includes('tutorials: "教程"')
 );
-const spcOperationIds = ["getSpcSubmissionOptions", "listSpcSubmissions", "createSpcSubmission", "getSpcSubmission", "patchSpcSubmission"];
+const spcOperationIds = ["getSpcSubmissionOptions", "getSpcSubmission", "patchSpcSubmission"];
 const competitionOperations = visibleOperations.filter((operation) => operation.domain === "competitions");
 const consultantOperations = visibleOperations.filter((operation) => operation.domain === "consultant");
+const mergedCompetitionSubmissionList = catalog.operations.find((operation) => operation.operationId === "listCompetitionSubmissions");
+const mergedCompetitionSubmissionCreate = catalog.operations.find((operation) => operation.operationId === "createCompetitionSubmission");
 check(
-  "SPC 提交接口并入比赛目录且顾问目录独立",
+  "SPC 列表与创建接口并入通用比赛提交操作",
   spcOperationIds.every((operationId) => competitionOperations.some((operation) => operation.operationId === operationId))
+    && !catalog.operations.some((operation) => ["listSpcSubmissions", "createSpcSubmission"].includes(operation.operationId))
+    && mergedCompetitionSubmissionList?.path === "/competitions/{competitionId}/submissions"
+    && mergedCompetitionSubmissionList?.parameters?.some((parameter) => parameter.name === "limit")
+    && mergedCompetitionSubmissionList?.parameters?.some((parameter) => parameter.name === "offset")
+    && mergedCompetitionSubmissionCreate?.requestBody?.contents?.["multipart/form-data"]
+    && mergedCompetitionSubmissionCreate?.requestBody?.contents?.["application/json"]?.schemaRef === "SpcSubmissionCreate"
     && consultantOperations.every((operation) => !operation.path.startsWith("/competitions/spc/"))
-    && competitionOperations.length === 13
-    && consultantOperations.length === 4
-    && app.includes('consultant: "顾问"')
+    && competitionOperations.length === 11
+    && consultantOperations.length === 3
+    && catalog.operations.find((operation) => operation.operationId === "createProtoUser")?.visibility === "hidden"
+    && app.includes('consultant: "Consultant"')
     && !app.includes('consultant: "顾问与 SPC"')
 );
 check(
@@ -161,7 +182,7 @@ check(
 );
 const hiddenAgreementAndTeamOperations = catalog.operations.filter((operation) => ["agreements", "teams"].includes(operation.domain));
 const listSelfAgreementsOperation = catalog.operations.find((operation) => operation.operationId === "listSelfAgreements");
-const additionallyHiddenOperationIds = ["acceptCompetition", "getResearcherPerformance", "getConfiguration"];
+const additionallyHiddenOperationIds = ["acceptCompetition", "getResearcherPerformance", "getConfiguration", "getTeamAlphaPerformance"];
 check(
   "协议、团队业务域及当前用户协议接口全部从网页隐藏",
   hiddenAgreementAndTeamOperations.length > 0
@@ -250,7 +271,7 @@ const accountLiveChecks = [
   ["listSelfAgreements", "AgreementList", "selfAgreements"]
 ];
 check(
-  "六个账户接口在目录保留实测 Schema 与去敏响应示例",
+  "账户与模拟设置六个接口保留实测 Schema 与去敏响应示例",
   accountLiveChecks.every(([operationId, schemaRef, exampleRef]) => {
     const operation = catalog.operations.find((item) => item.operationId === operationId);
     return operation?.response?.schemaRef === schemaRef
@@ -267,8 +288,10 @@ const getSimulationSettingsOperation = catalog.operations.find((operation) => op
 const updateSimulationSettingsOperation = catalog.operations.find((operation) => operation.operationId === "updateSimulationSettings");
 const updateSimulationDefaults = generator.defaultOperationValues(updateSimulationSettingsOperation);
 check(
-  "网页记录跨用户只读权限边界并使用实测模拟设置请求示例",
+  "模拟设置接口归入 Simulation，并记录权限边界及实测请求示例",
   app.includes("<th>说明</th>")
+    && getSimulationSettingsOperation?.domain === "simulation"
+    && updateSimulationSettingsOperation?.domain === "simulation"
     && getUserOperation?.response?.errorStatuses?.includes(403)
     && getUserOperation?.parameters?.[0]?.description?.includes("HTTP 403")
     && getUserProfileOperation?.parameters?.[0]?.description?.includes("公开字段子集")
@@ -278,6 +301,81 @@ check(
     && updateSimulationSettingsOperation?.requestBody?.exampleRef === "simulationSettings"
     && JSON.parse(updateSimulationDefaults.bodies["application/json"]).instrumentType === "EQUITY"
     && updateSimulationSettingsOperation?.response?.statuses?.includes(201)
+);
+const accountActivityLiveChecks = [
+  ["getUserRegistrationOptions", "UserRegistrationOptions", "userRegistrationOptions"],
+  ["listSelfActivities", "ActivityList", "selfActivities"],
+  ["getSelfActivity", "ActivityDetail", "selfActivity"],
+  ["listActivityReferrals", "ReferralActivity", "activityReferrals"],
+  ["getActivityDiversity", "ActivityDiversity", "activityDiversity"],
+  ["getActivityPyramidAlphas", "PyramidAlphaList", "activityPyramidAlphas"],
+  ["getActivityPyramidMultipliers", "PyramidMultiplierList", "activityPyramidMultipliers"],
+  ["getActivitySimulations", "ActivityDetail", "activitySimulations"],
+  ["getActivitySubmissions", "ActivityDetail", "activitySubmissions"],
+  ["getConsultantPerformance", "ConsultantPerformance", "consultantPerformance"]
+];
+const formerActivityOperationIds = [
+  "listSelfActivities", "getSelfActivity", "listActivityReferrals", "getActivityDiversity",
+  "getActivityPyramidAlphas", "getActivityPyramidMultipliers", "getActivitySimulations",
+  "getActivitySubmissions", "getConsultantPerformance", "getResearcherPerformance"
+];
+check(
+  "活动与表现接口全部移动到 Account",
+  formerActivityOperationIds.every((operationId) =>
+    catalog.operations.find((item) => item.operationId === operationId)?.domain === "account"
+  )
+    && !catalog.operations.some((item) => item.domain === "activity")
+    && !visibleDomains.has("activity")
+);
+check(
+  "Account 新增十个只读实测接口展示具体 Schema 与去敏示例",
+  accountActivityLiveChecks.every(([operationId, schemaRef, exampleRef]) => {
+    const target = catalog.operations.find((item) => item.operationId === operationId);
+    return target?.response?.schemaRef === schemaRef
+      && target?.response?.exampleRef === exampleRef
+      && target?.response?.evidenceLevel === "live_response_confirmed"
+      && target?.verification?.rawSampleStored === false
+      && catalog.examples?.[exampleRef]?.sanitized === true
+      && generator.responseExampleBlock(exampleRef).includes("去敏响应示例");
+  })
+);
+const selfActivityOperation = catalog.operations.find((item) => item.operationId === "getSelfActivity");
+const selfActivityBaseValues = generator.defaultOperationValues(selfActivityOperation);
+generator.state.operationValues.set(selfActivityOperation.operationId, selfActivityBaseValues);
+const selfActivityBasePython = generator.buildPython(selfActivityOperation);
+const selfActivityBaseJavascript = generator.buildJavascript(selfActivityOperation);
+const selfActivitySimulationValues = JSON.parse(JSON.stringify(selfActivityBaseValues));
+selfActivitySimulationValues.params["path:activityName"] = "simulations";
+generator.state.operationValues.set(selfActivityOperation.operationId, selfActivitySimulationValues);
+const selfActivitySimulationPython = generator.buildPython(selfActivityOperation);
+const selfActivitySimulationJavascript = generator.buildJavascript(selfActivityOperation);
+generator.state.operationValues.set(selfActivityOperation.operationId, selfActivityBaseValues);
+const diversityOperation = catalog.operations.find((item) => item.operationId === "getActivityDiversity");
+const activitySimulationsOperation = catalog.operations.find((item) => item.operationId === "getActivitySimulations");
+const activitySubmissionsOperation = catalog.operations.find((item) => item.operationId === "getActivitySubmissions");
+check(
+  "活动分类生成器按参数选择 API 版本并使用正确日期过滤名",
+  selfActivityBaseValues.params["path:activityName"] === "base-payment"
+    && selfActivityBasePython.includes("application/json;version=3.0")
+    && selfActivityBaseJavascript.includes("application/json;version=3.0")
+    && selfActivitySimulationPython.includes("application/json;version=2.0")
+    && selfActivitySimulationJavascript.includes("application/json;version=2.0")
+    && !selfActivitySimulationPython.includes("application/json;version=3.0")
+    && diversityOperation?.parameters?.[0]?.required === false
+    && [activitySimulationsOperation, activitySubmissionsOperation].every((target) =>
+      target?.parameters?.[0]?.name === "date>"
+        && target.parameters[0].required === false
+        && !target.parameters.some((parameter) => parameter.name === "date>=")
+    )
+);
+const researcherPerformanceOperation = catalog.operations.find((item) => item.operationId === "getResearcherPerformance");
+check(
+  "Researcher 表现接口保持隐藏且只记录实测 403",
+  researcherPerformanceOperation?.visibility === "hidden"
+    && researcherPerformanceOperation?.response?.errorStatuses?.includes(403)
+    && researcherPerformanceOperation?.response?.evidenceLevel === "consumer_confirmed"
+    && researcherPerformanceOperation?.accessVerification?.status === "live_access_denied_confirmed"
+    && !visibleOperations.includes(researcherPerformanceOperation)
 );
 const tagReadChecks = [
   ["getTagOptions", "TagOptions", "tagOptions"],
@@ -420,6 +518,11 @@ const listTagAlphasDefaults = generator.defaultOperationValues(newlyConfirmedByI
 const eventDefaults = generator.defaultOperationValues(newlyConfirmedById.get("listEvents"));
 const messageDefaults = generator.defaultOperationValues(newlyConfirmedById.get("listSelfMessages"));
 check(
+  "listTagAlphas 显示在 Alpha List 目录",
+  newlyConfirmedById.get("listAlphas")?.domain === "alpha"
+    && newlyConfirmedById.get("listTagAlphas")?.domain === "tags"
+);
+check(
   "新增查询参数进入代码生成器且使用实测默认值",
   listAlphasDefaults.params["query:limit"] === "10"
     && listAlphasDefaults.params["query:offset"] === "0"
@@ -433,12 +536,14 @@ check(
     && messageDefaults.params["query:read"] === ""
 );
 check(
-  "Alpha 前置条件与未测试接口边界在网页数据中保持准确",
+  "Alpha 前置条件、已实测写接口与团队接口边界在网页数据中保持准确",
   newlyConfirmedById.get("getSelfAlphaPerformance")?.response?.errorStatuses?.includes(400)
     && newlyConfirmedById.get("getAlphaTutorial")?.response?.mode === "json_or_empty"
     && newlyConfirmedById.get("getAlphaTutorial")?.response?.errorStatuses?.includes(412)
-    && ["bulkPatchAlphas", "patchMessage", "patchSelfMessageSummary", "getTeamAlphaPerformance", "getCompetitionAlphaPerformance"]
-      .every((operationId) => catalog.operations.find((operation) => operation.operationId === operationId)?.response?.evidenceLevel !== "live_response_confirmed")
+    && ["bulkPatchAlphas", "patchMessage", "patchSelfMessageSummary", "getCompetitionAlphaPerformance"]
+      .every((operationId) => catalog.operations.find((operation) => operation.operationId === operationId)?.response?.evidenceLevel === "live_response_confirmed")
+    && catalog.operations.find((operation) => operation.operationId === "getTeamAlphaPerformance")?.response?.evidenceLevel !== "live_response_confirmed"
+    && catalog.operations.find((operation) => operation.operationId === "getTeamAlphaPerformance")?.visibility === "hidden"
 );
 const createAuthenticationOperation = catalog.operations.find((operation) => operation.operationId === "createAuthentication");
 const getAuthenticationOperation = catalog.operations.find((operation) => operation.operationId === "getAuthentication");
@@ -481,6 +586,69 @@ check(
     catalog.operations.some((operation) => operation.operationId === operationId && operation.visibility === "hidden")
       && !visibleOperations.some((operation) => operation.operationId === operationId)
   )
+);
+const dataOperationIds = [
+  "getExpressionFieldsSummary",
+  "getSuggestedFields",
+  "listDatasets",
+  "getDataset",
+  "searchDatasets",
+  "listDataFields",
+  "getDataField",
+  "visualizeDataField",
+  "listDataCategories"
+];
+const dataOperations = Object.fromEntries(dataOperationIds.map((operationId) => [
+  operationId,
+  catalog.operations.find((operation) => operation.operationId === operationId)
+]));
+const fieldScopeNames = ["instrumentType", "region", "delay", "universe"];
+check(
+  "Data 接口实测 Schema、搜索参数与 scope 约束已同步",
+  dataOperationIds.every((operationId) => dataOperations[operationId]?.response?.evidenceLevel === "live_response_confirmed")
+    && dataOperations.getSuggestedFields?.response?.schemaRef === "SuggestedFields"
+    && catalog.schemas?.SuggestedFields?.properties?.selection?.items?.type === "string"
+    && dataOperations.searchDatasets?.response?.schemaRef === "DatasetSearchResult"
+    && dataOperations.searchDatasets?.parameters?.some((parameter) => parameter.name === "search" && parameter.required === true)
+    && !dataOperations.searchDatasets?.parameters?.some((parameter) => parameter.name === "query")
+    && fieldScopeNames.every((name) => dataOperations.listDataFields?.parameters?.some((parameter) => parameter.name === name && parameter.required === true))
+    && dataOperations.listDataFields?.apiVersions?.includes("2.0")
+    && dataOperations.listDataFields?.apiVersions?.includes("3.0")
+    && dataOperations.visualizeDataField?.response?.statuses?.length === 1
+    && dataOperations.visualizeDataField?.response?.statuses?.[0] === 202
+    && dataOperations.visualizeDataField?.response?.mode === "empty"
+    && dataOperationIds.filter((operationId) => !["visualizeDataField"].includes(operationId)).every((operationId) => catalog.examples?.[dataOperations[operationId]?.response?.exampleRef]?.sanitized === true)
+);
+const osmosisOperationIds = ["createOsmosisScalePoints", "pollOsmosisScalePoints", "getOsmosisSummary"];
+const osmosisOperations = Object.fromEntries(osmosisOperationIds.map((operationId) => [
+  operationId,
+  catalog.operations.find((operation) => operation.operationId === operationId)
+]));
+check(
+  "Osmosis 接口归入 Account 并记录真实轮询协议",
+  osmosisOperationIds.every((operationId) => osmosisOperations[operationId]?.domain === "account")
+    && osmosisOperationIds.every((operationId) => osmosisOperations[operationId]?.response?.evidenceLevel === "live_response_confirmed")
+    && osmosisOperations.createOsmosisScalePoints?.response?.statuses?.[0] === 201
+    && osmosisOperations.createOsmosisScalePoints?.response?.mode === "empty"
+    && osmosisOperations.createOsmosisScalePoints?.behavior?.followUpOperationId === "pollOsmosisScalePoints"
+    && osmosisOperations.pollOsmosisScalePoints?.response?.statuses?.includes(204)
+    && osmosisOperations.pollOsmosisScalePoints?.behavior?.retryAfterHeader === true
+    && osmosisOperations.getOsmosisSummary?.response?.schemaRef === "OsmosisSummary"
+    && catalog.examples?.osmosisSummary?.sanitized === true
+);
+const dataSearchPython = generator.buildPython(dataOperations.searchDatasets);
+const dataFieldsPython = generator.buildPython(dataOperations.listDataFields);
+const createOsmosisPython = generator.buildPython(osmosisOperations.createOsmosisScalePoints);
+check(
+  "Data 必填参数与 Osmosis GET 轮询进入 Python 代码生成器",
+  dataSearchPython.includes('"search": "price"')
+    && dataFieldsPython.includes('"instrumentType": "EQUITY"')
+    && dataFieldsPython.includes('"region": "GLB"')
+    && dataFieldsPython.includes('"delay": 1')
+    && dataFieldsPython.includes('"universe": "TOP3000"')
+    && createOsmosisPython.includes('poll_url = response.headers.get("Location")')
+    && createOsmosisPython.includes("response = session.get(")
+    && !createOsmosisPython.includes('response = session.request("POST", endpoint, headers=headers, timeout=30)')
 );
 const expandedSearchResults = generator.expandSchemaRefs({ $ref: "#/schemas/SearchResults" });
 const expandedSearchResultsText = JSON.stringify(expandedSearchResults);
@@ -571,6 +739,59 @@ check(
     && generator.operationConfidenceLabel(ordinaryHighConfidenceOperation) === "高可信度"
     && !app.includes("operation.confidence)} confidence")
     && !app.includes("example.evidenceLevel)}</strong>")
+);
+const liveConfirmedVisibleOperations = visibleOperations.filter((operation) => operation.response?.evidenceLevel === "live_response_confirmed");
+const remainingVisibleOperationIds = visibleOperations
+  .filter((operation) => operation.response?.evidenceLevel !== "live_response_confirmed")
+  .map((operation) => operation.operationId)
+  .sort();
+const createSimulationOperation = catalog.operations.find((operation) => operation.operationId === "createSimulation");
+const deleteSimulationOperation = catalog.operations.find((operation) => operation.operationId === "deleteSimulation");
+const superSelectionOperation = catalog.operations.find((operation) => operation.operationId === "getSimulationSuperSelection");
+const createProtoUserOperation = catalog.operations.find((operation) => operation.operationId === "createProtoUser");
+const searchPlatformOperation = catalog.operations.find((operation) => operation.operationId === "searchPlatform");
+check(
+  "catalog 1.15.1 固化本轮实测覆盖率与剩余接口",
+  catalog.catalogVersion === "1.15.1"
+    && visibleOperations.length === 93
+    && liveConfirmedVisibleOperations.length === 92
+    && JSON.stringify(remainingVisibleOperationIds) === JSON.stringify(["searchPlatform"])
+    && createProtoUserOperation?.visibility === "hidden"
+    && !visibleOperations.some((operation) => operation.operationId === "createProtoUser")
+);
+check(
+  "Simulation 创建、删除与 Super Selection 实测约束完整",
+  catalog.schemas?.SimulationCreateSettings?.required?.includes("visualization")
+    && createSimulationOperation?.response?.statuses?.length === 1
+    && createSimulationOperation?.response?.statuses?.[0] === 201
+    && createSimulationOperation?.response?.headers?.Location?.schema?.type === "string"
+    && deleteSimulationOperation?.response?.statuses?.[0] === 200
+    && deleteSimulationOperation?.response?.mode === "json_or_empty"
+    && superSelectionOperation?.parameters?.length > 0
+    && superSelectionOperation.parameters.every((parameter) => parameter.required === false)
+    && JSON.stringify(superSelectionOperation.parameters.find((parameter) => parameter.name === "selectionHandling")?.schema?.enum)
+      === JSON.stringify(["POSITIVE", "NON_ZERO", "NON_NAN"])
+    && superSelectionOperation.parameters.find((parameter) => parameter.name === "selectionLimit")?.schema?.minimum === 10
+    && superSelectionOperation.parameters.find((parameter) => parameter.name === "selectionLimit")?.schema?.maximum === 1000
+);
+const messageSummaryPatchVariants = catalog.schemas?.MessageSummaryPatchRequest?.oneOf ?? [];
+const spcSampleOutputSchema = catalog.schemas?.SpcSubmissionCreate?.properties?.sampleOutput;
+check(
+  "Message Summary 与 SPC 请求体使用实测结构",
+  messageSummaryPatchVariants.some((variant) => variant.properties?.announcement?.properties?.unread?.const === 0)
+    && messageSummaryPatchVariants.some((variant) => variant.properties?.notification?.properties?.unread?.const === 0)
+    && spcSampleOutputSchema?.contentMediaType === "application/json"
+    && spcSampleOutputSchema?.contentSchema?.additionalProperties?.type === "number"
+    && spcSampleOutputSchema?.contentSchema?.propertyNames?.pattern === "^[A-Z]{2}[A-Z0-9]{9}[0-9]\\|[A-Z0-9]{4}$"
+);
+check(
+  "未完成成功响应确认的保留接口注明真实阻塞原因",
+  searchPlatformOperation?.availability === "currently_returns_404"
+    && searchPlatformOperation?.verification?.status === "live_error_confirmed"
+    && searchPlatformOperation?.response?.errorStatuses?.includes(404)
+    && createProtoUserOperation?.requestValidation?.status === "request_validation_confirmed"
+    && catalog.schemas?.ProtoUserCreate?.required?.includes("email")
+    && catalog.schemas?.ProtoUserCreate?.required?.includes("captcha")
 );
 const generated = [];
 for (const operation of catalog.operations) {

@@ -1,6 +1,6 @@
 const DOMAIN_LABELS = {
-  authentication: "认证",
-  account: "账户",
+  authentication: "Authentication",
+  account: "Account",
   data: "Data",
   operators: "Operator",
   simulation: "Simulation",
@@ -9,12 +9,12 @@ const DOMAIN_LABELS = {
   messages: "Message",
   agreements: "协议",
   tags: "Alpha List",
-  competitions: "比赛",
-  consultant: "顾问",
+  competitions: "Competition",
+  consultant: "Consultant",
   teams: "团队",
-  search: "搜索",
+  search: "Search",
   activity: "活动与表现",
-  tutorials: "教程"
+  tutorials: "Tutorial"
 };
 
 const DOMAIN_ORDER = Object.keys(DOMAIN_LABELS);
@@ -116,8 +116,15 @@ function helpTooltip(id, label, value, description) {
   `;
 }
 
-function operationAccept(operation) {
+function operationAccept(operation, values) {
   if (operation.accept) return operation.accept;
+  const rule = operation.behavior?.acceptByParameter;
+  if (rule && values) {
+    const parameterKey = `${rule.in ?? "path"}:${rule.parameter}`;
+    const selectedValue = values.params?.[parameterKey];
+    const selectedVersion = rule.values?.[selectedValue] ?? rule.fallback;
+    if (selectedVersion) return `application/json;version=${selectedVersion}`;
+  }
   const version = operation.apiVersion ?? operation.apiVersions?.[0] ?? "2.0";
   return `application/json;version=${version}`;
 }
@@ -758,7 +765,7 @@ function buildPython(operation) {
     lines.push("files = {name: (handle.name, handle) for name, handle in file_handles.items()}");
   }
 
-  const headers = { Accept: operationAccept(operation) };
+  const headers = { Accept: operationAccept(operation, values) };
   if (modes.includes("bearer")) headers.Authorization = "Bearer {token}";
   const headerLines = Object.entries(headers).map(([key, value]) => {
     if (key === "Authorization") return `    ${JSON.stringify(key)}: f"${value}",`;
@@ -939,7 +946,7 @@ function buildJavascript(operation) {
     }
   }
 
-  const headers = { Accept: operationAccept(operation) };
+  const headers = { Accept: operationAccept(operation, values) };
   if (auth === "basic") headers.Authorization = "__BASIC__";
   if (auth === "bearer") headers.Authorization = "__BEARER__";
   lines.push("", "  const headers = {");
