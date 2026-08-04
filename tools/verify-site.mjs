@@ -50,7 +50,7 @@ check("页面具备接口目录、详情与右侧代码面板", ["nav-pane", "do
 check("代码面板支持 Python 与 JavaScript 语言选择", html.includes('id="language-select"') && html.includes("Python requests") && html.includes("JavaScript fetch"));
 check(
   "页头提供可访问的 GitHub 仓库链接",
-  html.includes('href="https://github.com/zhangkaihua88/QuantAPI"')
+  html.includes('href="https://github.com/AlphaQuantKit/QuantAPI"')
     && html.includes('rel="noopener noreferrer"')
     && html.includes('aria-label="在新标签页打开 QuantAPI GitHub 仓库"')
     && css.includes(".github-link")
