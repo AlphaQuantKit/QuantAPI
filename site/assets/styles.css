@@ -201,24 +201,54 @@ kbd {
   display: inline-flex;
   flex: none;
   align-items: center;
-  gap: 6px;
-  min-height: 36px;
-  padding: 0 12px;
-  border: 1px solid #c9c5bb;
-  border-radius: 10px;
-  background: #fff;
+  gap: 9px;
+  min-height: 42px;
+  padding: 4px 8px 4px 5px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  background: transparent;
   color: var(--ink);
-  font-size: 12px;
-  font-weight: 700;
   text-decoration: none;
-  box-shadow: 0 3px 10px rgba(30, 39, 55, 0.05);
-  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+  transition: border-color 160ms ease, background 160ms ease;
 }
 
 .github-link:hover {
-  border-color: #9ab8b1;
+  border-color: #c9dcd7;
   background: var(--accent-soft);
-  transform: translateY(-1px);
+}
+
+.github-link-icon {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 9px;
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: -0.08em;
+  box-shadow: 2px 2px 0 var(--accent);
+}
+
+.github-link-copy,
+.github-link-copy strong,
+.github-link-copy small {
+  display: block;
+}
+
+.github-link-copy strong {
+  font-size: 12px;
+  line-height: 1.15;
+}
+
+.github-link-copy small {
+  margin-top: 3px;
+  color: var(--ink-muted);
+  font-family: var(--mono);
+  font-size: 9px;
+  line-height: 1;
 }
 
 .status-dot {
@@ -1200,6 +1230,11 @@ noscript {
 
   .github-link {
     min-height: 42px;
+    padding-right: 7px;
+  }
+
+  .github-link-copy small {
+    display: none;
   }
 
   .workspace {
