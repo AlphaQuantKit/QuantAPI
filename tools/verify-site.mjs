@@ -75,6 +75,14 @@ const missingMarkers = generatorMarkers.filter((marker) => !app.includes(marker)
 check("双语言生成器包含认证、调用、轮询和凭据处理", missingMarkers.length === 0, missingMarkers.join(", "));
 check("页面具备接口目录、详情与右侧代码面板", ["nav-pane", "doc-pane", "code-pane"].every((className) => html.includes(className)));
 check("代码面板支持 Python 与 JavaScript 语言选择", html.includes('id="language-select"') && html.includes("Python requests") && html.includes("JavaScript fetch"));
+const topbarMetaHtml = html.match(/<div class="topbar-meta">([\s\S]*?)<\/div>/)?.[1] ?? "";
+check(
+  "左上角显示动态 catalog 版本且右上角不再重复",
+  html.includes('<small id="catalog-version">catalog —</small>')
+    && !html.includes("非官方 · 源码分析版")
+    && !topbarMetaHtml.includes('id="catalog-version"')
+    && app.includes('elements.catalogVersion.textContent = `catalog ${state.catalog.catalogVersion}`')
+);
 const tagOperations = catalog.operations.filter((operation) => operation.domain === "tags");
 check(
   "标签业务域统一显示为 Alpha List",
@@ -117,6 +125,13 @@ check(
       && (index === 0 || app.indexOf(`${expectedLeadingDomainOrder[index - 1]}:`) < app.indexOf(`${domain}:`))
   )
     && expectedLeadingDomainOrder.every((domain) => visibleDomains.has(domain))
+);
+check(
+  "数据与算子业务域使用英文名称",
+  app.includes('data: "Data"')
+    && app.includes('operators: "Operator"')
+    && !app.includes('data: "数据"')
+    && !app.includes('operators: "算子"')
 );
 const hiddenAgreementAndTeamOperations = catalog.operations.filter((operation) => ["agreements", "teams"].includes(operation.domain));
 const listSelfAgreementsOperation = catalog.operations.find((operation) => operation.operationId === "listSelfAgreements");
@@ -237,6 +252,109 @@ check(
     && updateSimulationSettingsOperation?.requestBody?.exampleRef === "simulationSettings"
     && JSON.parse(updateSimulationDefaults.bodies["application/json"]).instrumentType === "EQUITY"
     && updateSimulationSettingsOperation?.response?.statuses?.includes(201)
+);
+const tagReadChecks = [
+  ["getTagOptions", "TagOptions", "tagOptions"],
+  ["listSelfTags", "AlphaListTagPage", "alphaLists"],
+  ["getTag", "AlphaListTag", "alphaList"],
+  ["getTagInnerCorrelation", "TagInnerCorrelation", "tagInnerCorrelation"],
+  ["getTagSelfCorrelation", "TabularRecordset", "tagSelfCorrelation"]
+];
+check(
+  "五个 Alpha List 只读接口展示实测 Schema 与去敏响应示例",
+  tagReadChecks.every(([operationId, schemaRef, exampleRef]) => {
+    const operation = catalog.operations.find((item) => item.operationId === operationId);
+    return operation?.response?.schemaRef === schemaRef
+      && operation?.response?.exampleRef === exampleRef
+      && operation?.response?.evidenceLevel === "live_response_confirmed"
+      && operation?.verification?.rawSampleStored === false
+      && catalog.examples?.[exampleRef]?.sanitized === true
+      && generator.responseExampleBlock(exampleRef).includes("去敏响应示例");
+  })
+);
+const listSelfTagsOperation = catalog.operations.find((operation) => operation.operationId === "listSelfTags");
+const innerTagCorrelationOperation = catalog.operations.find((operation) => operation.operationId === "getTagInnerCorrelation");
+const selfTagCorrelationOperation = catalog.operations.find((operation) => operation.operationId === "getTagSelfCorrelation");
+check(
+  "Alpha List 分页默认值和相关性 Retry-After 轮询进入代码生成器",
+  generator.defaultOperationValues(listSelfTagsOperation).params["query:limit"] === "9"
+    && generator.defaultOperationValues(listSelfTagsOperation).params["query:offset"] === "0"
+    && [innerTagCorrelationOperation, selfTagCorrelationOperation].every((operation) =>
+      operation?.behavior?.polling === true
+        && operation?.behavior?.retryAfterHeader === true
+        && generator.defaultOperationValues(operation).includePolling === true
+    )
+    && catalog.examples?.tagOptions?.value?.actions?.POST?.name?.maxLength === 96
+    && catalog.examples?.tagSelfCorrelation?.value?.records?.[0]?.[1] === null
+);
+const createTagOperation = catalog.operations.find((operation) => operation.operationId === "createTag");
+const patchTagOperation = catalog.operations.find((operation) => operation.operationId === "patchTag");
+const deleteTagOperation = catalog.operations.find((operation) => operation.operationId === "deleteTag");
+const createTagDefaults = generator.defaultOperationValues(createTagOperation);
+const patchTagDefaults = generator.defaultOperationValues(patchTagOperation);
+check(
+  "三个 Alpha List 写接口展示实测结构且临时资源已清理",
+  createTagOperation?.requestBody?.exampleRef === "createAlphaListRequest"
+    && createTagOperation?.response?.exampleRef === "createdAlphaList"
+    && createTagOperation?.response?.evidenceLevel === "live_response_confirmed"
+    && JSON.parse(createTagDefaults.bodies["application/json"]).alphas.length === 0
+    && patchTagOperation?.requestBody?.exampleRef === "patchAlphaListRequest"
+    && patchTagOperation?.response?.exampleRef === "patchedAlphaList"
+    && patchTagOperation?.response?.evidenceLevel === "live_response_confirmed"
+    && Object.keys(JSON.parse(patchTagDefaults.bodies["application/json"])).join(",") === "op,alphas"
+    && JSON.parse(patchTagDefaults.bodies["application/json"]).op === "add"
+    && JSON.parse(patchTagDefaults.bodies["application/json"]).alphas[0] === "ALPHA_ID_EXAMPLE"
+    && catalog.examples?.patchedAlphaList?.value?.alphas?.[0]?.name === null
+    && patchTagOperation?.verification?.observations?.some((observation) => observation.includes("op=add"))
+    && deleteTagOperation?.response?.evidenceLevel === "live_response_confirmed"
+    && deleteTagOperation?.response?.mode === "empty"
+    && deleteTagOperation?.response?.statuses?.[0] === 204
+    && !deleteTagOperation?.response?.exampleRef
+    && deleteTagOperation?.verification?.observations?.some((observation) => observation.includes("临时资源已成功清理"))
+    && generator.responseExampleForOperation(deleteTagOperation) === ""
+);
+const getAlphaOperation = catalog.operations.find((operation) => operation.operationId === "getAlpha");
+const patchAlphaOperation = catalog.operations.find((operation) => operation.operationId === "patchAlpha");
+const listRelatedAlphasOperation = catalog.operations.find((operation) => operation.operationId === "listRelatedAlphas");
+const submitAlphaOperation = catalog.operations.find((operation) => operation.operationId === "submitAlpha");
+const pollAlphaSubmissionOperation = catalog.operations.find((operation) => operation.operationId === "pollAlphaSubmission");
+const patchAlphaDefaults = generator.defaultOperationValues(patchAlphaOperation);
+const patchAlphaBody = JSON.parse(patchAlphaDefaults.bodies["application/json"]);
+check(
+  "五个 Alpha 详情、描述、子项与提交接口展示实测 Schema 和示例",
+  [
+    [getAlphaOperation, "Alpha", "superAlpha"],
+    [patchAlphaOperation, "Alpha", "superAlpha"],
+    [listRelatedAlphasOperation, "AlphaList", "relatedAlphas"],
+    [submitAlphaOperation, "AlphaCheckResponse", "alphaSubmissionChecks"],
+    [pollAlphaSubmissionOperation, "AlphaCheckResponse", "alphaSubmissionChecks"]
+  ].every(([operation, schemaRef, exampleRef]) =>
+    operation?.response?.schemaRef === schemaRef
+      && operation?.response?.exampleRef === exampleRef
+      && operation?.response?.evidenceLevel === "live_response_confirmed"
+      && operation?.verification?.rawSampleStored === false
+      && catalog.examples?.[exampleRef]?.sanitized === true
+      && generator.responseExampleBlock(exampleRef).includes("去敏响应示例")
+  )
+    && patchAlphaOperation?.requestBody?.schemaRef === "AlphaPatchRequest"
+    && patchAlphaOperation?.requestBody?.exampleRef === "patchSuperAlphaDescriptionRequest"
+    && patchAlphaBody.selection.description.length >= 100
+    && patchAlphaBody.combo.description.length >= 100
+    && listRelatedAlphasOperation?.behavior?.pagination === "limit_offset"
+);
+const submitAlphaPython = generator.buildPython(submitAlphaOperation);
+const submitAlphaJavascript = generator.buildJavascript(submitAlphaOperation);
+check(
+  "Super Alpha 提交代码按 Retry-After 等待并改用 GET 轮询",
+  submitAlphaOperation?.behavior?.poll === "pollAlphaSubmission"
+    && submitAlphaOperation?.behavior?.retryAfterHeader === true
+    && pollAlphaSubmissionOperation?.verification?.observedPollCount === 16
+    && submitAlphaPython.includes('while response.headers.get("Retry-After"):')
+    && submitAlphaPython.includes("response = session.get(")
+    && !submitAlphaPython.includes("poll_response.status_code != 202")
+    && submitAlphaJavascript.includes('while (response.headers.has("Retry-After"))')
+    && submitAlphaJavascript.includes('method: "GET"')
+    && !submitAlphaJavascript.includes("response.status !== 202")
 );
 const createAuthenticationOperation = catalog.operations.find((operation) => operation.operationId === "createAuthentication");
 const getAuthenticationOperation = catalog.operations.find((operation) => operation.operationId === "getAuthentication");

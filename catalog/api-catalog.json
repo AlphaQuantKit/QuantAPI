@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "catalogVersion": "1.7.3",
+  "catalogVersion": "1.10.0",
   "title": "WQ API 非官方接口目录",
   "description": "以 WorldQuant BRAIN 前端 bundle 静态分析为基线，并通过人工复核的去敏真实响应逐项升级。此目录不是官方 API 承诺；unknown/inferred 字段必须在取得去敏真实响应后再升级。",
   "generatedFrom": {
@@ -316,6 +316,27 @@
         },
         "testPeriod": {
           "type": "string"
+        },
+        "startDate": {
+          "type": "string"
+        },
+        "endDate": {
+          "type": "string"
+        },
+        "selectionHandling": {
+          "type": "string"
+        },
+        "selectionLimit": {
+          "type": "integer"
+        },
+        "componentActivation": {
+          "type": "string"
+        },
+        "maxPosition": {
+          "type": "string"
+        },
+        "maxTrade": {
+          "type": "string"
         }
       },
       "additionalProperties": true
@@ -362,10 +383,48 @@
         "checks": {
           "type": "array",
           "items": {
-            "$ref": "#/schemas/OpenObject"
+            "$ref": "#/schemas/AlphaCheck"
           }
+        },
+        "selfCorrelation": {
+          "type": "number"
+        },
+        "prodCorrelation": {
+          "type": "number"
+        },
+        "investabilityConstrained": {
+          "$ref": "#/schemas/OpenObject"
+        },
+        "riskNeutralized": {
+          "$ref": "#/schemas/OpenObject"
         }
       },
+      "additionalProperties": true
+    },
+    "AlphaCodeBlock": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "operatorCount": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "code",
+        "description",
+        "operatorCount"
+      ],
       "additionalProperties": true
     },
     "Alpha": {
@@ -375,7 +434,11 @@
           "type": "string"
         },
         "type": {
-          "type": "string"
+          "type": "string",
+          "enum": [
+            "REGULAR",
+            "SUPER"
+          ]
         },
         "author": {
           "type": "string"
@@ -384,22 +447,35 @@
           "$ref": "#/schemas/AlphaSettings"
         },
         "regular": {
-          "type": "object",
-          "properties": {
-            "code": {
-              "type": "string"
+          "$ref": "#/schemas/AlphaCodeBlock"
+        },
+        "selection": {
+          "$ref": "#/schemas/AlphaCodeBlock"
+        },
+        "combo": {
+          "$ref": "#/schemas/AlphaCodeBlock"
+        },
+        "classifications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
             },
-            "description": {
-              "type": [
-                "string",
-                "null"
-              ]
-            },
-            "operatorCount": {
-              "type": "integer"
-            }
-          },
-          "additionalProperties": true
+            "required": [
+              "id",
+              "name"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "origin": {
+          "type": "string"
         },
         "dateCreated": {
           "type": "string"
@@ -444,7 +520,10 @@
           }
         },
         "grade": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "stage": {
           "type": "string"
@@ -463,6 +542,43 @@
         },
         "prod": {
           "$ref": "#/schemas/AlphaMetrics"
+        },
+        "train": {
+          "$ref": "#/schemas/AlphaMetrics"
+        },
+        "competitions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/schemas/OpenObject"
+          }
+        },
+        "themes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/schemas/OpenObject"
+          }
+        },
+        "pyramids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/schemas/OpenObject"
+          }
+        },
+        "pyramidThemes": {
+          "$ref": "#/schemas/OpenObject"
+        },
+        "team": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": true
+        },
+        "osmosisPoints": {
+          "type": [
+            "number",
+            "null"
+          ]
         }
       },
       "required": [
@@ -470,6 +586,75 @@
         "settings",
         "status"
       ],
+      "additionalProperties": true
+    },
+    "AlphaPatchRequest": {
+      "type": "object",
+      "properties": {
+        "color": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/schemas/OpenObject"
+          }
+        },
+        "category": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "regular": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "description"
+          ],
+          "additionalProperties": false
+        },
+        "selection": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string",
+              "description": "提交 Super Alpha 前，前端要求 Selection Expression 描述不少于 100 个字符。"
+            }
+          },
+          "required": [
+            "description"
+          ],
+          "additionalProperties": false
+        },
+        "combo": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string",
+              "description": "提交 Super Alpha 前，前端要求 Combo Expression 描述不少于 100 个字符。"
+            }
+          },
+          "required": [
+            "description"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "minProperties": 1,
       "additionalProperties": true
     },
     "AlphaList": {
@@ -565,6 +750,285 @@
         }
       },
       "additionalProperties": true
+    },
+    "TagOptionChoice": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value",
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "name"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "TagOptionField": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "readOnly": {
+          "type": "boolean"
+        },
+        "label": {
+          "type": "string"
+        },
+        "maxLength": {
+          "type": "integer"
+        },
+        "choices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/schemas/TagOptionChoice"
+          }
+        }
+      },
+      "required": [
+        "type",
+        "required",
+        "readOnly",
+        "label"
+      ],
+      "additionalProperties": false
+    },
+    "TagOptions": {
+      "type": "object",
+      "properties": {
+        "actions": {
+          "type": "object",
+          "properties": {
+            "POST": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "$ref": "#/schemas/TagOptionField"
+                },
+                "type": {
+                  "$ref": "#/schemas/TagOptionField"
+                },
+                "name": {
+                  "$ref": "#/schemas/TagOptionField"
+                }
+              },
+              "required": [
+                "id",
+                "type",
+                "name"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "POST"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "actions"
+      ],
+      "additionalProperties": false
+    },
+    "TagAlphaReference": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "additionalProperties": false
+    },
+    "AlphaListTag": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "alphas": {
+          "type": "array",
+          "items": {
+            "$ref": "#/schemas/TagAlphaReference"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "name",
+        "alphas"
+      ],
+      "additionalProperties": false
+    },
+    "AlphaListTagPage": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer"
+        },
+        "next": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "previous": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/schemas/AlphaListTag"
+          }
+        }
+      },
+      "required": [
+        "count",
+        "next",
+        "previous",
+        "results"
+      ],
+      "additionalProperties": false
+    },
+    "RecordsetColumn": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "title",
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "TabularRecordsetSchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "properties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/schemas/RecordsetColumn"
+          }
+        }
+      },
+      "required": [
+        "name",
+        "title",
+        "properties"
+      ],
+      "additionalProperties": false
+    },
+    "TabularRecordset": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "$ref": "#/schemas/TabularRecordsetSchema"
+        },
+        "records": {
+          "type": "array",
+          "description": "每一项为数组，元素顺序与 schema.properties 一致。",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": [
+                "string",
+                "number",
+                "boolean",
+                "null"
+              ]
+            }
+          }
+        }
+      },
+      "required": [
+        "schema",
+        "records"
+      ],
+      "additionalProperties": false
+    },
+    "TagInnerCorrelation": {
+      "type": "object",
+      "properties": {
+        "inner": {
+          "$ref": "#/schemas/TabularRecordset"
+        },
+        "pnl": {
+          "$ref": "#/schemas/TabularRecordset"
+        }
+      },
+      "required": [
+        "inner",
+        "pnl"
+      ],
+      "additionalProperties": false
     },
     "PollingState": {
       "type": "object",
@@ -1327,40 +1791,37 @@
       }
     },
     "AlphaCheck": {
-      "oneOf": [
-        {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string"
-            },
-            "result": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "name",
-            "result"
-          ],
-          "additionalProperties": true
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
         },
-        {
-          "type": "object",
-          "properties": {
-            "limit": {
-              "type": "number"
-            },
-            "value": {
-              "type": "number"
-            }
-          },
-          "required": [
-            "limit",
-            "value"
-          ],
-          "additionalProperties": true
+        "result": {
+          "type": "string",
+          "enum": [
+            "PASS",
+            "FAIL",
+            "PENDING"
+          ]
+        },
+        "limit": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "value": {
+          "type": [
+            "number",
+            "null"
+          ]
         }
-      ]
+      },
+      "required": [
+        "name",
+        "result"
+      ],
+      "additionalProperties": true
     },
     "AlphaCheckResponse": {
       "type": "object",
@@ -2211,6 +2672,221 @@
         }
       ]
     },
+    "tagOptions": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 只读实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存认证信息或原始响应；已有 Alpha List 的标识与名称已替换，API 字段描述及固定类型选项予以保留。",
+      "value": {
+        "actions": {
+          "POST": {
+            "id": {
+              "type": "string",
+              "required": false,
+              "readOnly": true,
+              "label": "Id"
+            },
+            "type": {
+              "type": "choice",
+              "required": true,
+              "readOnly": false,
+              "label": "Type",
+              "choices": [
+                {
+                  "value": "TAG",
+                  "label": "TAG"
+                },
+                {
+                  "value": "LIST",
+                  "label": "LIST"
+                },
+                {
+                  "value": "CATEGORY",
+                  "label": "CATEGORY"
+                },
+                {
+                  "value": "COLOR",
+                  "label": "COLOR"
+                }
+              ]
+            },
+            "name": {
+              "type": "string",
+              "required": true,
+              "readOnly": false,
+              "label": "Name",
+              "maxLength": 96,
+              "choices": [
+                {
+                  "id": "TAG_ID_EXAMPLE",
+                  "type": "LIST",
+                  "name": "示例 Alpha List"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "alphaLists": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 只读实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存认证信息、用户列表数量、真实列表与 Alpha 标识、列表名称或原始响应；示例仅保留字段结构。",
+      "value": {
+        "count": 1,
+        "next": null,
+        "previous": null,
+        "results": [
+          {
+            "id": "TAG_ID_EXAMPLE",
+            "type": "LIST",
+            "name": "示例 Alpha List",
+            "alphas": [
+              {
+                "id": "ALPHA_ID_EXAMPLE",
+                "name": null
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "alphaList": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 只读实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存认证信息、真实列表与 Alpha 标识、列表名称或原始响应；示例仅保留字段结构。",
+      "value": {
+        "id": "TAG_ID_EXAMPLE",
+        "type": "LIST",
+        "name": "示例 Alpha List",
+        "alphas": [
+          {
+            "id": "ALPHA_ID_EXAMPLE",
+            "name": null
+          }
+        ]
+      }
+    },
+    "createAlphaListRequest": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 临时资源实测请求（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "临时列表名称已替换；实测请求创建空列表，不包含任何真实 Alpha ID。",
+      "value": {
+        "type": "LIST",
+        "name": "示例临时 Alpha List",
+        "alphas": []
+      }
+    },
+    "createdAlphaList": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 临时资源实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "临时列表 ID 与名称已替换；创建响应中的空 alphas 原样保留，临时资源随后已删除。",
+      "value": {
+        "id": "TAG_ID_EXAMPLE",
+        "type": "LIST",
+        "name": "示例临时 Alpha List",
+        "alphas": []
+      }
+    },
+    "patchAlphaListRequest": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 临时资源实测请求（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "获准用于测试的真实 Alpha ID 已替换；请求只向本次创建的空临时列表添加一个 Alpha。",
+      "value": {
+        "op": "add",
+        "alphas": [
+          "ALPHA_ID_EXAMPLE"
+        ]
+      }
+    },
+    "patchedAlphaList": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 临时资源实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "临时列表 ID、名称及获准测试的 Alpha ID 已替换；Alpha name 的实测 null 原样保留，临时资源随后已删除。",
+      "value": {
+        "id": "TAG_ID_EXAMPLE",
+        "type": "LIST",
+        "name": "示例临时 Alpha List",
+        "alphas": [
+          {
+            "id": "ALPHA_ID_EXAMPLE",
+            "name": null
+          }
+        ]
+      }
+    },
+    "tagInnerCorrelation": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 只读实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存认证信息、列表与 Alpha 标识、列组名称、记录值或原始响应；实测空 records 原样保留。",
+      "value": {
+        "inner": {
+          "schema": {
+            "name": "SCHEMA_NAME_REDACTED",
+            "title": "SCHEMA_TITLE_REDACTED",
+            "properties": [
+              {
+                "name": "id",
+                "title": "Id",
+                "type": "string"
+              }
+            ]
+          },
+          "records": []
+        },
+        "pnl": {
+          "schema": {
+            "name": "SCHEMA_NAME_REDACTED",
+            "title": "SCHEMA_TITLE_REDACTED",
+            "properties": [
+              {
+                "name": "date",
+                "title": "Date",
+                "type": "date"
+              }
+            ]
+          },
+          "records": []
+        }
+      }
+    },
+    "tagSelfCorrelation": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 只读实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存认证信息、列表与 Alpha 标识、列组名称、相关性值或原始响应；示例记录替换为占位值并保留实测 null。",
+      "value": {
+        "schema": {
+          "name": "SCHEMA_NAME_REDACTED",
+          "title": "SCHEMA_TITLE_REDACTED",
+          "properties": [
+            {
+              "name": "id",
+              "title": "Id",
+              "type": "string"
+            },
+            {
+              "name": "correlation",
+              "title": "Correlation",
+              "type": "decimal"
+            }
+          ]
+        },
+        "records": [
+          [
+            "ALPHA_ID_EXAMPLE",
+            null
+          ]
+        ]
+      }
+    },
     "videoCourses": {
       "evidenceLevel": "live_response_confirmed",
       "source": "已登录 API 实测响应（2026-08-04）",
@@ -2459,6 +3135,126 @@
         "competitions": null,
         "themes": null,
         "team": null
+      }
+    },
+    "superAlpha": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 受控实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存原始响应；Alpha ID、作者、表达式、日期、分类值、设置细节与全部绩效数据均已替换或省略。description 为本次授权测试写入的通用说明。",
+      "value": {
+        "id": "ALPHA_ID_EXAMPLE",
+        "type": "SUPER",
+        "author": "USER_ID_EXAMPLE",
+        "settings": {
+          "instrumentType": "EQUITY",
+          "region": "USA",
+          "universe": "TOP3000",
+          "delay": 1,
+          "language": "FASTEXPR",
+          "selectionLimit": 100,
+          "visualization": false
+        },
+        "selection": {
+          "code": "<redacted-selection-expression>",
+          "description": "The selection expression identifies eligible candidate alphas using the configured filters and ranking logic, while excluding candidates that do not satisfy the required quality and robustness constraints.",
+          "operatorCount": null
+        },
+        "combo": {
+          "code": "<redacted-combo-expression>",
+          "description": "The combo expression combines the selected candidate alpha signals with the configured weighting and aggregation logic to produce a diversified SuperAlpha while controlling concentration and instability.",
+          "operatorCount": null
+        },
+        "classifications": [
+          {
+            "id": "CLASSIFICATION_ID_EXAMPLE",
+            "name": "Example classification"
+          }
+        ],
+        "dateCreated": "2025-01-15T09:30:00-05:00",
+        "dateSubmitted": "2025-02-20T11:45:00-05:00",
+        "dateModified": "2025-02-20T11:45:00-05:00",
+        "name": null,
+        "favorite": false,
+        "hidden": false,
+        "color": null,
+        "category": null,
+        "tags": [],
+        "grade": null,
+        "stage": "IS",
+        "status": "STATUS_EXAMPLE"
+      }
+    },
+    "patchSuperAlphaDescriptionRequest": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 受控实测请求（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "请求只包含两段通用 description，不含 Alpha ID、表达式、凭据或其他设置。",
+      "value": {
+        "selection": {
+          "description": "The selection expression identifies eligible candidate alphas using the configured filters and ranking logic, while excluding candidates that do not satisfy the required quality and robustness constraints."
+        },
+        "combo": {
+          "description": "The combo expression combines the selected candidate alpha signals with the configured weighting and aggregation logic to produce a diversified SuperAlpha while controlling concentration and instability."
+        }
+      }
+    },
+    "relatedAlphas": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 受控实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存原始响应；父子 Alpha ID、作者、表达式、日期、设置和绩效数据均已替换或省略，分页数量改为示例值。",
+      "value": {
+        "count": 1,
+        "next": null,
+        "previous": null,
+        "results": [
+          {
+            "id": "CHILD_ALPHA_ID_EXAMPLE",
+            "type": "REGULAR",
+            "author": "USER_ID_EXAMPLE",
+            "settings": {
+              "instrumentType": "EQUITY",
+              "region": "USA",
+              "universe": "TOP3000",
+              "delay": 1,
+              "language": "FASTEXPR",
+              "visualization": false
+            },
+            "regular": {
+              "code": "<redacted-expression>",
+              "description": null,
+              "operatorCount": null
+            },
+            "name": null,
+            "favorite": false,
+            "hidden": false,
+            "color": null,
+            "category": null,
+            "tags": [],
+            "grade": null,
+            "stage": "IS",
+            "status": "STATUS_EXAMPLE"
+          }
+        ]
+      }
+    },
+    "alphaSubmissionChecks": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 受控提交轮询最终响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存原始响应；检查名称及 limit/value 已替换为无业务含义的示例值，只保留实测字段结构与 PASS 结果。",
+      "value": {
+        "is": {
+          "checks": [
+            {
+              "name": "CHECK_NAME_EXAMPLE",
+              "result": "PASS",
+              "limit": 0.1,
+              "value": 0.2
+            }
+          ]
+        }
       }
     },
     "simulation": {
@@ -3788,9 +4584,24 @@
         "statuses": [
           200
         ],
-        "schemaRef": "Options",
-        "evidenceLevel": "consumer_confirmed",
+        "schemaRef": "TagOptions",
+        "evidenceLevel": "live_response_confirmed",
+        "exampleRef": "tagOptions",
         "mode": "json"
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "tagOptions",
+        "requestSafety": "仅发送 OPTIONS；未创建、修改或删除 Alpha List。",
+        "observations": [
+          "OPTIONS /tags 返回 HTTP 200 application/json。",
+          "响应包含 actions.POST.id、type、name 三个字段描述；name.maxLength 实测为 96。",
+          "type.choices 实测包含 TAG、LIST、CATEGORY、COLOR；name.choices 中的个人列表信息已全部替换。"
+        ],
+        "sanitization": "凭据、Cookie、个人列表标识与名称及原始响应均未进入公开产物。"
       },
       "evidence": [
         {
@@ -3809,7 +4620,7 @@
       "path": "/tags",
       "auth": "cookie_session",
       "apiVersion": "2.0",
-      "sensitivity": "none",
+      "sensitivity": "research",
       "requestBody": {
         "contentType": "application/json",
         "schema": {
@@ -3835,6 +4646,7 @@
           ],
           "additionalProperties": false
         },
+        "exampleRef": "createAlphaListRequest",
         "required": true
       },
       "response": {
@@ -3842,9 +4654,24 @@
           200,
           201
         ],
-        "schemaRef": "OpenObject",
-        "evidenceLevel": "consumer_confirmed",
+        "schemaRef": "AlphaListTag",
+        "evidenceLevel": "live_response_confirmed",
+        "exampleRef": "createdAlphaList",
         "mode": "json"
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "createdAlphaList",
+        "requestSafety": "创建一个名称随机、alphas 为空的临时 LIST；未引用或修改任何已有列表与 Alpha。",
+        "observations": [
+          "POST /tags 返回 HTTP 201 application/json。",
+          "请求体为 type=LIST、临时 name、空 alphas；响应包含 id、type、name、alphas。",
+          "响应 name 与请求一致、type 为 LIST、alphas 为空；该临时资源随后通过 deleteTag 成功删除。"
+        ],
+        "sanitization": "凭据、Cookie、临时列表 ID、随机名称和原始请求及响应均未进入公开产物。"
       },
       "evidence": [
         {
@@ -3863,7 +4690,7 @@
       "path": "/users/self/tags",
       "auth": "cookie_session",
       "apiVersion": "2.0",
-      "sensitivity": "none",
+      "sensitivity": "research",
       "parameters": [
         {
           "name": "limit",
@@ -3888,9 +4715,24 @@
         "statuses": [
           200
         ],
-        "schemaRef": "Paginated",
-        "evidenceLevel": "consumer_confirmed",
+        "schemaRef": "AlphaListTagPage",
+        "evidenceLevel": "live_response_confirmed",
+        "exampleRef": "alphaLists",
         "mode": "json"
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "alphaLists",
+        "requestSafety": "仅发送 GET；未创建、修改或删除 Alpha List。",
+        "observations": [
+          "GET /users/self/tags?limit=9&offset=0 返回 HTTP 200 application/json。",
+          "响应为 count、next、previous、results 组成的 limit/offset 分页对象。",
+          "results 项包含 id、type、name、alphas；alphas 项包含 id 与 name，且 name 实测为 null。"
+        ],
+        "sanitization": "凭据、Cookie、用户列表数量、列表与 Alpha 标识、列表名称和原始响应均未进入公开产物。"
       },
       "evidence": [
         {
@@ -3912,7 +4754,7 @@
       "path": "/tags/{tagId}",
       "auth": "cookie_session",
       "apiVersion": "2.0",
-      "sensitivity": "none",
+      "sensitivity": "research",
       "parameters": [
         {
           "name": "tagId",
@@ -3920,16 +4762,32 @@
           "required": true,
           "schema": {
             "type": "string"
-          }
+          },
+          "description": "Alpha List ID，通常从 listSelfTags 的 results[].id 取得。公开示例只使用占位符。"
         }
       ],
       "response": {
         "statuses": [
           200
         ],
-        "schemaRef": "OpenObject",
-        "evidenceLevel": "consumer_confirmed",
+        "schemaRef": "AlphaListTag",
+        "evidenceLevel": "live_response_confirmed",
+        "exampleRef": "alphaList",
         "mode": "json"
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "alphaList",
+        "requestSafety": "仅使用本人已有 Alpha List ID 发送 GET；未修改列表。",
+        "observations": [
+          "GET /tags/{tagId} 返回 HTTP 200 application/json。",
+          "响应包含 id、type、name、alphas，与分页列表中的结果项结构一致。",
+          "alphas 项包含 id 与 name，且 name 实测为 null。"
+        ],
+        "sanitization": "凭据、Cookie、列表与 Alpha 标识、列表名称和原始响应均未进入公开产物。"
       },
       "evidence": [
         {
@@ -3948,7 +4806,7 @@
       "path": "/tags/{tagId}",
       "auth": "cookie_session",
       "apiVersion": "2.0",
-      "sensitivity": "none",
+      "sensitivity": "research",
       "parameters": [
         {
           "name": "tagId",
@@ -3956,7 +4814,8 @@
           "required": true,
           "schema": {
             "type": "string"
-          }
+          },
+          "description": "Alpha List ID，通常从 listSelfTags 的 results[].id 取得。"
         }
       ],
       "requestBody": {
@@ -3968,7 +4827,13 @@
               "type": "string"
             },
             "op": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "add",
+                "remove",
+                "rename"
+              ],
+              "description": "raw 中确认的操作类型；仅重命名时可只发送 name。"
             },
             "alphas": {
               "type": "array",
@@ -3979,15 +4844,32 @@
           },
           "additionalProperties": false
         },
+        "exampleRef": "patchAlphaListRequest",
         "required": true
       },
       "response": {
         "statuses": [
           200
         ],
-        "schemaRef": "OpenObject",
-        "evidenceLevel": "consumer_confirmed",
+        "schemaRef": "AlphaListTag",
+        "evidenceLevel": "live_response_confirmed",
+        "exampleRef": "patchedAlphaList",
         "mode": "json"
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "patchedAlphaList",
+        "requestSafety": "先对本次创建的空临时列表完成重命名验证；经用户明确授权后，另建空临时列表并只添加一个指定 Alpha，随后删除临时列表。",
+        "observations": [
+          "PATCH /tags/{tagId} 使用仅包含 name 的 JSON，返回 HTTP 200 application/json。",
+          "响应 id 与创建接口返回值一致，name 与重命名请求一致，type 为 LIST，alphas 仍为空。",
+          "另一次受控请求使用 op=add 与单个 Alpha ID，返回 HTTP 200；响应列表身份一致、alphas 仅包含获准 Alpha，且 Alpha name 为 null。",
+          "未测试对已有列表的更新或 remove 操作；临时列表已删除，Alpha 本身未修改。"
+        ],
+        "sanitization": "凭据、Cookie、临时列表 ID、随机名称、获准测试的真实 Alpha ID 和原始请求及响应均未进入公开产物。"
       },
       "evidence": [
         {
@@ -4022,8 +4904,21 @@
           204
         ],
         "schemaRef": "Empty",
-        "evidenceLevel": "consumer_confirmed",
+        "evidenceLevel": "live_response_confirmed",
         "mode": "empty"
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test",
+        "rawSampleStored": false,
+        "requestSafety": "仅删除同一次测试创建并核对 ID、名称和类型后的空临时列表。",
+        "observations": [
+          "DELETE /tags/{tagId} 返回 HTTP 204，响应体为空。",
+          "删除目标严格限定为本次 createTag 返回且已完成身份核对的临时列表 ID。",
+          "临时资源已成功清理；已有列表和 Alpha 成员均未触碰。"
+        ],
+        "sanitization": "凭据、Cookie、临时列表 ID、随机名称和空响应均未保存。"
       },
       "evidence": [
         {
@@ -4042,7 +4937,7 @@
       "path": "/tags/{tagId}/correlations/inner",
       "auth": "cookie_session",
       "apiVersion": "2.0",
-      "sensitivity": "none",
+      "sensitivity": "research",
       "parameters": [
         {
           "name": "tagId",
@@ -4050,16 +4945,36 @@
           "required": true,
           "schema": {
             "type": "string"
-          }
+          },
+          "description": "Alpha List ID，通常从 listSelfTags 的 results[].id 取得。"
         }
       ],
       "response": {
         "statuses": [
           200
         ],
-        "schemaRef": "Recordset",
-        "evidenceLevel": "consumer_confirmed",
+        "schemaRef": "TagInnerCorrelation",
+        "evidenceLevel": "live_response_confirmed",
+        "exampleRef": "tagInnerCorrelation",
         "mode": "json"
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "tagInnerCorrelation",
+        "requestSafety": "仅使用本人已有 Alpha List ID 发送 GET，并按前端逻辑处理 Retry-After；未修改列表。",
+        "observations": [
+          "GET /tags/{tagId}/correlations/inner 最终返回 HTTP 200 application/json。",
+          "一次初始读取观察到 HTTP 200 text/html 非 JSON 中间响应；raw 包装器会在 Retry-After 存在时递归重试，并配置 retryEmpty。",
+          "最终响应顶层包含 inner 与 pnl；二者均包含 schema 和 records。实测 inner 列为 id/string，pnl 列为 date/date，两个 records 均为空数组。"
+        ],
+        "sanitization": "凭据、Cookie、列表与 Alpha 标识、列组名称、记录值和原始响应均未进入公开产物。"
+      },
+      "behavior": {
+        "polling": true,
+        "retryAfterHeader": true
       },
       "evidence": [
         {
@@ -4078,7 +4993,7 @@
       "path": "/tags/{tagId}/correlations/self",
       "auth": "cookie_session",
       "apiVersion": "2.0",
-      "sensitivity": "none",
+      "sensitivity": "research",
       "parameters": [
         {
           "name": "tagId",
@@ -4086,16 +5001,36 @@
           "required": true,
           "schema": {
             "type": "string"
-          }
+          },
+          "description": "Alpha List ID，通常从 listSelfTags 的 results[].id 取得。"
         }
       ],
       "response": {
         "statuses": [
           200
         ],
-        "schemaRef": "Recordset",
-        "evidenceLevel": "consumer_confirmed",
+        "schemaRef": "TabularRecordset",
+        "evidenceLevel": "live_response_confirmed",
+        "exampleRef": "tagSelfCorrelation",
         "mode": "json"
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "tagSelfCorrelation",
+        "requestSafety": "仅使用本人已有 Alpha List ID 发送 GET，并按前端逻辑处理 Retry-After；未修改列表。",
+        "observations": [
+          "GET /tags/{tagId}/correlations/self 最终返回 HTTP 200 application/json。",
+          "一次初始读取观察到 HTTP 200 text/html 非 JSON 中间响应；raw 包装器会在 Retry-After 存在时递归重试，并配置 retryEmpty。",
+          "最终响应包含 schema 与 records；列定义为 id/string、correlation/decimal，实测记录的 correlation 值包含 null。"
+        ],
+        "sanitization": "凭据、Cookie、列表与 Alpha 标识、列组名称、相关性值和原始响应均未进入公开产物。"
+      },
+      "behavior": {
+        "polling": true,
+        "retryAfterHeader": true
       },
       "evidence": [
         {
@@ -4282,9 +5217,23 @@
           200
         ],
         "schemaRef": "Alpha",
-        "exampleRef": "alpha",
-        "evidenceLevel": "fixture_confirmed",
+        "exampleRef": "superAlpha",
+        "evidenceLevel": "live_response_confirmed",
         "mode": "json"
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "superAlpha",
+        "requestSafety": "仅对用户明确指定的 Alpha 发送 GET；未读取其他 Alpha。",
+        "observations": [
+          "GET /alphas/{alphaId} 返回 HTTP 200 application/json。",
+          "实测顶层 type 为 SUPER；Super Alpha 使用 selection 与 combo，而普通子 Alpha 使用 regular。",
+          "selection、combo 均包含 code、description、operatorCount；本次 PATCH 前两处 description 均为 null。"
+        ],
+        "sanitization": "凭据、Cookie、Alpha ID、作者、表达式、日期、设置细节、分类值、指标和原始响应均未进入公开产物。"
       },
       "evidence": [
         {
@@ -4331,16 +5280,32 @@
       ],
       "requestBody": {
         "contentType": "application/json",
-        "schemaRef": "OpenObject",
+        "schemaRef": "AlphaPatchRequest",
+        "exampleRef": "patchSuperAlphaDescriptionRequest",
         "required": true
       },
       "response": {
         "statuses": [
           200
         ],
-        "schemaRef": "OpenObject",
-        "evidenceLevel": "consumer_confirmed",
+        "schemaRef": "Alpha",
+        "exampleRef": "superAlpha",
+        "evidenceLevel": "live_response_confirmed",
         "mode": "json"
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "superAlpha",
+        "requestSafety": "仅更新用户明确指定 Super Alpha 的 selection.description 与 combo.description；未发送名称、表达式、设置或其他元数据。",
+        "observations": [
+          "PATCH /alphas/{alphaId} 返回 HTTP 200 application/json。",
+          "请求体只包含 selection.description 与 combo.description；两段说明均超过前端提交校验要求的 100 个字符。",
+          "PATCH 后再次 GET，两个 description 与请求逐字一致，Alpha type 仍为 SUPER。"
+        ],
+        "sanitization": "凭据、Cookie、Alpha ID、表达式、指标和原始响应均未进入公开产物；公开请求示例只保留通用 description。"
       },
       "evidence": [
         {
@@ -4431,8 +5396,23 @@
           200
         ],
         "schemaRef": "AlphaList",
-        "evidenceLevel": "decoder_confirmed",
+        "exampleRef": "relatedAlphas",
+        "evidenceLevel": "live_response_confirmed",
         "mode": "json"
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "relatedAlphas",
+        "requestSafety": "仅对用户明确指定的 Super Alpha 发送 GET，并使用前端默认 limit=5；未修改父 Alpha 或子 Alpha。",
+        "observations": [
+          "GET /alphas/{alphaId}/alphas?limit=5 使用 Accept version=4.0，返回 HTTP 200 application/json。",
+          "响应为 count、next、previous、results 组成的分页对象，不是裸数组。",
+          "results 中的子项使用 Alpha 结构；实测代表子项为 REGULAR，并包含 regular 代码块。"
+        ],
+        "sanitization": "凭据、Cookie、父子 Alpha ID、作者、表达式、日期、设置、指标、真实数量和原始响应均未进入公开产物。"
       },
       "evidence": [
         {
@@ -4446,6 +5426,10 @@
           "line": 7877
         }
       ],
+      "behavior": {
+        "pagination": "limit_offset",
+        "defaultLimit": 5
+      },
       "confidence": "high"
     },
     {
@@ -4511,13 +5495,28 @@
           204
         ],
         "schemaRef": "AlphaCheckResponse",
-        "evidenceLevel": "decoder_confirmed",
+        "exampleRef": "alphaSubmissionChecks",
+        "evidenceLevel": "live_response_confirmed",
         "mode": "json_or_empty",
         "errorStatuses": [
           401,
           429,
           500
         ]
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "alphaSubmissionChecks",
+        "requestSafety": "仅提交用户明确指定且已确认为 SUPER 的 Alpha；提交前只更新了两段必需 description，未修改表达式、设置或其他字段。",
+        "observations": [
+          "POST /alphas/{alphaId}/submit 返回 HTTP 201 text/html，并带 Retry-After: 1.0；此时不应尝试解析 JSON。",
+          "收到 Retry-After 后，前端与实测均改用 GET 轮询同一路径。",
+          "本次从 POST 到最终结果共 17 次请求：1 次 POST 与 16 次 GET。"
+        ],
+        "sanitization": "凭据、Cookie、Alpha ID、表达式、检查名称、阈值、实测值和原始响应均未进入公开产物。"
       },
       "evidence": [
         {
@@ -4533,7 +5532,11 @@
       ],
       "behavior": {
         "poll": "pollAlphaSubmission",
-        "retryAfterHeader": true
+        "retryAfterHeader": true,
+        "retryAfterUnit": "seconds",
+        "initialMethod": "POST",
+        "pollMethod": "GET",
+        "completion": "收到不含 Retry-After 的 2xx 响应后解析 JSON"
       },
       "confidence": "high"
     },
@@ -4562,8 +5565,24 @@
           202
         ],
         "schemaRef": "AlphaCheckResponse",
-        "evidenceLevel": "decoder_confirmed",
+        "exampleRef": "alphaSubmissionChecks",
+        "evidenceLevel": "live_response_confirmed",
         "mode": "json"
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "alphaSubmissionChecks",
+        "observedPollCount": 16,
+        "requestSafety": "只对刚刚获准提交的同一 Alpha 轮询提交状态；未操作其他 Alpha 或账户资源。",
+        "observations": [
+          "POST 后共执行 16 次 GET；前 15 次为 HTTP 200 text/html 且带 Retry-After: 1.0。",
+          "第 16 次 GET 返回 HTTP 200 application/json 且不再包含 Retry-After，表示轮询完成。",
+          "最终 JSON 顶层仅含 is，is 仅含 checks；每个检查项实测包含 name、result、limit、value，全部 result 为 PASS。"
+        ],
+        "sanitization": "凭据、Cookie、Alpha ID、检查名称、阈值、实测值和原始响应均未进入公开产物。"
       },
       "evidence": [
         {
@@ -4579,7 +5598,10 @@
       ],
       "behavior": {
         "polling": true,
-        "retryAfterHeader": true
+        "retryAfterHeader": true,
+        "retryAfterUnit": "seconds",
+        "pollMethod": "GET",
+        "completion": "响应不含 Retry-After 时停止轮询并解析 JSON"
       },
       "confidence": "high"
     },

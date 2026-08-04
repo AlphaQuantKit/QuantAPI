@@ -1,8 +1,8 @@
 const DOMAIN_LABELS = {
   authentication: "认证",
   account: "账户",
-  data: "数据",
-  operators: "算子",
+  data: "Data",
+  operators: "Operator",
   simulation: "Simulation",
   alpha: "Alpha",
   events: "事件",
@@ -796,21 +796,36 @@ function buildPython(operation) {
     } else {
       lines.push("poll_url = endpoint");
     }
-    lines.push(
-      "",
-      "while True:",
-      "    poll_response = session.get(",
-      "        poll_url,",
-      `        headers={"Accept": ${JSON.stringify(pollAccept)}},`,
-      "        timeout=30,",
-      "    )",
-      "    poll_response.raise_for_status()",
-      "    if poll_response.status_code != 202:",
-      "        response = poll_response",
-      "        break",
-      "    time.sleep(retry_after_seconds(poll_response))",
-      ""
-    );
+    if (operation.behavior?.retryAfterHeader) {
+      lines.push(
+        "",
+        "while response.headers.get(\"Retry-After\"):",
+        "    time.sleep(retry_after_seconds(response))",
+        "    response = session.get(",
+        "        poll_url,",
+        `        headers={"Accept": ${JSON.stringify(pollAccept)}},`,
+        "        timeout=30,",
+        "    )",
+        "    response.raise_for_status()",
+        ""
+      );
+    } else {
+      lines.push(
+        "",
+        "while True:",
+        "    poll_response = session.get(",
+        "        poll_url,",
+        `        headers={"Accept": ${JSON.stringify(pollAccept)}},`,
+        "        timeout=30,",
+        "    )",
+        "    poll_response.raise_for_status()",
+        "    if poll_response.status_code != 202:",
+        "        response = poll_response",
+        "        break",
+        "    time.sleep(retry_after_seconds(poll_response))",
+        ""
+      );
+    }
   } else if (needsPolling && operation.behavior?.polling) {
     const pollingCondition = operation.response.statuses?.includes(202)
       ? 'response.status_code == 202 or response.headers.get("Retry-After")'
@@ -996,18 +1011,32 @@ function buildJavascript(operation) {
     } else {
       lines.push("  const pollUrl = requestUrl;");
     }
-    lines.push(
-      "  while (true) {",
-      "    response = await fetch(pollUrl, {",
-      '      method: "GET",',
-      '      credentials: "include",',
-      `      headers: { Accept: ${JSON.stringify(pollAccept)} },`,
-      "    });",
-      "    await assertOk(response);",
-      "    if (response.status !== 202) break;",
-      "    await sleep(retryAfterMs(response));",
-      "  }"
-    );
+    if (operation.behavior?.retryAfterHeader) {
+      lines.push(
+        '  while (response.headers.has("Retry-After")) {',
+        "    await sleep(retryAfterMs(response));",
+        "    response = await fetch(pollUrl, {",
+        '      method: "GET",',
+        '      credentials: "include",',
+        `      headers: { Accept: ${JSON.stringify(pollAccept)} },`,
+        "    });",
+        "    await assertOk(response);",
+        "  }"
+      );
+    } else {
+      lines.push(
+        "  while (true) {",
+        "    response = await fetch(pollUrl, {",
+        '      method: "GET",',
+        '      credentials: "include",',
+        `      headers: { Accept: ${JSON.stringify(pollAccept)} },`,
+        "    });",
+        "    await assertOk(response);",
+        "    if (response.status !== 202) break;",
+        "    await sleep(retryAfterMs(response));",
+        "  }"
+      );
+    }
   } else if (needsPolling && operation.behavior?.polling) {
     const pollingCondition = operation.response.statuses?.includes(202)
       ? 'response.status === 202 || response.headers.has("Retry-After")'
