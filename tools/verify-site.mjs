@@ -53,6 +53,7 @@ check(
   html.includes('href="https://github.com/AlphaQuantKit/QuantAPI"')
     && html.includes('rel="noopener noreferrer"')
     && html.includes('aria-label="在新标签页打开 QuantAPI GitHub 仓库"')
+    && html.includes('src="./assets/github-invertocat.svg"')
     && css.includes(".github-link")
 );
 check("页面已移除 QUICK TEST 与本地测试器", !html.includes("QUICK TEST") && !html.includes("LOCAL ONLY") && !app.includes("LocalTester"));
