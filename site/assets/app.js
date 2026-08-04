@@ -396,7 +396,7 @@ function renderEndpointList() {
   `).join("");
 }
 
-function schemaBlock(schema, label, fallbackConfidence = "unknown") {
+function schemaBlock(schema, label, fallbackConfidence = "unknown", showConfidence = true) {
   const refCount = countSchemaRefs(schema);
   const expanded = expandSchemaRefs(schema);
   const confidence = fallbackConfidence;
@@ -407,7 +407,7 @@ function schemaBlock(schema, label, fallbackConfidence = "unknown") {
     <div class="schema-block">
       <div class="schema-label"><span>${escapeHtml(label)}</span><span>${escapeHtml(schemaNote)}</span></div>
       <pre>${escapeHtml(JSON.stringify(shown, null, 2))}</pre>
-      <p class="schema-confidence"><strong>文档可信度：${escapeHtml(confidenceLabel)}</strong><span>${escapeHtml(confidenceDescription)}；文档证据，不属于实际请求或响应。</span></p>
+      ${showConfidence ? `<p class="schema-confidence"><strong>文档可信度：${escapeHtml(confidenceLabel)}</strong><span>${escapeHtml(confidenceDescription)}；文档证据，不属于实际请求或响应。</span></p>` : ""}
     </div>
   `;
 }
@@ -426,12 +426,12 @@ function responseExampleBlock(exampleRef) {
   `;
 }
 
-function schemaExampleBlock(value, label, note) {
+function schemaExampleBlock(value, label, note = "") {
   return `
     <div class="response-example schema-example">
       <div class="schema-label"><span>${escapeHtml(label)}</span><span>Schema 生成</span></div>
       <pre>${escapeHtml(JSON.stringify(value, null, 2))}</pre>
-      <p class="example-note"><strong>结构示例</strong><span>${escapeHtml(note)}</span></p>
+      ${note ? `<p class="example-note"><strong>结构示例</strong><span>${escapeHtml(note)}</span></p>` : ""}
     </div>
   `;
 }
@@ -498,11 +498,10 @@ function renderDoc(operation) {
       <div class="section-heading"><h2>请求体</h2><span>${definitions.length ? definitions.map((item) => item.contentType).join(" / ") : "none"}</span></div>
       ${definitions.length
         ? definitions.map(({ contentType, definition }) => `
-          ${schemaBlock(definitionSchema(definition), contentType)}
+          ${schemaBlock(definitionSchema(definition), contentType, "unknown", false)}
           ${schemaExampleBlock(
             bodySample(operation, contentType),
-            "请求体示例",
-            "根据请求 Schema 自动生成，可作为填写起点；请按实际调用替换占位值。"
+            "请求体示例"
           )}
         `).join("<br>")
         : '<div class="empty-section">这个接口不发送请求体。</div>'}
@@ -1224,4 +1223,4 @@ async function initialize() {
 
 if (typeof document !== "undefined") initialize();
 
-export { buildJavascript, buildPython, confidenceLabel, defaultOperationValues, evidenceLabel, expandSchemaRefs, helpTooltip, responseExampleBlock, responseExampleForOperation, sampleFromSchema, schemaExampleBlock, sensitivityLabel, state, stripSchemaMetadata };
+export { buildJavascript, buildPython, confidenceLabel, defaultOperationValues, evidenceLabel, expandSchemaRefs, helpTooltip, responseExampleBlock, responseExampleForOperation, sampleFromSchema, schemaBlock, schemaExampleBlock, sensitivityLabel, state, stripSchemaMetadata };
