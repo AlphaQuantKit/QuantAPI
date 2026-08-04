@@ -2,7 +2,7 @@ const DOMAIN_LABELS = {
   authentication: "认证",
   account: "账户",
   agreements: "协议",
-  tags: "标签",
+  tags: "Alpha List",
   alpha: "Alpha",
   simulation: "Simulation",
   operators: "算子",

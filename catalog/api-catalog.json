@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "catalogVersion": "1.1.0",
+  "catalogVersion": "1.1.1",
   "title": "WQ API 非官方接口目录",
   "description": "由 WorldQuant BRAIN 前端 bundle 静态分析得到。此目录不是官方 API 承诺；unknown/inferred 字段必须在取得去敏真实响应后再升级。",
   "generatedFrom": {
@@ -2175,7 +2175,7 @@
     {
       "operationId": "getTagOptions",
       "domain": "tags",
-      "summary": "读取标签创建选项",
+      "summary": "读取 Alpha List 创建选项",
       "method": "OPTIONS",
       "path": "/tags",
       "auth": "cookie_session",
@@ -2201,7 +2201,7 @@
     {
       "operationId": "createTag",
       "domain": "tags",
-      "summary": "创建标签",
+      "summary": "创建 Alpha List",
       "method": "POST",
       "path": "/tags",
       "auth": "cookie_session",
@@ -2255,7 +2255,7 @@
     {
       "operationId": "listSelfTags",
       "domain": "tags",
-      "summary": "分页列出当前用户标签",
+      "summary": "分页列出当前用户 Alpha List",
       "method": "GET",
       "path": "/users/self/tags",
       "auth": "cookie_session",
@@ -2304,7 +2304,7 @@
     {
       "operationId": "getTag",
       "domain": "tags",
-      "summary": "读取标签",
+      "summary": "读取 Alpha List",
       "method": "GET",
       "path": "/tags/{tagId}",
       "auth": "cookie_session",
@@ -2340,7 +2340,7 @@
     {
       "operationId": "patchTag",
       "domain": "tags",
-      "summary": "更新标签",
+      "summary": "更新 Alpha List",
       "method": "PATCH",
       "path": "/tags/{tagId}",
       "auth": "cookie_session",
@@ -2398,7 +2398,7 @@
     {
       "operationId": "deleteTag",
       "domain": "tags",
-      "summary": "删除标签",
+      "summary": "删除 Alpha List",
       "method": "DELETE",
       "path": "/tags/{tagId}",
       "auth": "cookie_session",
@@ -2434,7 +2434,7 @@
     {
       "operationId": "getTagInnerCorrelation",
       "domain": "tags",
-      "summary": "读取标签内部相关性",
+      "summary": "读取 Alpha List 内部相关性",
       "method": "GET",
       "path": "/tags/{tagId}/correlations/inner",
       "auth": "cookie_session",
@@ -2470,7 +2470,7 @@
     {
       "operationId": "getTagSelfCorrelation",
       "domain": "tags",
-      "summary": "读取标签自相关性",
+      "summary": "读取 Alpha List 自相关性",
       "method": "GET",
       "path": "/tags/{tagId}/correlations/self",
       "auth": "cookie_session",
@@ -2578,7 +2578,7 @@
     {
       "operationId": "listTagAlphas",
       "domain": "alpha",
-      "summary": "筛选并分页列出标签中的 Alpha",
+      "summary": "筛选并分页列出 Alpha List 中的 Alpha",
       "method": "GET",
       "path": "/tags/{tagId}/alphas",
       "auth": "cookie_session",

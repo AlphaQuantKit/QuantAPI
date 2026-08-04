@@ -48,6 +48,13 @@ const missingMarkers = generatorMarkers.filter((marker) => !app.includes(marker)
 check("双语言生成器包含认证、调用、轮询和凭据处理", missingMarkers.length === 0, missingMarkers.join(", "));
 check("页面具备接口目录、详情与右侧代码面板", ["nav-pane", "doc-pane", "code-pane"].every((className) => html.includes(className)));
 check("代码面板支持 Python 与 JavaScript 语言选择", html.includes('id="language-select"') && html.includes("Python requests") && html.includes("JavaScript fetch"));
+const tagOperations = catalog.operations.filter((operation) => operation.domain === "tags");
+check(
+  "标签业务域统一显示为 Alpha List",
+  app.includes('tags: "Alpha List"')
+    && tagOperations.length > 0
+    && tagOperations.every((operation) => operation.summary.includes("Alpha List") && !operation.summary.includes("标签"))
+);
 check(
   "页头提供可访问的 GitHub 仓库链接",
   html.includes('href="https://github.com/AlphaQuantKit/QuantAPI"')
