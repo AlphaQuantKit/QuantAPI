@@ -88,7 +88,14 @@ const unresolvedSchemas = Object.entries(catalog.schemas ?? {})
   .filter(([, schema]) => JSON.stringify(generator.expandSchemaRefs(schema)).includes('"$ref"'))
   .map(([name]) => name);
 check("目录中的 Schema 引用均可解析", unresolvedSchemas.length === 0, unresolvedSchemas.join(", "));
-check("Schema 面板注明 x-wq 元数据不是响应字段", app.includes("x-wq-* 非响应字段"));
+const displaySearchResultsText = JSON.stringify(generator.stripSchemaMetadata(expandedSearchResults));
+check("请求与响应 Schema JSON 不显示 x-wq 文档元数据", !displaySearchResultsText.includes('"x-wq-'));
+check(
+  "Schema 下方独立说明证据可信度",
+  app.includes("文档可信度：")
+    && app.includes("文档证据，不属于实际请求或响应")
+    && css.includes(".schema-confidence")
+);
 const generated = [];
 for (const operation of catalog.operations) {
   generator.state.operationValues.clear();

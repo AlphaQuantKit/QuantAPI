@@ -133,6 +133,22 @@ function countSchemaRefs(value, trail = []) {
   return 1 + siblingCount + (target ? countSchemaRefs(target, [...trail, name]) : 0);
 }
 
+function stripSchemaMetadata(value) {
+  if (Array.isArray(value)) return value.map(stripSchemaMetadata);
+  if (!value || typeof value !== "object") return value;
+  return Object.fromEntries(Object.entries(value)
+    .filter(([key]) => !key.startsWith("x-wq-"))
+    .map(([key, item]) => [key, stripSchemaMetadata(item)]));
+}
+
+const SCHEMA_CONFIDENCE = {
+  fixture_confirmed: ["内置示例确认", "前端内置示例 JSON 中明确出现"],
+  decoder_confirmed: ["解析器确认", "前端存在明确的响应解析或类型校验代码"],
+  consumer_confirmed: ["消费代码确认", "前端读取、展示或使用了该结构"],
+  inferred: ["代码推断", "根据调用逻辑、命名或上下文推断，尚未被真实响应确认"],
+  unknown: ["尚未确认", "目前没有足够证据确定该结构"]
+};
+
 function operationResponseSchema(operation) {
   if (operation.response.schemaRef) return { $ref: `#/schemas/${operation.response.schemaRef}` };
   return operation.response.schema ?? { type: "object", additionalProperties: true };
@@ -330,16 +346,18 @@ function renderEndpointList() {
   `).join("");
 }
 
-function schemaBlock(schema, label, resolvedLabel = "Schema") {
+function schemaBlock(schema, label, fallbackConfidence = "unknown") {
   const refCount = countSchemaRefs(schema);
-  const shown = expandSchemaRefs(schema);
-  const schemaNote = refCount
-    ? `${refCount} refs · 已递归展开 · x-wq-* 非响应字段`
-    : `${resolvedLabel} · x-wq-* 非响应字段`;
+  const expanded = expandSchemaRefs(schema);
+  const confidence = expanded["x-wq-confidence"] ?? fallbackConfidence;
+  const [confidenceLabel, confidenceDescription] = SCHEMA_CONFIDENCE[confidence] ?? [confidence, "目录记录的证据等级"];
+  const shown = stripSchemaMetadata(expanded);
+  const schemaNote = refCount ? `${refCount} refs · 已递归展开` : "Schema";
   return `
     <div class="schema-block">
       <div class="schema-label"><span>${escapeHtml(label)}</span><span>${escapeHtml(schemaNote)}</span></div>
       <pre>${escapeHtml(JSON.stringify(shown, null, 2))}</pre>
+      <p class="schema-confidence"><strong>文档可信度：${escapeHtml(confidenceLabel)}</strong><span><code>${escapeHtml(confidence)}</code> · ${escapeHtml(confidenceDescription)}；文档证据，不属于实际请求或响应。</span></p>
     </div>
   `;
 }
@@ -390,7 +408,7 @@ function renderDoc(operation) {
     <section class="doc-section">
       <div class="section-heading"><h2>请求体</h2><span>${definitions.length ? definitions.map((item) => item.contentType).join(" / ") : "none"}</span></div>
       ${definitions.length
-        ? definitions.map(({ contentType, definition }) => schemaBlock(definitionSchema(definition), contentType, "Request Schema")).join("<br>")
+        ? definitions.map(({ contentType, definition }) => schemaBlock(definitionSchema(definition), contentType)).join("<br>")
         : '<div class="empty-section">这个接口不发送请求体。</div>'}
     </section>
 
@@ -1097,4 +1115,4 @@ async function initialize() {
 
 if (typeof document !== "undefined") initialize();
 
-export { buildJavascript, buildPython, defaultOperationValues, expandSchemaRefs, sampleFromSchema, state };
+export { buildJavascript, buildPython, defaultOperationValues, expandSchemaRefs, sampleFromSchema, state, stripSchemaMetadata };

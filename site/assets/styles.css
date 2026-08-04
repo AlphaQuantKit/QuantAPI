@@ -701,6 +701,29 @@ kbd {
   tab-size: 2;
 }
 
+.schema-confidence {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 9px;
+  margin: 0;
+  padding: 10px 13px;
+  border-top: 1px solid #dedbd3;
+  background: #eeece6;
+  color: var(--ink-muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.schema-confidence strong {
+  color: var(--accent);
+}
+
+.schema-confidence code {
+  color: #525d70;
+  font-family: var(--mono);
+  font-size: 9px;
+}
+
 .status-row,
 .behavior-list,
 .evidence-list {
