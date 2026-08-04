@@ -732,6 +732,16 @@ kbd {
   background: #f7faf8;
 }
 
+.schema-example {
+  border-color: #d8d5cd;
+  background: #faf9f6;
+}
+
+.schema-example .example-note {
+  border-top-color: #dedbd3;
+  background: #f0eee8;
+}
+
 .response-example pre {
   max-height: 360px;
   margin: 0;

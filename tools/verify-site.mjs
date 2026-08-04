@@ -117,6 +117,16 @@ check(
     && css.includes(".verification-card")
     && !JSON.stringify(achievementsExample.value).includes("x-wq-")
 );
+const generatedResponseExample = generator.responseExampleForOperation(catalog.operations.find((operation) => operation.operationId === "getUserProfile"));
+check(
+  "请求体与响应 Schema 均提供易读示例",
+  app.includes("请求体示例")
+    && app.includes("响应结构示例")
+    && app.includes("根据请求 Schema 自动生成")
+    && generatedResponseExample.includes("Schema 生成")
+    && generatedResponseExample.includes("不是真实 API 响应")
+    && generator.sampleFromSchema({ type: ["number", "null"] }) === 0
+);
 const generated = [];
 for (const operation of catalog.operations) {
   generator.state.operationValues.clear();

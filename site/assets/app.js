@@ -218,7 +218,8 @@ function sampleFromSchema(inputSchema, name = "value", depth = 0, seen = new Set
   }
 
   const schema = resolveSchema(inputSchema, seen) ?? inputSchema;
-  const type = schema.type ?? (schema.properties ? "object" : undefined);
+  const declaredType = schema.type ?? (schema.properties ? "object" : undefined);
+  const type = Array.isArray(declaredType) ? declaredType.find((item) => item !== "null") ?? declaredType[0] : declaredType;
   if (type === "object") {
     const result = {};
     const entries = Object.entries(schema.properties ?? {});
@@ -377,6 +378,27 @@ function responseExampleBlock(exampleRef) {
   `;
 }
 
+function schemaExampleBlock(value, label, note) {
+  return `
+    <div class="response-example schema-example">
+      <div class="schema-label"><span>${escapeHtml(label)}</span><span>Schema 生成</span></div>
+      <pre>${escapeHtml(JSON.stringify(value, null, 2))}</pre>
+      <p class="example-note"><strong>结构示例</strong><span>${escapeHtml(note)}</span></p>
+    </div>
+  `;
+}
+
+function responseExampleForOperation(operation) {
+  const confirmed = responseExampleBlock(operation.response.exampleRef);
+  if (confirmed) return confirmed;
+  if (["empty", "headers"].includes(operation.response.mode) || operation.response.statuses?.every((status) => status === 204)) return "";
+  return schemaExampleBlock(
+    sampleFromSchema(operationResponseSchema(operation), "response"),
+    "响应结构示例",
+    "根据响应 Schema 自动生成，仅用于快速理解字段结构，不是真实 API 响应。"
+  );
+}
+
 function renderDoc(operation) {
   const parameters = operation.parameters ?? [];
   const definitions = requestDefinitions(operation);
@@ -423,7 +445,14 @@ function renderDoc(operation) {
     <section class="doc-section">
       <div class="section-heading"><h2>请求体</h2><span>${definitions.length ? definitions.map((item) => item.contentType).join(" / ") : "none"}</span></div>
       ${definitions.length
-        ? definitions.map(({ contentType, definition }) => schemaBlock(definitionSchema(definition), contentType)).join("<br>")
+        ? definitions.map(({ contentType, definition }) => `
+          ${schemaBlock(definitionSchema(definition), contentType)}
+          ${schemaExampleBlock(
+            bodySample(operation, contentType),
+            "请求体示例",
+            "根据请求 Schema 自动生成，可作为填写起点；请按实际调用替换占位值。"
+          )}
+        `).join("<br>")
         : '<div class="empty-section">这个接口不发送请求体。</div>'}
     </section>
 
@@ -435,7 +464,7 @@ function renderDoc(operation) {
       </div>
       <div style="height:12px"></div>
       ${schemaBlock(operationResponseSchema(operation), "响应 Schema", operation.response.evidenceLevel)}
-      ${responseExampleBlock(operation.response.exampleRef)}
+      ${responseExampleForOperation(operation)}
     </section>
 
     ${operation.verification ? `
@@ -1143,4 +1172,4 @@ async function initialize() {
 
 if (typeof document !== "undefined") initialize();
 
-export { buildJavascript, buildPython, defaultOperationValues, expandSchemaRefs, responseExampleBlock, sampleFromSchema, state, stripSchemaMetadata };
+export { buildJavascript, buildPython, defaultOperationValues, expandSchemaRefs, responseExampleBlock, responseExampleForOperation, sampleFromSchema, schemaExampleBlock, state, stripSchemaMetadata };
