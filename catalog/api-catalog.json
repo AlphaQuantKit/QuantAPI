@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "catalogVersion": "1.3.0",
+  "catalogVersion": "1.4.0",
   "title": "WQ API 非官方接口目录",
   "description": "以 WorldQuant BRAIN 前端 bundle 静态分析为基线，并通过人工复核的去敏真实响应逐项升级。此目录不是官方 API 承诺；unknown/inferred 字段必须在取得去敏真实响应后再升级。",
   "generatedFrom": {
@@ -92,6 +92,170 @@
         "results"
       ],
       "additionalProperties": true
+    },
+    "VideoCourseVideo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "课程内的视频条目标识；前端内部路由使用该字段。"
+        },
+        "category": {
+          "type": "string",
+          "description": "视频所属分类。"
+        },
+        "duration": {
+          "type": "string",
+          "format": "duration",
+          "description": "ISO 8601 时长。"
+        },
+        "title": {
+          "type": "string",
+          "description": "视频标题。"
+        },
+        "uid": {
+          "type": "string",
+          "description": "外部视频平台标识；YouTube 视频由前端用于构造嵌入地址。"
+        },
+        "numericalId": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "可选数值标识；实测样本中为 null。"
+        },
+        "language": {
+          "type": "string",
+          "description": "视频语言代码。"
+        },
+        "sequence": {
+          "type": "integer",
+          "description": "视频在课程中的排序序号。"
+        },
+        "source": {
+          "type": "string",
+          "description": "视频托管来源；实测样本为 YouTube，前端代码还兼容 Vidyard。"
+        },
+        "description": {
+          "type": "string",
+          "description": "视频说明。"
+        },
+        "transcript": {
+          "type": "string",
+          "description": "视频文字稿；没有文字稿时可为空字符串。"
+        },
+        "lastModified": {
+          "type": "string",
+          "format": "date-time",
+          "description": "视频记录最后修改时间。"
+        }
+      },
+      "required": [
+        "id",
+        "category",
+        "duration",
+        "title",
+        "uid",
+        "numericalId",
+        "language",
+        "sequence",
+        "source",
+        "description",
+        "transcript",
+        "lastModified"
+      ],
+      "additionalProperties": false
+    },
+    "VideoCourse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "课程标识。"
+        },
+        "category": {
+          "type": "string",
+          "description": "课程分类。"
+        },
+        "videos": {
+          "type": "array",
+          "items": {
+            "$ref": "#/schemas/VideoCourseVideo"
+          },
+          "description": "课程包含的视频列表。"
+        },
+        "duration": {
+          "type": "string",
+          "format": "duration",
+          "description": "课程总时长，使用 ISO 8601 duration。"
+        },
+        "title": {
+          "type": "string",
+          "description": "课程标题。"
+        },
+        "sequence": {
+          "type": "integer",
+          "description": "课程排序序号。"
+        },
+        "description": {
+          "type": "string",
+          "description": "课程说明。"
+        },
+        "lastModified": {
+          "type": "string",
+          "format": "date-time",
+          "description": "课程记录最后修改时间。"
+        }
+      },
+      "required": [
+        "id",
+        "category",
+        "videos",
+        "duration",
+        "title",
+        "sequence",
+        "description",
+        "lastModified"
+      ],
+      "additionalProperties": false
+    },
+    "VideoCourseList": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer",
+          "description": "课程总数。"
+        },
+        "next": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri",
+          "description": "下一页地址；没有下一页时为 null。"
+        },
+        "previous": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri",
+          "description": "上一页地址；没有上一页时为 null。"
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/schemas/VideoCourse"
+          }
+        }
+      },
+      "required": [
+        "count",
+        "next",
+        "previous",
+        "results"
+      ],
+      "additionalProperties": false
     },
     "Options": {
       "type": "object",
@@ -950,6 +1114,44 @@
           "ratio": 0.02
         }
       ]
+    },
+    "videoCourses": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存认证信息或原始响应；课程与视频标识、标题、说明及时间已替换为示例值，结果列表精简为一个代表项。",
+      "value": {
+        "count": 16,
+        "next": "http://api.worldquantbrain.com/content/api/video-courses?limit=10&offset=10",
+        "previous": null,
+        "results": [
+          {
+            "id": "COURSE_ID_EXAMPLE",
+            "category": "Brain and Alphas",
+            "videos": [
+              {
+                "id": "VIDEO_ID_EXAMPLE",
+                "category": "Introduction",
+                "duration": "PT4M15S",
+                "title": "示例视频",
+                "uid": "YOUTUBE_VIDEO_UID",
+                "numericalId": null,
+                "language": "en",
+                "sequence": 1,
+                "source": "YouTube",
+                "description": "示例视频说明",
+                "transcript": "",
+                "lastModified": "2026-01-01T00:00:00Z"
+              }
+            ],
+            "duration": "PT28M48S",
+            "title": "示例视频课程",
+            "sequence": 1,
+            "description": "示例课程说明",
+            "lastModified": "2026-01-01T00:00:00Z"
+          }
+        ]
+      }
     },
     "alpha": {
       "evidenceLevel": "fixture_confirmed",
@@ -6660,9 +6862,10 @@
         "statuses": [
           200
         ],
-        "schemaRef": "Paginated",
-        "evidenceLevel": "consumer_confirmed",
-        "mode": "json"
+        "schemaRef": "VideoCourseList",
+        "evidenceLevel": "live_response_confirmed",
+        "mode": "json",
+        "exampleRef": "videoCourses"
       },
       "evidence": [
         {
@@ -6677,14 +6880,34 @@
           "line": 68263
         }
       ],
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "rawSampleStored": false,
+        "exampleRef": "videoCourses",
+        "sanitization": "认证信息和原始响应未入库；课程、视频标识、标题、说明及时间均已去敏。",
+        "observations": [
+          "GET /video-courses 返回 HTTP 200 application/json。",
+          "响应为分页对象，results 中的课程已包含完整 videos 数组。",
+          "实测 next 指向 /content/api/video-courses 分页地址。"
+        ]
+      },
       "confidence": "high"
     },
     {
       "operationId": "getVideoCourse",
       "domain": "tutorials",
-      "summary": "读取视频课程",
+      "summary": "读取视频课程（已废弃）",
       "method": "GET",
       "path": "/video-courses/{courseId}",
+      "deprecated": true,
+      "visibility": "hidden",
+      "deprecation": {
+        "status": "deprecated",
+        "verifiedAt": "2026-08-04",
+        "reason": "前端 bundle 保留旧调用，但使用 /video-courses 返回的有效课程 ID 实测得到 HTTP 404；当前课程列表已包含完整 videos 数据。",
+        "replacementOperationId": "listVideoCourses"
+      },
       "auth": "cookie_session",
       "apiVersion": "2.0",
       "sensitivity": "none",
@@ -6702,6 +6925,9 @@
         "statuses": [
           200,
           302
+        ],
+        "errorStatuses": [
+          404
         ],
         "schemaRef": "OpenObject",
         "evidenceLevel": "consumer_confirmed",

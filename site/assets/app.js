@@ -352,9 +352,13 @@ function valuesFor(operation) {
   return state.operationValues.get(operation.operationId);
 }
 
+function visibleOperations() {
+  return state.catalog?.operations.filter((operation) => operation.visibility !== "hidden") ?? [];
+}
+
 function filteredOperations() {
   const query = state.query.trim().toLowerCase();
-  return state.catalog.operations
+  return visibleOperations()
     .filter((operation) => state.domain === "all" || operation.domain === state.domain)
     .filter((operation) => {
       if (!query) return true;
@@ -365,14 +369,15 @@ function filteredOperations() {
 }
 
 function selectedOperation() {
-  return state.catalog?.operations.find((operation) => operation.operationId === state.selectedId) ?? null;
+  return visibleOperations().find((operation) => operation.operationId === state.selectedId) ?? null;
 }
 
 function renderDomains() {
   const counts = Object.fromEntries(DOMAIN_ORDER.map((domain) => [domain, 0]));
-  for (const operation of state.catalog.operations) counts[operation.domain] = (counts[operation.domain] ?? 0) + 1;
+  const operations = visibleOperations();
+  for (const operation of operations) counts[operation.domain] = (counts[operation.domain] ?? 0) + 1;
   elements.domainNav.innerHTML = [
-    `<button class="domain-button all-domains ${state.domain === "all" ? "active" : ""}" type="button" data-domain="all"><span>全部业务域</span><span>${state.catalog.operations.length}</span></button>`,
+    `<button class="domain-button all-domains ${state.domain === "all" ? "active" : ""}" type="button" data-domain="all"><span>全部业务域</span><span>${operations.length}</span></button>`,
     ...DOMAIN_ORDER.filter((domain) => counts[domain]).map((domain) =>
       `<button class="domain-button ${state.domain === domain ? "active" : ""}" type="button" data-domain="${escapeHtml(domain)}"><span>${escapeHtml(DOMAIN_LABELS[domain])}</span><span>${counts[domain]}</span></button>`
     )
@@ -1065,7 +1070,7 @@ function renderGenerator(operation) {
 }
 
 function selectOperation(operationId, updateHash = true) {
-  const operation = state.catalog.operations.find((item) => item.operationId === operationId);
+  const operation = visibleOperations().find((item) => item.operationId === operationId);
   if (!operation) return;
   state.selectedId = operationId;
   renderEndpointList();
@@ -1187,18 +1192,19 @@ async function initialize() {
     const response = await fetch("./data/api-catalog.json", { cache: "no-cache" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     state.catalog = await response.json();
-    elements.operationCount.textContent = state.catalog.operations.length;
+    const operations = visibleOperations();
+    elements.operationCount.textContent = operations.length;
     elements.catalogVersion.textContent = `catalog ${state.catalog.catalogVersion}`;
-    elements.catalogStatus.textContent = `${state.catalog.operations.length} operations`;
+    elements.catalogStatus.textContent = `${operations.length} operations`;
     elements.statusDot.classList.add("ready");
     elements.workspace.setAttribute("aria-busy", "false");
     renderDomains();
     const hashId = decodeURIComponent(location.hash.replace(/^#/, ""));
-    const initial = state.catalog.operations.some((operation) => operation.operationId === hashId)
+    const initial = operations.some((operation) => operation.operationId === hashId)
       ? hashId
-      : state.catalog.operations.some((operation) => operation.operationId === "createSimulation")
+      : operations.some((operation) => operation.operationId === "createSimulation")
         ? "createSimulation"
-        : state.catalog.operations[0].operationId;
+        : operations[0].operationId;
     selectOperation(initial, false);
   } catch (error) {
     elements.catalogStatus.textContent = "载入失败";
@@ -1209,4 +1215,4 @@ async function initialize() {
 
 if (typeof document !== "undefined") initialize();
 
-export { buildJavascript, buildPython, confidenceLabel, defaultOperationValues, evidenceLabel, expandSchemaRefs, helpTooltip, operationConfidenceLabel, responseExampleBlock, responseExampleForOperation, sampleFromSchema, schemaBlock, schemaExampleBlock, sensitivityLabel, state, stripSchemaMetadata };
+export { buildJavascript, buildPython, confidenceLabel, defaultOperationValues, evidenceLabel, expandSchemaRefs, helpTooltip, operationConfidenceLabel, responseExampleBlock, responseExampleForOperation, sampleFromSchema, schemaBlock, schemaExampleBlock, sensitivityLabel, state, stripSchemaMetadata, visibleOperations };

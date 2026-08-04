@@ -106,6 +106,37 @@ check("GitHub Pages 工作流只发布 site", /path:\s*site/.test(workflow));
 
 const generator = await import(new URL("../site/assets/app.js", import.meta.url));
 generator.state.catalog = catalog;
+const visibleOperations = generator.visibleOperations();
+const videoCoursesOperation = catalog.operations.find((operation) => operation.operationId === "listVideoCourses");
+const deprecatedVideoCourseOperation = catalog.operations.find((operation) => operation.operationId === "getVideoCourse");
+const videoCoursesExample = catalog.examples?.videoCourses;
+const videoCourseSchema = catalog.schemas?.VideoCourse;
+const videoSchema = catalog.schemas?.VideoCourseVideo;
+const videoCoursesExampleHtml = generator.responseExampleBlock(videoCoursesOperation?.response?.exampleRef);
+check(
+  "视频课程列表已由实测响应确认并提供完整去敏结构",
+  videoCoursesOperation?.response?.evidenceLevel === "live_response_confirmed"
+    && videoCoursesOperation?.response?.schemaRef === "VideoCourseList"
+    && videoCoursesOperation?.response?.exampleRef === "videoCourses"
+    && videoCoursesOperation?.verification?.rawSampleStored === false
+    && videoCoursesExample?.sanitized === true
+    && videoCoursesExample?.value?.results?.[0]?.videos?.[0]?.source === "YouTube"
+    && ["id", "category", "videos", "duration", "title", "sequence", "description", "lastModified"].every((field) => videoCourseSchema?.required?.includes(field))
+    && ["id", "category", "duration", "title", "uid", "numericalId", "language", "sequence", "source", "description", "transcript", "lastModified"].every((field) => videoSchema?.required?.includes(field))
+    && videoCoursesExampleHtml.includes("去敏响应示例")
+    && videoCoursesExampleHtml.includes("YOUTUBE_VIDEO_UID")
+);
+check(
+  "废弃视频详情接口保留在数据中但不在网页显示",
+  deprecatedVideoCourseOperation?.deprecated === true
+    && deprecatedVideoCourseOperation?.visibility === "hidden"
+    && deprecatedVideoCourseOperation?.deprecation?.replacementOperationId === "listVideoCourses"
+    && deprecatedVideoCourseOperation?.response?.errorStatuses?.includes(404)
+    && catalog.operations.includes(deprecatedVideoCourseOperation)
+    && !visibleOperations.some((operation) => operation.operationId === "getVideoCourse")
+    && visibleOperations.length === catalog.operations.length - 1
+    && app.includes('operation.visibility !== "hidden"')
+);
 const expandedSearchResults = generator.expandSchemaRefs({ $ref: "#/schemas/SearchResults" });
 const expandedSearchResultsText = JSON.stringify(expandedSearchResults);
 check(
