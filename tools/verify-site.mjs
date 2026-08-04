@@ -48,6 +48,13 @@ const missingMarkers = generatorMarkers.filter((marker) => !app.includes(marker)
 check("双语言生成器包含认证、调用、轮询和凭据处理", missingMarkers.length === 0, missingMarkers.join(", "));
 check("页面具备接口目录、详情与右侧代码面板", ["nav-pane", "doc-pane", "code-pane"].every((className) => html.includes(className)));
 check("代码面板支持 Python 与 JavaScript 语言选择", html.includes('id="language-select"') && html.includes("Python requests") && html.includes("JavaScript fetch"));
+check(
+  "页头提供可访问的 GitHub 仓库链接",
+  html.includes('href="https://github.com/zhangkaihua88/QuantAPI"')
+    && html.includes('rel="noopener noreferrer"')
+    && html.includes('aria-label="在新标签页打开 QuantAPI GitHub 仓库"')
+    && css.includes(".github-link")
+);
 check("页面已移除 QUICK TEST 与本地测试器", !html.includes("QUICK TEST") && !html.includes("LOCAL ONLY") && !app.includes("LocalTester"));
 check(
   "右侧代码面板使用统一浅色主题",
