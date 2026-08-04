@@ -108,6 +108,43 @@ const generator = await import(new URL("../site/assets/app.js", import.meta.url)
 generator.state.catalog = catalog;
 const visibleOperations = generator.visibleOperations();
 const hiddenOperations = catalog.operations.filter((operation) => operation.visibility === "hidden");
+const expectedLeadingDomainOrder = ["authentication", "account", "data", "operators", "simulation", "alpha", "events", "messages"];
+const visibleDomains = new Set(visibleOperations.map((operation) => operation.domain));
+check(
+  "接口目录按认证、账户、Data、Operator、Simulation、Alpha、Event、Message 排序",
+  expectedLeadingDomainOrder.every((domain, index) =>
+    app.indexOf(`${domain}:`) >= 0
+      && (index === 0 || app.indexOf(`${expectedLeadingDomainOrder[index - 1]}:`) < app.indexOf(`${domain}:`))
+  )
+    && expectedLeadingDomainOrder.every((domain) => visibleDomains.has(domain))
+);
+const hiddenAgreementAndTeamOperations = catalog.operations.filter((operation) => ["agreements", "teams"].includes(operation.domain));
+const listSelfAgreementsOperation = catalog.operations.find((operation) => operation.operationId === "listSelfAgreements");
+const additionallyHiddenOperationIds = ["acceptCompetition", "getResearcherPerformance", "getConfiguration"];
+check(
+  "协议、团队业务域及当前用户协议接口全部从网页隐藏",
+  hiddenAgreementAndTeamOperations.length > 0
+    && hiddenAgreementAndTeamOperations.every((operation) =>
+      operation.visibility === "hidden"
+        && !visibleOperations.includes(operation)
+    )
+    && listSelfAgreementsOperation?.visibility === "hidden"
+    && !visibleOperations.includes(listSelfAgreementsOperation)
+    && !visibleOperations.some((operation) => ["agreements", "teams"].includes(operation.domain))
+);
+check(
+  "指定比赛、表现与配置接口从网页隐藏",
+  additionallyHiddenOperationIds.every((operationId) =>
+    catalog.operations.some((operation) => operation.operationId === operationId && operation.visibility === "hidden")
+      && !visibleOperations.some((operation) => operation.operationId === operationId)
+  )
+);
+const registrationOptionsOperation = catalog.operations.find((operation) => operation.operationId === "getUserRegistrationOptions");
+check(
+  "注册字段接口归类到账户业务域",
+  registrationOptionsOperation?.domain === "account"
+    && visibleOperations.includes(registrationOptionsOperation)
+);
 const videoCoursesOperation = catalog.operations.find((operation) => operation.operationId === "listVideoCourses");
 const deprecatedVideoCourseOperation = catalog.operations.find((operation) => operation.operationId === "getVideoCourse");
 const videoCoursesExample = catalog.examples?.videoCourses;
@@ -162,6 +199,44 @@ check(
   })
     && generator.defaultOperationValues(catalog.operations.find((operation) => operation.operationId === "getTutorial"))
       .params["path:tutorialId"] === "YOUR_TUTORIAL_STEP_SLUG"
+);
+const accountLiveChecks = [
+  ["getConfiguration", "PlatformConfiguration", "platformConfiguration"],
+  ["getUser", "WqUser", "user"],
+  ["getUserProfile", "PublicUserProfile", "publicUserProfile"],
+  ["getSimulationSettings", "SimulationSettings", "simulationSettings"],
+  ["updateSimulationSettings", "SimulationSettings", "simulationSettings"],
+  ["listSelfAgreements", "AgreementList", "selfAgreements"]
+];
+check(
+  "六个账户接口在目录保留实测 Schema 与去敏响应示例",
+  accountLiveChecks.every(([operationId, schemaRef, exampleRef]) => {
+    const operation = catalog.operations.find((item) => item.operationId === operationId);
+    return operation?.response?.schemaRef === schemaRef
+      && operation?.response?.exampleRef === exampleRef
+      && operation?.response?.evidenceLevel === "live_response_confirmed"
+      && operation?.verification?.rawSampleStored === false
+      && catalog.examples?.[exampleRef]?.sanitized === true
+      && generator.responseExampleBlock(exampleRef).includes("去敏响应示例");
+  })
+);
+const getUserOperation = catalog.operations.find((operation) => operation.operationId === "getUser");
+const getUserProfileOperation = catalog.operations.find((operation) => operation.operationId === "getUserProfile");
+const getSimulationSettingsOperation = catalog.operations.find((operation) => operation.operationId === "getSimulationSettings");
+const updateSimulationSettingsOperation = catalog.operations.find((operation) => operation.operationId === "updateSimulationSettings");
+const updateSimulationDefaults = generator.defaultOperationValues(updateSimulationSettingsOperation);
+check(
+  "网页记录跨用户只读权限边界并使用实测模拟设置请求示例",
+  app.includes("<th>说明</th>")
+    && getUserOperation?.response?.errorStatuses?.includes(403)
+    && getUserOperation?.parameters?.[0]?.description?.includes("HTTP 403")
+    && getUserProfileOperation?.parameters?.[0]?.description?.includes("公开字段子集")
+    && getSimulationSettingsOperation?.response?.errorStatuses?.includes(404)
+    && getSimulationSettingsOperation?.parameters?.[0]?.description?.includes("HTTP 404")
+    && updateSimulationSettingsOperation?.parameters?.[0]?.description?.includes("未测试任何跨用户写入")
+    && updateSimulationSettingsOperation?.requestBody?.exampleRef === "simulationSettings"
+    && JSON.parse(updateSimulationDefaults.bodies["application/json"]).instrumentType === "EQUITY"
+    && updateSimulationSettingsOperation?.response?.statuses?.includes(201)
 );
 const createAuthenticationOperation = catalog.operations.find((operation) => operation.operationId === "createAuthentication");
 const getAuthenticationOperation = catalog.operations.find((operation) => operation.operationId === "getAuthentication");
@@ -249,7 +324,12 @@ check(
     && !achievementsExampleHtml.includes("证据：")
     && !JSON.stringify(achievementsExample.value).includes("x-wq-")
 );
-const generatedResponseExample = generator.responseExampleForOperation(catalog.operations.find((operation) => operation.operationId === "getUserProfile"));
+const schemaGeneratedResponseOperation = catalog.operations.find((operation) =>
+  !operation.response.exampleRef
+    && !["empty", "headers"].includes(operation.response.mode)
+    && !operation.response.statuses?.every((status) => status === 204)
+);
+const generatedResponseExample = generator.responseExampleForOperation(schemaGeneratedResponseOperation);
 const requestSchemaWithoutHint = generator.schemaBlock({ type: "object" }, "application/json");
 const requestExampleWithoutHint = generator.schemaExampleBlock({ regular: "rank(close)" }, "请求体示例");
 check(

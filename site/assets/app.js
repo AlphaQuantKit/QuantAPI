@@ -1,18 +1,18 @@
 const DOMAIN_LABELS = {
   authentication: "认证",
   account: "账户",
+  data: "数据",
+  operators: "算子",
+  simulation: "Simulation",
+  alpha: "Alpha",
+  events: "事件",
+  messages: "消息",
   agreements: "协议",
   tags: "Alpha List",
-  alpha: "Alpha",
-  simulation: "Simulation",
-  operators: "算子",
-  data: "数据",
   competitions: "比赛",
   consultant: "顾问与 SPC",
   teams: "团队",
   search: "搜索",
-  messages: "消息",
-  events: "事件",
   activity: "活动与表现",
   tutorials: "教程"
 };
@@ -314,6 +314,9 @@ function simulationRequestSample() {
 function bodySample(operation, contentType) {
   const definition = requestDefinitions(operation).find((item) => item.contentType === contentType)?.definition;
   if (operation.operationId === "createSimulation" && contentType === "application/json") return simulationRequestSample();
+  if (definition?.exampleRef && state.catalog?.examples?.[definition.exampleRef]) {
+    return structuredClone(state.catalog.examples[definition.exampleRef].value);
+  }
   return sampleFromSchema(definitionSchema(definition), "payload");
 }
 
@@ -432,10 +435,10 @@ function responseExampleBlock(exampleRef) {
   `;
 }
 
-function schemaExampleBlock(value, label) {
+function schemaExampleBlock(value, label, sourceLabel = "Schema 生成") {
   return `
     <div class="response-example schema-example">
-      <div class="schema-label"><span>${escapeHtml(label)}</span><span>Schema 生成</span></div>
+      <div class="schema-label"><span>${escapeHtml(label)}</span><span>${escapeHtml(sourceLabel)}</span></div>
       <pre>${escapeHtml(JSON.stringify(value, null, 2))}</pre>
     </div>
   `;
@@ -486,13 +489,14 @@ function renderDoc(operation) {
       <div class="section-heading"><h2>参数</h2><span>${parameters.length} fields</span></div>
       ${parameters.length ? `
         <div class="doc-table-wrap"><table class="doc-table">
-          <thead><tr><th>名称</th><th>位置</th><th>类型</th><th>默认值 / 枚举</th></tr></thead>
+          <thead><tr><th>名称</th><th>位置</th><th>类型</th><th>默认值 / 枚举</th><th>说明</th></tr></thead>
           <tbody>${parameters.map((parameter) => `
             <tr>
               <td><code>${escapeHtml(parameter.name)}</code>${parameter.required ? '<span class="required-mark">required</span>' : ""}</td>
               <td>${escapeHtml(parameter.in)}</td>
               <td>${escapeHtml(parameter.schema?.type ?? "unknown")}</td>
               <td>${escapeHtml(parameter.schema?.default ?? parameter.schema?.enum?.join(" | ") ?? "—")}</td>
+              <td>${escapeHtml(parameter.description ?? "—")}</td>
             </tr>`).join("")}
           </tbody>
         </table></div>` : '<div class="empty-section">这个调用点没有路径或查询参数。</div>'}
@@ -505,7 +509,8 @@ function renderDoc(operation) {
           ${schemaBlock(definitionSchema(definition), contentType)}
           ${schemaExampleBlock(
             bodySample(operation, contentType),
-            "请求体示例"
+            "请求体示例",
+            definition.exampleRef ? "去敏实测示例" : "Schema 生成"
           )}
         `).join("<br>")
         : '<div class="empty-section">这个接口不发送请求体。</div>'}

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "catalogVersion": "1.6.2",
+  "catalogVersion": "1.7.3",
   "title": "WQ API 非官方接口目录",
   "description": "以 WorldQuant BRAIN 前端 bundle 静态分析为基线，并通过人工复核的去敏真实响应逐项升级。此目录不是官方 API 承诺；unknown/inferred 字段必须在取得去敏真实响应后再升级。",
   "generatedFrom": {
@@ -721,6 +721,530 @@
       ],
       "additionalProperties": false
     },
+    "PlatformConfiguration": {
+      "type": "object",
+      "properties": {
+        "analytics": {
+          "type": "object",
+          "properties": {
+            "trackingId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "trackingId"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "analytics"
+      ],
+      "additionalProperties": false
+    },
+    "UserAddress": {
+      "type": "object",
+      "properties": {
+        "street": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "city": {
+          "type": "string"
+        },
+        "state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "postalCode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "country": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "street",
+        "city",
+        "state",
+        "postalCode",
+        "country"
+      ],
+      "additionalProperties": false
+    },
+    "UserEducation": {
+      "type": "object",
+      "properties": {
+        "university": {
+          "type": "string"
+        },
+        "major": {
+          "type": "string"
+        },
+        "degree": {
+          "type": "string"
+        },
+        "stem": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "graduationYear": {
+          "type": "integer"
+        },
+        "gpa": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "maxGPA": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "university",
+        "major",
+        "degree",
+        "stem",
+        "graduationYear",
+        "gpa",
+        "maxGPA"
+      ],
+      "additionalProperties": false
+    },
+    "UserVisibilitySetting": {
+      "type": "object",
+      "properties": {
+        "visibility": {
+          "type": "string"
+        },
+        "moderation": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "visibility",
+        "moderation"
+      ],
+      "additionalProperties": false
+    },
+    "UserSettings": {
+      "type": "object",
+      "properties": {
+        "allowTracking": {
+          "type": "boolean"
+        },
+        "communication": {
+          "type": "object",
+          "properties": {
+            "allowSMS": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "allowSMS"
+          ],
+          "additionalProperties": false
+        },
+        "privacy": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "$ref": "#/schemas/UserVisibilitySetting"
+            },
+            "image": {
+              "$ref": "#/schemas/UserVisibilitySetting"
+            }
+          },
+          "required": [
+            "name",
+            "image"
+          ],
+          "additionalProperties": false
+        },
+        "client": {
+          "type": "object",
+          "properties": {
+            "version": {
+              "type": "integer"
+            },
+            "preferences": {
+              "type": "object",
+              "properties": {
+                "simulationWalkthrough": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "simulationWalkthrough"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "preferences"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "allowTracking",
+        "communication",
+        "privacy",
+        "client"
+      ],
+      "additionalProperties": false
+    },
+    "UserCampaign": {
+      "type": "object",
+      "properties": {
+        "campaign": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "medium": {
+          "type": "string"
+        },
+        "term": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "content": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "campaign",
+        "source",
+        "medium",
+        "term",
+        "content"
+      ],
+      "additionalProperties": false
+    },
+    "WqUser": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "telephone": {
+          "type": "string"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "fullName": {
+          "type": "string"
+        },
+        "gender": {
+          "type": "string"
+        },
+        "dateCreated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "dateVerified": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "dateApproved": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "verified": {
+          "type": "boolean"
+        },
+        "approved": {
+          "type": "boolean"
+        },
+        "address": {
+          "$ref": "#/schemas/UserAddress"
+        },
+        "education": {
+          "$ref": "#/schemas/UserEducation"
+        },
+        "employment": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": true
+        },
+        "recruitment": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": true
+        },
+        "resume": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "image": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "settings": {
+          "$ref": "#/schemas/UserSettings"
+        },
+        "onboarding": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "status"
+          ],
+          "additionalProperties": false
+        },
+        "auxiliary": {
+          "type": "object",
+          "properties": {
+            "campaign": {
+              "$ref": "#/schemas/UserCampaign"
+            }
+          },
+          "required": [
+            "campaign"
+          ],
+          "additionalProperties": false
+        },
+        "geniusLevel": {
+          "type": "string"
+        },
+        "level": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "telephone",
+        "firstName",
+        "lastName",
+        "fullName",
+        "gender",
+        "dateCreated",
+        "dateVerified",
+        "dateApproved",
+        "verified",
+        "approved",
+        "address",
+        "education",
+        "employment",
+        "recruitment",
+        "resume",
+        "image",
+        "settings",
+        "onboarding",
+        "auxiliary",
+        "geniusLevel",
+        "level"
+      ],
+      "additionalProperties": true
+    },
+    "PublicUserProfile": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "address": {
+          "type": "object",
+          "properties": {
+            "country": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "country"
+          ],
+          "additionalProperties": false
+        },
+        "education": {
+          "type": "object",
+          "properties": {
+            "university": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "university"
+          ],
+          "additionalProperties": false
+        },
+        "geniusLevel": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "address",
+        "education",
+        "geniusLevel"
+      ],
+      "additionalProperties": false
+    },
+    "SimulationSettings": {
+      "type": "object",
+      "properties": {
+        "instrumentType": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "universe": {
+          "type": "string"
+        },
+        "delay": {
+          "type": "integer"
+        },
+        "decay": {
+          "type": "integer"
+        },
+        "neutralization": {
+          "type": "string"
+        },
+        "truncation": {
+          "type": "number"
+        },
+        "lookback": {
+          "type": "integer"
+        },
+        "pasteurization": {
+          "type": "string"
+        },
+        "unitHandling": {
+          "type": "string"
+        },
+        "nanHandling": {
+          "type": "string"
+        },
+        "selectionHandling": {
+          "type": "string"
+        },
+        "selectionLimit": {
+          "type": "integer"
+        },
+        "maxTrade": {
+          "type": "string"
+        },
+        "maxPosition": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string"
+        },
+        "visualization": {
+          "type": "boolean"
+        },
+        "testPeriod": {
+          "type": "string"
+        },
+        "componentActivation": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "instrumentType",
+        "region",
+        "universe",
+        "delay",
+        "decay",
+        "neutralization",
+        "truncation",
+        "lookback",
+        "pasteurization",
+        "unitHandling",
+        "nanHandling",
+        "selectionHandling",
+        "selectionLimit",
+        "maxTrade",
+        "maxPosition",
+        "language",
+        "visualization",
+        "testPeriod",
+        "componentActivation"
+      ],
+      "additionalProperties": false
+    },
+    "AgreementEntity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "additionalProperties": false
+    },
+    "UserAgreement": {
+      "type": "object",
+      "properties": {
+        "agreement": {
+          "$ref": "#/schemas/AgreementEntity"
+        },
+        "status": {
+          "type": "string"
+        },
+        "statusDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "competition": {
+          "$ref": "#/schemas/AgreementEntity"
+        }
+      },
+      "required": [
+        "agreement",
+        "status",
+        "statusDate",
+        "competition"
+      ],
+      "additionalProperties": false
+    },
     "UserToken": {
       "type": "object",
       "properties": {
@@ -737,7 +1261,7 @@
     "AgreementList": {
       "type": "array",
       "items": {
-        "$ref": "#/schemas/OpenObject"
+        "$ref": "#/schemas/UserAgreement"
       }
     },
     "Achievement": {
@@ -1537,6 +2061,156 @@
       "sanitization": "DELETE 仅注销本次 Cookie Session；响应为不含字段的空 JSON 对象，未保存 Cookie 或原始响应。",
       "value": {}
     },
+    "platformConfiguration": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "未登录 API 实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "响应不含账户数据；未保存原始响应，trackingId 保留实测 null。",
+      "value": {
+        "analytics": {
+          "trackingId": null
+        }
+      }
+    },
+    "user": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存原始响应；用户 ID、邮箱、电话、姓名、地址、教育经历、日期、营销来源和隐私设置值均已替换。",
+      "value": {
+        "id": "USER_ID_EXAMPLE",
+        "email": "EMAIL_REDACTED",
+        "telephone": "+00-0000000000",
+        "firstName": "示例",
+        "lastName": "用户",
+        "fullName": "示例用户",
+        "gender": "OTHER",
+        "dateCreated": "2026-01-01T00:00:00Z",
+        "dateVerified": "2026-01-02T00:00:00Z",
+        "dateApproved": "2026-01-03T00:00:00Z",
+        "verified": true,
+        "approved": true,
+        "address": {
+          "street": null,
+          "city": "示例城市",
+          "state": null,
+          "postalCode": null,
+          "country": "XX"
+        },
+        "education": {
+          "university": "示例大学",
+          "major": "示例专业",
+          "degree": "BACHELOR",
+          "stem": null,
+          "graduationYear": 2026,
+          "gpa": null,
+          "maxGPA": null
+        },
+        "employment": null,
+        "recruitment": null,
+        "resume": null,
+        "image": null,
+        "settings": {
+          "allowTracking": false,
+          "communication": {
+            "allowSMS": false
+          },
+          "privacy": {
+            "name": {
+              "visibility": "PRIVATE",
+              "moderation": "APPROVED"
+            },
+            "image": {
+              "visibility": "PRIVATE",
+              "moderation": "APPROVED"
+            }
+          },
+          "client": {
+            "version": 1,
+            "preferences": {
+              "simulationWalkthrough": true
+            }
+          }
+        },
+        "onboarding": {
+          "status": "COMPLETE"
+        },
+        "auxiliary": {
+          "campaign": {
+            "campaign": "example",
+            "source": "example",
+            "medium": "example",
+            "term": null,
+            "content": "example"
+          }
+        },
+        "geniusLevel": "GOLD",
+        "level": "GOLD"
+      }
+    },
+    "publicUserProfile": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存原始响应；用户 ID、国家、学校及等级值均已替换。本人 ID 与另一用户 ID 均观察到相同字段结构。",
+      "value": {
+        "id": "USER_ID_EXAMPLE",
+        "address": {
+          "country": "XX"
+        },
+        "education": {
+          "university": "示例大学"
+        },
+        "geniusLevel": "GOLD"
+      }
+    },
+    "simulationSettings": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 实测响应与本人原样写回响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存用户 ID、原始偏好值或原始响应；示例值已替换为通用模拟配置。",
+      "value": {
+        "instrumentType": "EQUITY",
+        "region": "USA",
+        "universe": "TOP3000",
+        "delay": 1,
+        "decay": 4,
+        "neutralization": "SUBINDUSTRY",
+        "truncation": 0.08,
+        "lookback": 0,
+        "pasteurization": "ON",
+        "unitHandling": "VERIFY",
+        "nanHandling": "OFF",
+        "selectionHandling": "OFF",
+        "selectionLimit": 1000,
+        "maxTrade": "OFF",
+        "maxPosition": "OFF",
+        "language": "FASTEXPR",
+        "visualization": false,
+        "testPeriod": "P0Y0M0D",
+        "componentActivation": "OFF"
+      }
+    },
+    "selfAgreements": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存原始响应；协议、比赛标识与名称及状态日期已替换，9 项结果精简为一个代表项。",
+      "value": [
+        {
+          "agreement": {
+            "id": "AGREEMENT_ID_EXAMPLE",
+            "name": "示例协议"
+          },
+          "status": "ACCEPTED",
+          "statusDate": "2026-01-01T00:00:00Z",
+          "competition": {
+            "id": "COMPETITION_ID_EXAMPLE",
+            "name": "示例比赛"
+          }
+        }
+      ]
+    },
     "videoCourses": {
       "evidenceLevel": "live_response_confirmed",
       "source": "已登录 API 实测响应（2026-08-04）",
@@ -1817,7 +2491,7 @@
   "operations": [
     {
       "operationId": "getUserRegistrationOptions",
-      "domain": "authentication",
+      "domain": "account",
       "summary": "读取注册字段及枚举",
       "method": "OPTIONS",
       "path": "/users",
@@ -2411,6 +3085,7 @@
       "summary": "读取平台配置",
       "method": "GET",
       "path": "/configuration",
+      "visibility": "hidden",
       "auth": "none",
       "apiVersion": "2.0",
       "sensitivity": "none",
@@ -2418,9 +3093,22 @@
         "statuses": [
           200
         ],
-        "schemaRef": "OpenObject",
-        "evidenceLevel": "consumer_confirmed",
+        "schemaRef": "PlatformConfiguration",
+        "evidenceLevel": "live_response_confirmed",
+        "exampleRef": "platformConfiguration",
         "mode": "json"
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "unauthenticated_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "platformConfiguration",
+        "observations": [
+          "未登录请求 GET /configuration 返回 HTTP 200 application/json。",
+          "实测响应仅包含 analytics.trackingId，且 trackingId 为 null。"
+        ],
+        "sanitization": "响应不含账户数据；未保存原始响应。"
       },
       "evidence": [
         {
@@ -2447,16 +3135,34 @@
           "required": true,
           "schema": {
             "type": "string"
-          }
+          },
+          "description": "WQ 用户 ID。完整用户记录按本人权限校验；使用另一用户 ID 的只读实测请求返回 HTTP 403。"
         }
       ],
       "response": {
         "statuses": [
           200
         ],
-        "schemaRef": "OpenObject",
-        "evidenceLevel": "consumer_confirmed",
+        "errorStatuses": [
+          403
+        ],
+        "schemaRef": "WqUser",
+        "evidenceLevel": "live_response_confirmed",
+        "exampleRef": "user",
         "mode": "json"
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "user",
+        "observations": [
+          "使用本人 ID 请求 GET /users/{userId} 返回 HTTP 200 application/json。",
+          "响应包含账户资料、地址、教育、设置、入门状态、来源信息与等级字段；可空字段按实测 null 建模。",
+          "使用另一用户 ID 的只读请求返回 HTTP 403 application/json；响应仅观察到 detail 字符串。"
+        ],
+        "sanitization": "凭据、Cookie、用户 ID、邮箱、电话、姓名、地址、教育经历、日期、营销来源、错误 detail 和原始响应均未进入公开产物。"
       },
       "evidence": [
         {
@@ -2583,16 +3289,34 @@
           "required": true,
           "schema": {
             "type": "string"
-          }
+          },
+          "description": "当前登录用户的 WQ ID。使用另一用户 ID 的只读实测请求返回 HTTP 404。"
         }
       ],
       "response": {
         "statuses": [
           200
         ],
-        "schemaRef": "OpenObject",
-        "evidenceLevel": "consumer_confirmed",
+        "errorStatuses": [
+          404
+        ],
+        "schemaRef": "SimulationSettings",
+        "evidenceLevel": "live_response_confirmed",
+        "exampleRef": "simulationSettings",
         "mode": "json"
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "simulationSettings",
+        "observations": [
+          "使用本人 ID 请求 GET /users/{userId}/settings/simulation 返回 HTTP 200 application/json。",
+          "实测响应包含 19 个模拟默认设置字段，字段类型已按真实响应确认。",
+          "使用另一用户 ID 的只读请求返回 HTTP 404 application/json；响应仅观察到 detail 字符串。"
+        ],
+        "sanitization": "凭据、Cookie、本人及目标用户 ID、原始偏好值、错误 detail 和原始响应均未进入公开产物。"
       },
       "evidence": [
         {
@@ -2619,22 +3343,40 @@
           "required": true,
           "schema": {
             "type": "string"
-          }
+          },
+          "description": "当前登录用户的 WQ ID。仅以本人 ID 进行过原样写回验证；未测试任何跨用户写入。"
         }
       ],
       "requestBody": {
         "contentType": "application/json",
-        "schemaRef": "OpenObject",
+        "schemaRef": "SimulationSettings",
+        "exampleRef": "simulationSettings",
         "required": true
       },
       "response": {
         "statuses": [
           200,
+          201,
           204
         ],
-        "schemaRef": "OpenObject",
-        "evidenceLevel": "consumer_confirmed",
+        "schemaRef": "SimulationSettings",
+        "evidenceLevel": "live_response_confirmed",
+        "exampleRef": "simulationSettings",
         "mode": "json_or_empty"
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "simulationSettings",
+        "requestSafety": "读取本人当前设置后，将完全相同的 JSON 原样写回；未主动改变任何字段。",
+        "observations": [
+          "POST /users/{userId}/settings/simulation 使用本人 ID 与 GET 返回的完整原始 JSON，返回 HTTP 201 application/json。",
+          "响应包含与读取接口相同的 19 个字段，且字段值与原样写回内容一致。",
+          "未发送任何跨用户写入请求，也未测试删除或资料更新操作。"
+        ],
+        "sanitization": "凭据、Cookie、用户 ID、原始偏好值和原始响应均未进入公开产物。"
       },
       "evidence": [
         {
@@ -2651,6 +3393,7 @@
       "summary": "列出当前用户协议状态",
       "method": "GET",
       "path": "/users/self/agreements",
+      "visibility": "hidden",
       "auth": "cookie_session",
       "apiVersion": "2.0",
       "sensitivity": "legal",
@@ -2659,8 +3402,22 @@
           200
         ],
         "schemaRef": "AgreementList",
-        "evidenceLevel": "consumer_confirmed",
+        "evidenceLevel": "live_response_confirmed",
+        "exampleRef": "selfAgreements",
         "mode": "json"
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "selfAgreements",
+        "observedItemCount": 9,
+        "observations": [
+          "GET /users/self/agreements 返回 HTTP 200 application/json，顶层响应为数组。",
+          "实测 9 项均包含 agreement、status、statusDate 与 competition；两个嵌套对象均包含 id 与 name。"
+        ],
+        "sanitization": "凭据、Cookie、协议与比赛标识及名称、状态日期和原始响应均未进入公开产物。"
       },
       "evidence": [
         {
@@ -2687,16 +3444,31 @@
           "required": true,
           "schema": {
             "type": "string"
-          }
+          },
+          "description": "WQ 用户 ID。本人及另一用户 ID 的只读实测请求均返回公开档案；只包含公开字段子集。"
         }
       ],
       "response": {
         "statuses": [
           200
         ],
-        "schemaRef": "OpenObject",
-        "evidenceLevel": "consumer_confirmed",
+        "schemaRef": "PublicUserProfile",
+        "evidenceLevel": "live_response_confirmed",
+        "exampleRef": "publicUserProfile",
         "mode": "json"
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "publicUserProfile",
+        "observations": [
+          "使用本人 ID 与另一用户 ID 请求 GET /users/{userId}/profile 均返回 HTTP 200 application/json。",
+          "两次响应均仅观察到 id、address.country、education.university 与 geniusLevel。",
+          "该结果只确认公开档案可读，不代表完整用户记录、设置或写操作可跨用户访问。"
+        ],
+        "sanitization": "凭据、Cookie、本人及目标用户 ID、国家、学校、等级值和原始响应均未进入公开产物。"
       },
       "evidence": [
         {
@@ -2776,6 +3548,7 @@
       "summary": "读取公开协议正文",
       "method": "GET",
       "path": "/agreements/{agreementId}/agreement",
+      "visibility": "hidden",
       "auth": "none",
       "apiVersion": "2.0",
       "sensitivity": "legal",
@@ -2817,6 +3590,7 @@
       "summary": "读取团队协议正文",
       "method": "GET",
       "path": "/teams/{teamId}/agreement",
+      "visibility": "hidden",
       "auth": "cookie_session",
       "apiVersion": "2.0",
       "sensitivity": "legal",
@@ -2853,6 +3627,7 @@
       "summary": "读取比赛协议正文",
       "method": "GET",
       "path": "/competitions/{competitionId}/agreement",
+      "visibility": "hidden",
       "auth": "none",
       "apiVersion": "2.0",
       "sensitivity": "legal",
@@ -2898,6 +3673,7 @@
       "summary": "接受资源协议",
       "method": "POST",
       "path": "/{resourceType}/{resourceId}/accept",
+      "visibility": "hidden",
       "auth": "cookie_session",
       "apiVersion": "2.0",
       "sensitivity": "legal",
@@ -2951,6 +3727,7 @@
       "summary": "拒绝资源协议",
       "method": "POST",
       "path": "/{resourceType}/{resourceId}/reject",
+      "visibility": "hidden",
       "auth": "cookie_session",
       "apiVersion": "2.0",
       "sensitivity": "legal",
@@ -5269,6 +6046,7 @@
       "summary": "接受比赛协议并加入比赛",
       "method": "POST",
       "path": "/competitions/{competitionId}/accept",
+      "visibility": "hidden",
       "auth": "cookie_session",
       "apiVersion": "2.0",
       "sensitivity": "legal",
@@ -6043,6 +6821,7 @@
       "summary": "列出当前用户团队",
       "method": "GET",
       "path": "/users/self/teams",
+      "visibility": "hidden",
       "auth": "cookie_session",
       "apiVersion": "2.0",
       "sensitivity": "personal_data",
@@ -6097,6 +6876,7 @@
       "summary": "读取团队更新选项",
       "method": "OPTIONS",
       "path": "/teams/{teamId}",
+      "visibility": "hidden",
       "auth": "cookie_session",
       "apiVersion": "2.0",
       "sensitivity": "none",
@@ -6133,6 +6913,7 @@
       "summary": "创建团队",
       "method": "POST",
       "path": "/teams",
+      "visibility": "hidden",
       "auth": "cookie_session",
       "apiVersion": "2.0",
       "sensitivity": "personal_data",
@@ -6185,6 +6966,7 @@
       "summary": "更新团队",
       "method": "PATCH",
       "path": "/teams/{teamId}",
+      "visibility": "hidden",
       "auth": "cookie_session",
       "apiVersion": "2.0",
       "sensitivity": "personal_data",
@@ -6229,6 +7011,7 @@
       "summary": "接受、拒绝或终止团队关系",
       "method": "POST",
       "path": "/teams/{teamId}/{action}",
+      "visibility": "hidden",
       "auth": "cookie_session",
       "apiVersion": "2.0",
       "sensitivity": "legal",
@@ -6939,6 +7722,7 @@
       "summary": "读取用户研究者表现",
       "method": "GET",
       "path": "/users/{userId}/researcher",
+      "visibility": "hidden",
       "auth": "cookie_session",
       "apiVersion": "2.0",
       "sensitivity": "personal_data",
