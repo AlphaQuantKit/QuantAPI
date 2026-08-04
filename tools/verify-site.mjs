@@ -23,6 +23,12 @@ const css = read("site/assets/styles.css");
 const workflow = read(".github/workflows/pages.yml");
 
 check("站点目录快照与唯一数据源一致", sha256(canonicalCatalog) === sha256(siteCatalog));
+check(
+  "公开目录彻底移除 x-wq-confidence",
+  !canonicalCatalog.includes('"x-wq-confidence"')
+    && !siteCatalog.includes('"x-wq-confidence"')
+    && !app.includes('"x-wq-confidence"')
+);
 check("站点包含全部目录操作", catalog.operations.length === canonical.operations.length, `${catalog.operations.length}/${canonical.operations.length}`);
 check("operationId 在站点数据中唯一", new Set(catalog.operations.map((operation) => operation.operationId)).size === catalog.operations.length);
 

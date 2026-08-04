@@ -371,7 +371,7 @@ function renderEndpointList() {
 function schemaBlock(schema, label, fallbackConfidence = "unknown") {
   const refCount = countSchemaRefs(schema);
   const expanded = expandSchemaRefs(schema);
-  const confidence = expanded["x-wq-confidence"] ?? fallbackConfidence;
+  const confidence = fallbackConfidence;
   const [confidenceLabel, confidenceDescription] = SCHEMA_CONFIDENCE[confidence] ?? [confidence, "目录记录的证据等级"];
   const shown = stripSchemaMetadata(expanded);
   const schemaNote = refCount ? `${refCount} refs · 已递归展开` : "Schema";

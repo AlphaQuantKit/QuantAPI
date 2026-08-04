@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "catalogVersion": "1.2.0",
+  "catalogVersion": "1.3.0",
   "title": "WQ API 非官方接口目录",
   "description": "以 WorldQuant BRAIN 前端 bundle 静态分析为基线，并通过人工复核的去敏真实响应逐项升级。此目录不是官方 API 承诺；unknown/inferred 字段必须在取得去敏真实响应后再升级。",
   "generatedFrom": {
@@ -42,8 +42,7 @@
   "schemas": {
     "OpenObject": {
       "type": "object",
-      "additionalProperties": true,
-      "x-wq-confidence": "unknown"
+      "additionalProperties": true
     },
     "Empty": {
       "type": "null"
@@ -61,8 +60,7 @@
           }
         }
       },
-      "additionalProperties": true,
-      "x-wq-confidence": "consumer_confirmed"
+      "additionalProperties": true
     },
     "Paginated": {
       "type": "object",
@@ -93,8 +91,7 @@
         "count",
         "results"
       ],
-      "additionalProperties": true,
-      "x-wq-confidence": "decoder_confirmed"
+      "additionalProperties": true
     },
     "Options": {
       "type": "object",
@@ -107,8 +104,7 @@
       "required": [
         "actions"
       ],
-      "additionalProperties": true,
-      "x-wq-confidence": "consumer_confirmed"
+      "additionalProperties": true
     },
     "AlphaSettings": {
       "type": "object",
@@ -153,8 +149,7 @@
           "type": "string"
         }
       },
-      "additionalProperties": true,
-      "x-wq-confidence": "fixture_confirmed"
+      "additionalProperties": true
     },
     "AlphaMetrics": {
       "type": [
@@ -202,8 +197,7 @@
           }
         }
       },
-      "additionalProperties": true,
-      "x-wq-confidence": "fixture_confirmed"
+      "additionalProperties": true
     },
     "Alpha": {
       "type": "object",
@@ -307,8 +301,7 @@
         "settings",
         "status"
       ],
-      "additionalProperties": true,
-      "x-wq-confidence": "fixture_confirmed"
+      "additionalProperties": true
     },
     "AlphaList": {
       "allOf": [
@@ -323,8 +316,7 @@
             "$ref": "#/schemas/Alpha"
           }
         }
-      },
-      "x-wq-confidence": "decoder_confirmed"
+      }
     },
     "Simulation": {
       "type": "object",
@@ -384,8 +376,7 @@
         "settings",
         "status"
       ],
-      "additionalProperties": true,
-      "x-wq-confidence": "fixture_confirmed"
+      "additionalProperties": true
     },
     "Recordset": {
       "type": "object",
@@ -404,8 +395,7 @@
           ]
         }
       },
-      "additionalProperties": true,
-      "x-wq-confidence": "consumer_confirmed"
+      "additionalProperties": true
     },
     "PollingState": {
       "type": "object",
@@ -424,15 +414,13 @@
       "required": [
         "status"
       ],
-      "additionalProperties": false,
-      "x-wq-confidence": "consumer_confirmed"
+      "additionalProperties": false
     },
     "StringArray": {
       "type": "array",
       "items": {
         "type": "string"
-      },
-      "x-wq-confidence": "consumer_confirmed"
+      }
     },
     "CaptchaRequest": {
       "type": "object",
@@ -444,8 +432,7 @@
       "required": [
         "captcha"
       ],
-      "additionalProperties": false,
-      "x-wq-confidence": "consumer_confirmed"
+      "additionalProperties": false
     },
     "ChangeEmailRequest": {
       "type": "object",
@@ -461,8 +448,7 @@
         "email",
         "captcha"
       ],
-      "additionalProperties": false,
-      "x-wq-confidence": "consumer_confirmed"
+      "additionalProperties": false
     },
     "ReverifyEmailRequest": {
       "type": "object",
@@ -478,8 +464,7 @@
         "email",
         "captcha"
       ],
-      "additionalProperties": true,
-      "x-wq-confidence": "consumer_confirmed"
+      "additionalProperties": true
     },
     "ChangePasswordRequest": {
       "type": "object",
@@ -499,8 +484,7 @@
         "confirmation",
         "captcha"
       ],
-      "additionalProperties": false,
-      "x-wq-confidence": "consumer_confirmed"
+      "additionalProperties": false
     },
     "AuthenticationPersonaRequest": {
       "type": "object",
@@ -516,8 +500,7 @@
         "inquiry",
         "captcha"
       ],
-      "additionalProperties": false,
-      "x-wq-confidence": "consumer_confirmed"
+      "additionalProperties": false
     },
     "AuthSession": {
       "type": "object",
@@ -532,8 +515,7 @@
           }
         }
       },
-      "additionalProperties": true,
-      "x-wq-confidence": "consumer_confirmed"
+      "additionalProperties": true
     },
     "UserToken": {
       "type": "object",
@@ -546,15 +528,13 @@
       "required": [
         "token"
       ],
-      "additionalProperties": true,
-      "x-wq-confidence": "consumer_confirmed"
+      "additionalProperties": true
     },
     "AgreementList": {
       "type": "array",
       "items": {
         "$ref": "#/schemas/OpenObject"
-      },
-      "x-wq-confidence": "consumer_confirmed"
+      }
     },
     "Achievement": {
       "type": "object",
@@ -610,15 +590,13 @@
         "total",
         "ratio"
       ],
-      "additionalProperties": false,
-      "x-wq-confidence": "live_response_confirmed"
+      "additionalProperties": false
     },
     "AchievementList": {
       "type": "array",
       "items": {
         "$ref": "#/schemas/Achievement"
-      },
-      "x-wq-confidence": "live_response_confirmed"
+      }
     },
     "AlphaCheck": {
       "oneOf": [
@@ -654,8 +632,7 @@
           ],
           "additionalProperties": true
         }
-      ],
-      "x-wq-confidence": "decoder_confirmed"
+      ]
     },
     "AlphaCheckResponse": {
       "type": "object",
@@ -682,8 +659,7 @@
       "required": [
         "is"
       ],
-      "additionalProperties": true,
-      "x-wq-confidence": "decoder_confirmed"
+      "additionalProperties": true
     },
     "CorrelationRecordset": {
       "type": "object",
@@ -718,8 +694,7 @@
         "records",
         "schema"
       ],
-      "additionalProperties": true,
-      "x-wq-confidence": "decoder_confirmed"
+      "additionalProperties": true
     },
     "RecordsetDescriptor": {
       "type": "object",
@@ -735,8 +710,7 @@
         "name",
         "title"
       ],
-      "additionalProperties": false,
-      "x-wq-confidence": "decoder_confirmed"
+      "additionalProperties": false
     },
     "RecordsetList": {
       "allOf": [
@@ -751,8 +725,7 @@
             "$ref": "#/schemas/RecordsetDescriptor"
           }
         }
-      },
-      "x-wq-confidence": "decoder_confirmed"
+      }
     },
     "Operator": {
       "type": "object",
@@ -776,15 +749,13 @@
           "type": "string"
         }
       },
-      "additionalProperties": true,
-      "x-wq-confidence": "consumer_confirmed"
+      "additionalProperties": true
     },
     "OperatorList": {
       "type": "array",
       "items": {
         "$ref": "#/schemas/Operator"
-      },
-      "x-wq-confidence": "consumer_confirmed"
+      }
     },
     "DataFieldSummary": {
       "type": "object",
@@ -808,15 +779,13 @@
           "$ref": "#/schemas/OpenObject"
         }
       },
-      "additionalProperties": true,
-      "x-wq-confidence": "consumer_confirmed"
+      "additionalProperties": true
     },
     "DataFieldSummaryList": {
       "type": "array",
       "items": {
         "$ref": "#/schemas/DataFieldSummary"
-      },
-      "x-wq-confidence": "consumer_confirmed"
+      }
     },
     "DataCategory": {
       "type": "object",
@@ -846,15 +815,13 @@
           "type": "number"
         }
       },
-      "additionalProperties": true,
-      "x-wq-confidence": "consumer_confirmed"
+      "additionalProperties": true
     },
     "DataCategoryList": {
       "type": "array",
       "items": {
         "$ref": "#/schemas/DataCategory"
-      },
-      "x-wq-confidence": "consumer_confirmed"
+      }
     },
     "CompetitionLevel": {
       "type": "object",
@@ -870,22 +837,19 @@
         "id",
         "name"
       ],
-      "additionalProperties": true,
-      "x-wq-confidence": "decoder_confirmed"
+      "additionalProperties": true
     },
     "CompetitionLevelList": {
       "type": "array",
       "items": {
         "$ref": "#/schemas/CompetitionLevel"
-      },
-      "x-wq-confidence": "decoder_confirmed"
+      }
     },
     "SearchResults": {
       "type": "object",
       "additionalProperties": {
         "$ref": "#/schemas/Paginated"
-      },
-      "x-wq-confidence": "consumer_confirmed"
+      }
     },
     "TutorialStep": {
       "type": "object",
@@ -912,15 +876,13 @@
           ]
         }
       },
-      "additionalProperties": true,
-      "x-wq-confidence": "consumer_confirmed"
+      "additionalProperties": true
     },
     "TutorialStepList": {
       "type": "array",
       "items": {
         "$ref": "#/schemas/TutorialStep"
-      },
-      "x-wq-confidence": "consumer_confirmed"
+      }
     },
     "TutorialSummary": {
       "type": "object",
@@ -950,8 +912,7 @@
           "type": "boolean"
         }
       },
-      "additionalProperties": true,
-      "x-wq-confidence": "consumer_confirmed"
+      "additionalProperties": true
     }
   },
   "examples": {
