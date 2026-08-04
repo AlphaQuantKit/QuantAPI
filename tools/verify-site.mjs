@@ -112,10 +112,15 @@ check("目录中的 Schema 引用均可解析", unresolvedSchemas.length === 0, 
 const displaySearchResultsText = JSON.stringify(generator.stripSchemaMetadata(expandedSearchResults));
 check("请求与响应 Schema JSON 不显示 x-wq 文档元数据", !displaySearchResultsText.includes('"x-wq-'));
 check(
-  "Schema 下方独立说明证据可信度",
-  app.includes("文档可信度：")
-    && app.includes("文档证据，不属于实际请求或响应")
-    && css.includes(".schema-confidence")
+  "页面不展示冗余的结构、可信度和验证说明块",
+  !app.includes("文档可信度：")
+    && !app.includes("文档证据，不属于实际请求或响应")
+    && !app.includes("不是真实 API 响应")
+    && !app.includes("实测验证")
+    && !app.includes('class="example-note"')
+    && !css.includes(".schema-confidence")
+    && !css.includes(".example-note")
+    && !css.includes(".verification-card")
 );
 const achievementsOperation = catalog.operations.find((operation) => operation.operationId === "getUserAchievements");
 const ordinaryHighConfidenceOperation = catalog.operations.find((operation) => operation.confidence === "high" && operation.response.evidenceLevel !== "live_response_confirmed");
@@ -128,12 +133,11 @@ check(
     && achievementsExample?.sanitized === true
     && achievementsExampleHtml.includes("去敏响应示例")
     && achievementsExampleHtml.includes("SIMULATION_20")
-    && app.includes("实测验证")
-    && css.includes(".verification-card")
+    && !achievementsExampleHtml.includes("证据：")
     && !JSON.stringify(achievementsExample.value).includes("x-wq-")
 );
 const generatedResponseExample = generator.responseExampleForOperation(catalog.operations.find((operation) => operation.operationId === "getUserProfile"));
-const requestSchemaWithoutHint = generator.schemaBlock({ type: "object" }, "application/json", "unknown", false);
+const requestSchemaWithoutHint = generator.schemaBlock({ type: "object" }, "application/json");
 const requestExampleWithoutHint = generator.schemaExampleBlock({ regular: "rank(close)" }, "请求体示例");
 check(
   "请求体与响应 Schema 均提供易读示例",
@@ -143,7 +147,7 @@ check(
     && !requestExampleWithoutHint.includes("结构示例")
     && !requestExampleWithoutHint.includes("根据请求 Schema 自动生成")
     && generatedResponseExample.includes("Schema 生成")
-    && generatedResponseExample.includes("不是真实 API 响应")
+    && !generatedResponseExample.includes("example-note")
     && generator.sampleFromSchema({ type: ["number", "null"] }) === 0
 );
 const evidenceTooltip = generator.helpTooltip("evidence-test", "响应证据", "consumer_confirmed", catalog.evidenceLevels.consumer_confirmed);

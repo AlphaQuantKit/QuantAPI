@@ -401,18 +401,15 @@ function renderEndpointList() {
   `).join("");
 }
 
-function schemaBlock(schema, label, fallbackConfidence = "unknown", showConfidence = true) {
+function schemaBlock(schema, label) {
   const refCount = countSchemaRefs(schema);
   const expanded = expandSchemaRefs(schema);
-  const confidence = fallbackConfidence;
-  const [confidenceLabel, confidenceDescription] = SCHEMA_CONFIDENCE[confidence] ?? [confidence, "目录记录的证据等级"];
   const shown = stripSchemaMetadata(expanded);
   const schemaNote = refCount ? `${refCount} refs · 已递归展开` : "Schema";
   return `
     <div class="schema-block">
       <div class="schema-label"><span>${escapeHtml(label)}</span><span>${escapeHtml(schemaNote)}</span></div>
       <pre>${escapeHtml(JSON.stringify(shown, null, 2))}</pre>
-      ${showConfidence ? `<p class="schema-confidence"><strong>文档可信度：${escapeHtml(confidenceLabel)}</strong><span>${escapeHtml(confidenceDescription)}；文档证据，不属于实际请求或响应。</span></p>` : ""}
     </div>
   `;
 }
@@ -421,22 +418,19 @@ function responseExampleBlock(exampleRef) {
   if (!exampleRef) return "";
   const example = state.catalog?.examples?.[exampleRef];
   if (!example) return "";
-  const [confidenceLabel] = SCHEMA_CONFIDENCE[example.evidenceLevel] ?? [example.evidenceLevel];
   return `
     <div class="response-example">
-      <div class="schema-label"><span>去敏响应示例</span><span>${escapeHtml(confidenceLabel)}</span></div>
+      <div class="schema-label"><span>去敏响应示例</span></div>
       <pre>${escapeHtml(JSON.stringify(example.value, null, 2))}</pre>
-      <p class="example-note"><strong>证据：${escapeHtml(confidenceLabel)}</strong><span>${escapeHtml(example.sanitization ?? "示例已去敏；原始响应未进入公开文档。")} 来源：${escapeHtml(example.source)}。</span></p>
     </div>
   `;
 }
 
-function schemaExampleBlock(value, label, note = "") {
+function schemaExampleBlock(value, label) {
   return `
     <div class="response-example schema-example">
       <div class="schema-label"><span>${escapeHtml(label)}</span><span>Schema 生成</span></div>
       <pre>${escapeHtml(JSON.stringify(value, null, 2))}</pre>
-      ${note ? `<p class="example-note"><strong>结构示例</strong><span>${escapeHtml(note)}</span></p>` : ""}
     </div>
   `;
 }
@@ -447,8 +441,7 @@ function responseExampleForOperation(operation) {
   if (["empty", "headers"].includes(operation.response.mode) || operation.response.statuses?.every((status) => status === 204)) return "";
   return schemaExampleBlock(
     sampleFromSchema(operationResponseSchema(operation), "response"),
-    "响应结构示例",
-    "根据响应 Schema 自动生成，仅用于快速理解字段结构，不是真实 API 响应。"
+    "响应结构示例"
   );
 }
 
@@ -503,7 +496,7 @@ function renderDoc(operation) {
       <div class="section-heading"><h2>请求体</h2><span>${definitions.length ? definitions.map((item) => item.contentType).join(" / ") : "none"}</span></div>
       ${definitions.length
         ? definitions.map(({ contentType, definition }) => `
-          ${schemaBlock(definitionSchema(definition), contentType, "unknown", false)}
+          ${schemaBlock(definitionSchema(definition), contentType)}
           ${schemaExampleBlock(
             bodySample(operation, contentType),
             "请求体示例"
@@ -519,21 +512,9 @@ function renderDoc(operation) {
         ${errorStatuses.map((status) => `<span class="status-chip error">HTTP ${status}</span>`).join("")}
       </div>
       <div style="height:12px"></div>
-      ${schemaBlock(operationResponseSchema(operation), "响应 Schema", operation.response.evidenceLevel)}
+      ${schemaBlock(operationResponseSchema(operation), "响应 Schema")}
       ${responseExampleForOperation(operation)}
     </section>
-
-    ${operation.verification ? `
-      <section class="doc-section">
-        <div class="section-heading"><h2>实测验证</h2><span>${escapeHtml(operation.verification.verifiedAt)}</span></div>
-        <div class="verification-card">
-          <div><span>状态</span><strong>${escapeHtml(evidenceLabel(operation.verification.status))}</strong></div>
-          <div><span>原始样本入库</span><strong>${operation.verification.rawSampleStored ? "是" : "否"}</strong></div>
-          ${operation.verification.observedItemCount != null ? `<div><span>观察项数</span><strong>${escapeHtml(operation.verification.observedItemCount)}</strong></div>` : ""}
-          <p>${escapeHtml(operation.verification.sanitization)}</p>
-          ${(operation.verification.observations ?? []).length ? `<ul>${operation.verification.observations.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : ""}
-        </div>
-      </section>` : ""}
 
     <section class="doc-section">
       <div class="section-heading"><h2>运行行为</h2><span>${behaviorEntries.length} rules</span></div>
