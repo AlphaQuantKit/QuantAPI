@@ -142,6 +142,7 @@ function stripSchemaMetadata(value) {
 }
 
 const SCHEMA_CONFIDENCE = {
+  live_response_confirmed: ["实测响应确认", "真实 API 响应经人工复核与去敏后确认"],
   fixture_confirmed: ["内置示例确认", "前端内置示例 JSON 中明确出现"],
   decoder_confirmed: ["解析器确认", "前端存在明确的响应解析或类型校验代码"],
   consumer_confirmed: ["消费代码确认", "前端读取、展示或使用了该结构"],
@@ -362,6 +363,20 @@ function schemaBlock(schema, label, fallbackConfidence = "unknown") {
   `;
 }
 
+function responseExampleBlock(exampleRef) {
+  if (!exampleRef) return "";
+  const example = state.catalog?.examples?.[exampleRef];
+  if (!example) return "";
+  const [confidenceLabel] = SCHEMA_CONFIDENCE[example.evidenceLevel] ?? [example.evidenceLevel];
+  return `
+    <div class="response-example">
+      <div class="schema-label"><span>去敏响应示例</span><span>${escapeHtml(confidenceLabel)}</span></div>
+      <pre>${escapeHtml(JSON.stringify(example.value, null, 2))}</pre>
+      <p class="example-note"><strong>证据：${escapeHtml(example.evidenceLevel)}</strong><span>${escapeHtml(example.sanitization ?? "示例已去敏；原始响应未进入公开文档。")} 来源：${escapeHtml(example.source)}。</span></p>
+    </div>
+  `;
+}
+
 function renderDoc(operation) {
   const parameters = operation.parameters ?? [];
   const definitions = requestDefinitions(operation);
@@ -420,7 +435,20 @@ function renderDoc(operation) {
       </div>
       <div style="height:12px"></div>
       ${schemaBlock(operationResponseSchema(operation), "响应 Schema", operation.response.evidenceLevel)}
+      ${responseExampleBlock(operation.response.exampleRef)}
     </section>
+
+    ${operation.verification ? `
+      <section class="doc-section">
+        <div class="section-heading"><h2>实测验证</h2><span>${escapeHtml(operation.verification.verifiedAt)}</span></div>
+        <div class="verification-card">
+          <div><span>状态</span><strong>${escapeHtml(operation.verification.status)}</strong></div>
+          <div><span>原始样本入库</span><strong>${operation.verification.rawSampleStored ? "是" : "否"}</strong></div>
+          ${operation.verification.observedItemCount != null ? `<div><span>观察项数</span><strong>${escapeHtml(operation.verification.observedItemCount)}</strong></div>` : ""}
+          <p>${escapeHtml(operation.verification.sanitization)}</p>
+          ${(operation.verification.observations ?? []).length ? `<ul>${operation.verification.observations.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : ""}
+        </div>
+      </section>` : ""}
 
     <section class="doc-section">
       <div class="section-heading"><h2>运行行为</h2><span>${behaviorEntries.length} rules</span></div>
@@ -1115,4 +1143,4 @@ async function initialize() {
 
 if (typeof document !== "undefined") initialize();
 
-export { buildJavascript, buildPython, defaultOperationValues, expandSchemaRefs, sampleFromSchema, state, stripSchemaMetadata };
+export { buildJavascript, buildPython, defaultOperationValues, expandSchemaRefs, responseExampleBlock, sampleFromSchema, state, stripSchemaMetadata };

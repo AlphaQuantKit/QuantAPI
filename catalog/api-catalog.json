@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "catalogVersion": "1.1.1",
+  "catalogVersion": "1.2.0",
   "title": "WQ API 非官方接口目录",
-  "description": "由 WorldQuant BRAIN 前端 bundle 静态分析得到。此目录不是官方 API 承诺；unknown/inferred 字段必须在取得去敏真实响应后再升级。",
+  "description": "以 WorldQuant BRAIN 前端 bundle 静态分析为基线，并通过人工复核的去敏真实响应逐项升级。此目录不是官方 API 承诺；unknown/inferred 字段必须在取得去敏真实响应后再升级。",
   "generatedFrom": {
     "entry": "raw/index.6168be46.js",
     "bundleHash": "6168be46",
@@ -11,6 +11,7 @@
     "audience": "WQ 用户小圈子"
   },
   "evidenceLevels": {
+    "live_response_confirmed": "用户提供的真实 API 响应经人工复核与去敏后确认",
     "fixture_confirmed": "bundle 内置 JSON fixture 直接确认",
     "decoder_confirmed": "前端运行时解码器确认",
     "consumer_confirmed": "响应字段消费代码确认",
@@ -559,37 +560,45 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "string"
+          "type": "string",
+          "description": "成就定义标识，例如 SIMULATION_20。"
         },
         "name": {
-          "type": "string"
+          "type": "string",
+          "description": "成就显示名称。"
         },
         "description": {
-          "type": "string"
+          "type": "string",
+          "description": "成就条件或含义说明。"
         },
         "achieved": {
           "type": [
             "string",
             "null"
-          ]
+          ],
+          "format": "date-time",
+          "description": "达成时间；尚未达成时为 null。实测值包含时区偏移。"
         },
         "value": {
           "type": [
             "number",
             "null"
-          ]
+          ],
+          "description": "当前成就进度值；不适用时为 null。"
         },
         "total": {
           "type": [
             "number",
             "null"
-          ]
+          ],
+          "description": "达成成就所需目标值；不适用时为 null。"
         },
         "ratio": {
           "type": [
             "number",
             "null"
-          ]
+          ],
+          "description": "平台返回的成就比例值；具体统计口径未从当前响应确认。"
         }
       },
       "required": [
@@ -602,14 +611,14 @@
         "ratio"
       ],
       "additionalProperties": false,
-      "x-wq-confidence": "decoder_confirmed"
+      "x-wq-confidence": "live_response_confirmed"
     },
     "AchievementList": {
       "type": "array",
       "items": {
         "$ref": "#/schemas/Achievement"
       },
-      "x-wq-confidence": "decoder_confirmed"
+      "x-wq-confidence": "live_response_confirmed"
     },
     "AlphaCheck": {
       "oneOf": [
@@ -946,6 +955,41 @@
     }
   },
   "examples": {
+    "userAchievements": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "用户提供的已登录 API 实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存原始 URL 或原始响应；用户 ID 已删除，个人达成时间已替换为示例值，列表精简为覆盖非空与 null 情况的代表项。",
+      "value": [
+        {
+          "id": "SIMULATION_20",
+          "name": "20 Simulations",
+          "description": "Ran 20 Simulations",
+          "total": 20,
+          "achieved": "2024-01-15T09:30:00-05:00",
+          "value": 20,
+          "ratio": 0.75
+        },
+        {
+          "id": "ALPHA_PERF_GOOD",
+          "name": "Good Alpha",
+          "description": "Made an alpha with Good performance",
+          "total": null,
+          "achieved": "2024-02-20T11:45:00-05:00",
+          "value": null,
+          "ratio": 0.67
+        },
+        {
+          "id": "TUTORIAL",
+          "name": "Complete Tutorial",
+          "description": "Completed tutorial and achieved GOLD level",
+          "total": null,
+          "achieved": null,
+          "value": null,
+          "ratio": 0.02
+        }
+      ]
+    },
     "alpha": {
       "evidenceLevel": "fixture_confirmed",
       "source": "raw/9019.c47c947f.chunk.js#module-49019",
@@ -1905,7 +1949,7 @@
       "path": "/users/{userId}/achievements",
       "auth": "cookie_session",
       "apiVersion": "2.0",
-      "sensitivity": "none",
+      "sensitivity": "personal_data",
       "parameters": [
         {
           "name": "userId",
@@ -1913,7 +1957,8 @@
           "required": true,
           "schema": {
             "type": "string"
-          }
+          },
+          "description": "WQ 用户 ID；公开文档只使用占位符，不保留实测值。"
         }
       ],
       "response": {
@@ -1921,8 +1966,23 @@
           200
         ],
         "schemaRef": "AchievementList",
-        "evidenceLevel": "decoder_confirmed",
+        "evidenceLevel": "live_response_confirmed",
+        "exampleRef": "userAchievements",
         "mode": "json"
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "user_provided_live_response",
+        "rawSampleStored": false,
+        "exampleRef": "userAchievements",
+        "observedItemCount": 13,
+        "observations": [
+          "顶层响应为数组。",
+          "观察到的 13 项均包含 id、name、description、total、achieved、value、ratio。",
+          "total、value 与 achieved 均观察到 null；achieved 的非空值为带时区偏移的 RFC 3339 日期时间。"
+        ],
+        "sanitization": "用户 ID 与个人达成时间未进入公开产物。"
       },
       "evidence": [
         {

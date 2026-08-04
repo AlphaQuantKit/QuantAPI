@@ -103,6 +103,20 @@ check(
     && app.includes("文档证据，不属于实际请求或响应")
     && css.includes(".schema-confidence")
 );
+const achievementsOperation = catalog.operations.find((operation) => operation.operationId === "getUserAchievements");
+const achievementsExample = catalog.examples?.userAchievements;
+const achievementsExampleHtml = generator.responseExampleBlock(achievementsOperation?.response?.exampleRef);
+check(
+  "用户成就实测响应已去敏并展示",
+  achievementsOperation?.response?.evidenceLevel === "live_response_confirmed"
+    && achievementsOperation?.response?.exampleRef === "userAchievements"
+    && achievementsExample?.sanitized === true
+    && achievementsExampleHtml.includes("去敏响应示例")
+    && achievementsExampleHtml.includes("SIMULATION_20")
+    && app.includes("实测验证")
+    && css.includes(".verification-card")
+    && !JSON.stringify(achievementsExample.value).includes("x-wq-")
+);
 const generated = [];
 for (const operation of catalog.operations) {
   generator.state.operationValues.clear();
@@ -140,7 +154,8 @@ const publicText = [html, app, css, siteCatalog].join("\n");
 const sensitivePatterns = [
   /Authorization:\s*Basic\s+[A-Za-z0-9+/=]{12,}/i,
   /sessionid=[A-Za-z0-9._-]{8,}/i,
-  /[A-Za-z0-9._%+-]+@(?!example\.com)[A-Za-z0-9.-]+\.[A-Za-z]{2,}/
+  /[A-Za-z0-9._%+-]+@(?!example\.com)[A-Za-z0-9.-]+\.[A-Za-z]{2,}/,
+  /\b[A-Z]{2}\d{5}\b/
 ];
 const leaked = sensitivePatterns.filter((pattern) => pattern.test(publicText)).map(String);
 check("公开站点敏感信息扫描通过", leaked.length === 0, leaked.join(", "));

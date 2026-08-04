@@ -724,6 +724,90 @@ kbd {
   font-size: 9px;
 }
 
+.response-example {
+  overflow: hidden;
+  margin-top: 12px;
+  border: 1px solid #cfded9;
+  border-radius: 12px;
+  background: #f7faf8;
+}
+
+.response-example pre {
+  max-height: 360px;
+  margin: 0;
+  overflow: auto;
+  padding: 15px;
+  color: #344059;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.7;
+  tab-size: 2;
+}
+
+.example-note {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 9px;
+  margin: 0;
+  padding: 10px 13px;
+  border-top: 1px solid #d9e5e1;
+  background: #eaf3f0;
+  color: var(--ink-muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.example-note strong {
+  color: var(--accent);
+}
+
+.verification-card {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  padding: 13px;
+  border: 1px solid #bfd8d0;
+  border-radius: 12px;
+  background: #eef6f3;
+}
+
+.verification-card > div {
+  padding: 10px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.66);
+}
+
+.verification-card span,
+.verification-card strong {
+  display: block;
+}
+
+.verification-card span {
+  margin-bottom: 4px;
+  color: var(--ink-muted);
+  font-size: 9px;
+}
+
+.verification-card strong {
+  overflow-wrap: anywhere;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 10px;
+}
+
+.verification-card p,
+.verification-card ul {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #596375;
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.verification-card ul {
+  padding-left: 18px;
+}
+
 .status-row,
 .behavior-list,
 .evidence-list {
@@ -1270,6 +1354,10 @@ noscript {
 
   .meta-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .verification-card {
+    grid-template-columns: 1fr;
   }
 
   .code-pane {
