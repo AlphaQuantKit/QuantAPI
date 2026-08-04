@@ -20,6 +20,16 @@ const DOMAIN_LABELS = {
 const DOMAIN_ORDER = Object.keys(DOMAIN_LABELS);
 const BASE_URL = "https://api.worldquantbrain.com";
 
+const SENSITIVITY_DESCRIPTIONS = {
+  none: "未发现额外的敏感信息或高风险副作用。",
+  credential: "涉及账号密码、Token 或认证凭据；分享和保存前必须移除。",
+  personal_data: "涉及个人资料、用户标识或账户相关数据；示例和日志应先去敏。",
+  research: "涉及 Alpha、Simulation 或研究内容；避免公开策略、表达式和结果。",
+  submission: "会提交 Alpha、比赛作品或其他成果，可能改变账户状态或评审结果。",
+  destructive: "可能删除资源或产生难以撤销的修改；调用前必须确认目标。",
+  legal: "涉及协议接受、法律声明或合规状态；操作前应人工确认内容。"
+};
+
 const elements = typeof document === "undefined" ? {} : {
   workspace: document.querySelector("#workspace"),
   search: document.querySelector("#global-search"),
@@ -78,6 +88,16 @@ function toSnakeCase(value) {
 function methodBadge(method) {
   const normalized = String(method).toUpperCase();
   return `<span class="method ${normalized.toLowerCase()}">${escapeHtml(normalized)}</span>`;
+}
+
+function helpTooltip(id, label, value, description) {
+  const accessibleText = `${label} ${value}：${description}`;
+  return `
+    <span class="meta-help-wrap">
+      <button class="meta-help" type="button" aria-label="${escapeHtml(accessibleText)}" aria-describedby="${escapeHtml(id)}">?</button>
+      <span class="meta-tooltip" id="${escapeHtml(id)}" role="tooltip"><b>${escapeHtml(value)}</b>${escapeHtml(description)}</span>
+    </span>
+  `;
 }
 
 function operationAccept(operation) {
@@ -410,6 +430,8 @@ function renderDoc(operation) {
   const accepts = operation.accept
     ? [operation.accept]
     : (operation.apiVersions ?? [operation.apiVersion]).map((version) => `application/json;version=${version}`);
+  const evidenceDescription = state.catalog?.evidenceLevels?.[operation.response.evidenceLevel] ?? "当前目录尚未提供该证据等级的补充说明。";
+  const sensitivityDescription = SENSITIVITY_DESCRIPTIONS[operation.sensitivity] ?? "当前目录尚未提供该敏感等级的补充说明。";
 
   elements.docPane.innerHTML = `
     <div class="breadcrumbs"><span>WQ API</span><span>/</span><span>${escapeHtml(DOMAIN_LABELS[operation.domain] ?? operation.domain)}</span></div>
@@ -422,8 +444,8 @@ function renderDoc(operation) {
     <div class="meta-grid">
       <div class="meta-card"><span>鉴权</span><strong>${escapeHtml(authModes(operation).join(" / "))}</strong></div>
       <div class="meta-card"><span>Accept</span><strong title="${escapeHtml(accepts.join(" / "))}">${escapeHtml(accepts.join(" / "))}</strong></div>
-      <div class="meta-card"><span>响应证据</span><strong>${escapeHtml(operation.response.evidenceLevel)}</strong></div>
-      <div class="meta-card"><span>敏感等级</span><strong>${escapeHtml(operation.sensitivity)}</strong></div>
+      <div class="meta-card"><span class="meta-label">响应证据 ${helpTooltip("response-evidence-help", "响应证据", operation.response.evidenceLevel, evidenceDescription)}</span><strong>${escapeHtml(operation.response.evidenceLevel)}</strong></div>
+      <div class="meta-card"><span class="meta-label">敏感等级 ${helpTooltip("sensitivity-help", "敏感等级", operation.sensitivity, sensitivityDescription)}</span><strong>${escapeHtml(operation.sensitivity)}</strong></div>
     </div>
 
     <section class="doc-section">
@@ -1172,4 +1194,4 @@ async function initialize() {
 
 if (typeof document !== "undefined") initialize();
 
-export { buildJavascript, buildPython, defaultOperationValues, expandSchemaRefs, responseExampleBlock, responseExampleForOperation, sampleFromSchema, schemaExampleBlock, state, stripSchemaMetadata };
+export { buildJavascript, buildPython, defaultOperationValues, expandSchemaRefs, helpTooltip, responseExampleBlock, responseExampleForOperation, sampleFromSchema, schemaExampleBlock, state, stripSchemaMetadata };

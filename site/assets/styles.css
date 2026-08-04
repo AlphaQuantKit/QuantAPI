@@ -572,6 +572,7 @@ kbd {
 }
 
 .meta-card {
+  position: relative;
   min-width: 0;
   padding: 12px 13px;
   border: 1px solid var(--line-soft);
@@ -579,15 +580,15 @@ kbd {
   background: rgba(255, 255, 255, 0.52);
 }
 
-.meta-card span,
-.meta-card strong {
+.meta-card > span,
+.meta-card > strong {
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.meta-card span {
+.meta-card > span {
   margin-bottom: 5px;
   color: #8d939d;
   font-size: 9px;
@@ -596,10 +597,90 @@ kbd {
   text-transform: uppercase;
 }
 
-.meta-card strong {
+.meta-card > strong {
   font-family: var(--mono);
   font-size: 11px;
   font-weight: 600;
+}
+
+.meta-label {
+  display: flex !important;
+  align-items: center;
+  gap: 5px;
+  overflow: visible !important;
+}
+
+.meta-help-wrap {
+  display: inline-flex;
+  flex: none;
+}
+
+.meta-help {
+  display: inline-grid;
+  width: 15px;
+  height: 15px;
+  padding: 0;
+  border: 1px solid #b8b4aa;
+  border-radius: 50%;
+  background: #fff;
+  color: #696e77;
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: help;
+  place-items: center;
+}
+
+.meta-help:hover,
+.meta-help:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent-dark);
+  outline: none;
+}
+
+.meta-tooltip {
+  position: absolute;
+  z-index: 30;
+  top: 38px;
+  right: 10px;
+  width: min(280px, calc(100vw - 96px));
+  padding: 10px 12px;
+  border: 1px solid #d6d2c8;
+  border-radius: 8px;
+  background: #fffdf9;
+  box-shadow: 0 12px 28px rgba(38, 45, 57, 0.16);
+  color: #555b65;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: normal;
+  line-height: 1.55;
+  opacity: 0;
+  overflow: visible;
+  pointer-events: none;
+  text-align: left;
+  text-overflow: clip;
+  text-transform: none;
+  transform: translateY(-4px);
+  transition: opacity 120ms ease, transform 120ms ease, visibility 120ms ease;
+  visibility: hidden;
+  white-space: normal;
+}
+
+.meta-tooltip b {
+  display: block;
+  margin-bottom: 3px;
+  color: #242a34;
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+.meta-help-wrap:hover .meta-tooltip,
+.meta-help-wrap:focus-within .meta-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
 }
 
 .doc-section {
@@ -1250,6 +1331,11 @@ noscript {
 
   .meta-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .meta-card:nth-child(3) .meta-tooltip {
+    right: auto;
+    left: 10px;
   }
 }
 

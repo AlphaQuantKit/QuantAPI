@@ -127,6 +127,19 @@ check(
     && generatedResponseExample.includes("不是真实 API 响应")
     && generator.sampleFromSchema({ type: ["number", "null"] }) === 0
 );
+const evidenceTooltip = generator.helpTooltip("evidence-test", "响应证据", "consumer_confirmed", catalog.evidenceLevels.consumer_confirmed);
+const sensitivityTooltip = generator.helpTooltip("sensitivity-test", "敏感等级", "personal_data", "涉及个人资料、用户标识或账户相关数据；示例和日志应先去敏。");
+check(
+  "响应证据与敏感等级提供可访问的问号说明",
+  app.includes("SENSITIVITY_DESCRIPTIONS")
+    && app.includes("response-evidence-help")
+    && app.includes("sensitivity-help")
+    && evidenceTooltip.includes('role="tooltip"')
+    && evidenceTooltip.includes("响应字段消费代码确认")
+    && sensitivityTooltip.includes("示例和日志应先去敏")
+    && css.includes(".meta-help-wrap:focus-within .meta-tooltip")
+    && css.includes(".meta-help:focus-visible")
+);
 const generated = [];
 for (const operation of catalog.operations) {
   generator.state.operationValues.clear();
