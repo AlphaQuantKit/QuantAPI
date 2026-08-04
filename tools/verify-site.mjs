@@ -116,6 +116,16 @@ const generator = await import(new URL("../site/assets/app.js", import.meta.url)
 generator.state.catalog = catalog;
 const visibleOperations = generator.visibleOperations();
 const hiddenOperations = catalog.operations.filter((operation) => operation.visibility === "hidden");
+const alphaCorrelationOperation = catalog.operations.find((operation) => operation.operationId === "getAlphaCorrelation");
+const correlationTypeParameter = alphaCorrelationOperation?.parameters?.find((parameter) => parameter.name === "correlationType");
+check(
+  "Alpha 三类相关性共用一个动态接口入口",
+  alphaCorrelationOperation?.path === "/alphas/{alphaId}/correlations/{correlationType}"
+    && !catalog.operations.some((operation) => operation.operationId === "getAlphaProdCorrelation")
+    && JSON.stringify(correlationTypeParameter?.schema?.enum) === JSON.stringify(["self", "power-pool", "prod"])
+    && visibleOperations.filter((operation) => operation.operationId === "getAlphaCorrelation").length === 1
+    && generator.defaultOperationValues(alphaCorrelationOperation).params["path:correlationType"] === "self"
+);
 const expectedLeadingDomainOrder = ["authentication", "account", "data", "operators", "simulation", "alpha", "events", "messages"];
 const visibleDomains = new Set(visibleOperations.map((operation) => operation.domain));
 check(
@@ -125,6 +135,22 @@ check(
       && (index === 0 || app.indexOf(`${expectedLeadingDomainOrder[index - 1]}:`) < app.indexOf(`${domain}:`))
   )
     && expectedLeadingDomainOrder.every((domain) => visibleDomains.has(domain))
+    && app.includes('events: "Event"')
+    && app.includes('messages: "Message"')
+    && !app.includes('events: "事件"')
+    && !app.includes('messages: "消息"')
+);
+const spcOperationIds = ["getSpcSubmissionOptions", "listSpcSubmissions", "createSpcSubmission", "getSpcSubmission", "patchSpcSubmission"];
+const competitionOperations = visibleOperations.filter((operation) => operation.domain === "competitions");
+const consultantOperations = visibleOperations.filter((operation) => operation.domain === "consultant");
+check(
+  "SPC 提交接口并入比赛目录且顾问目录独立",
+  spcOperationIds.every((operationId) => competitionOperations.some((operation) => operation.operationId === operationId))
+    && consultantOperations.every((operation) => !operation.path.startsWith("/competitions/spc/"))
+    && competitionOperations.length === 13
+    && consultantOperations.length === 4
+    && app.includes('consultant: "顾问"')
+    && !app.includes('consultant: "顾问与 SPC"')
 );
 check(
   "数据与算子业务域使用英文名称",
@@ -356,6 +382,64 @@ check(
     && submitAlphaJavascript.includes('method: "GET"')
     && !submitAlphaJavascript.includes("response.status !== 202")
 );
+const newlyConfirmedReadOnlyChecks = [
+  ["listOperators", "OperatorList", "operators"],
+  ["listAlphas", "AlphaList", "alphaSearchResults"],
+  ["listTagAlphas", "AlphaList", "tagAlphas"],
+  ["getUserAlphaOptions", "Options", "alphaQueryOptions"],
+  ["getAlphaChecks", "AlphaCheckResponse", "alphaChecks"],
+  ["getAlphaCorrelation", "CorrelationRecordset", "alphaCorrelation"],
+  ["listAlphaRecordsets", "RecordsetList", "alphaRecordsets"],
+  ["getAlphaRecordset", "Recordset", "alphaRecordset"],
+  ["getSelfAlphaPerformance", "AlphaPerformanceComparison", "alphaPerformanceComparison"],
+  ["getSelfAlphaSummary", "AlphaSummary", "alphaSummary"],
+  ["getAlphaTutorial", "AlphaTutorialCheck", "alphaTutorialCheck"],
+  ["listEvents", "EventList", "events"],
+  ["getEventOptions", "Options", "eventOptions"],
+  ["listSelfMessages", "MessageList", "messages"],
+  ["getSelfMessageSummary", "MessageSummary", "messageSummary"]
+];
+check(
+  "Operator、Alpha、Event 与消息新增只读接口展示实测结构",
+  newlyConfirmedReadOnlyChecks.every(([operationId, schemaRef, exampleRef]) => {
+    const operation = catalog.operations.find((item) => item.operationId === operationId);
+    return operation?.response?.schemaRef === schemaRef
+      && operation?.response?.exampleRef === exampleRef
+      && operation?.response?.evidenceLevel === "live_response_confirmed"
+      && operation?.verification?.rawSampleStored === false
+      && catalog.examples?.[exampleRef]?.sanitized === true
+      && generator.responseExampleBlock(exampleRef).includes("去敏响应示例");
+  })
+);
+const newlyConfirmedById = new Map(newlyConfirmedReadOnlyChecks.map(([operationId]) => [
+  operationId,
+  catalog.operations.find((operation) => operation.operationId === operationId)
+]));
+const listAlphasDefaults = generator.defaultOperationValues(newlyConfirmedById.get("listAlphas"));
+const listTagAlphasDefaults = generator.defaultOperationValues(newlyConfirmedById.get("listTagAlphas"));
+const eventDefaults = generator.defaultOperationValues(newlyConfirmedById.get("listEvents"));
+const messageDefaults = generator.defaultOperationValues(newlyConfirmedById.get("listSelfMessages"));
+check(
+  "新增查询参数进入代码生成器且使用实测默认值",
+  listAlphasDefaults.params["query:limit"] === "10"
+    && listAlphasDefaults.params["query:offset"] === "0"
+    && listAlphasDefaults.params["query:type"] === "REGULAR"
+    && listAlphasDefaults.params["query:stage"] === "IS"
+    && listAlphasDefaults.params["query:status"] === "UNSUBMITTED"
+    && listTagAlphasDefaults.params["path:tagId"] === "YOUR_TAG_ID"
+    && eventDefaults.params["query:type"] === "ONLINE"
+    && eventDefaults.params["query:language"] === "en"
+    && messageDefaults.params["query:type"] === "ANNOUNCEMENT"
+    && messageDefaults.params["query:read"] === ""
+);
+check(
+  "Alpha 前置条件与未测试接口边界在网页数据中保持准确",
+  newlyConfirmedById.get("getSelfAlphaPerformance")?.response?.errorStatuses?.includes(400)
+    && newlyConfirmedById.get("getAlphaTutorial")?.response?.mode === "json_or_empty"
+    && newlyConfirmedById.get("getAlphaTutorial")?.response?.errorStatuses?.includes(412)
+    && ["bulkPatchAlphas", "patchMessage", "patchSelfMessageSummary", "getTeamAlphaPerformance", "getCompetitionAlphaPerformance"]
+      .every((operationId) => catalog.operations.find((operation) => operation.operationId === operationId)?.response?.evidenceLevel !== "live_response_confirmed")
+);
 const createAuthenticationOperation = catalog.operations.find((operation) => operation.operationId === "createAuthentication");
 const getAuthenticationOperation = catalog.operations.find((operation) => operation.operationId === "getAuthentication");
 const deleteAuthenticationOperation = catalog.operations.find((operation) => operation.operationId === "deleteAuthentication");
@@ -507,7 +591,7 @@ const malformedJavascript = generated.filter(({ javascript }) =>
 );
 check("全部接口均可生成 WQ 页面 fetch 文本", malformedJavascript.length === 0, malformedJavascript.map(({ operation }) => operation.operationId).join(", "));
 const javascriptSyntaxFailures = generated.filter(({ javascript }) => spawnSync(process.execPath, ["--check"], { input: javascript, encoding: "utf8" }).status !== 0);
-check("126 个 JavaScript 脚本均通过语法检查", javascriptSyntaxFailures.length === 0, javascriptSyntaxFailures.map(({ operation }) => operation.operationId).join(", "));
+check(`${visibleOperations.length} 个 JavaScript 脚本均通过语法检查`, javascriptSyntaxFailures.length === 0, javascriptSyntaxFailures.map(({ operation }) => operation.operationId).join(", "));
 
 const pythonCandidates = process.platform === "win32" ? ["python"] : ["python3", "python"];
 const pythonCommand = pythonCandidates.find((candidate) => !spawnSync(candidate, ["--version"], { encoding: "utf8" }).error);
@@ -516,7 +600,7 @@ if (pythonCommand) {
     const result = spawnSync(pythonCommand, ["-c", "import sys; compile(sys.stdin.buffer.read(), '<generated_request.py>', 'exec')"], { input: Buffer.from(python, "utf8") });
     return result.status !== 0;
   });
-  check("126 个生成脚本均通过 Python 语法检查", syntaxFailures.length === 0, syntaxFailures.map(({ operation }) => operation.operationId).join(", "));
+  check(`${visibleOperations.length} 个生成脚本均通过 Python 语法检查`, syntaxFailures.length === 0, syntaxFailures.map(({ operation }) => operation.operationId).join(", "));
 } else {
   check("Python 语法检查器可用", true, "当前环境无 Python，已跳过；GitHub Actions ubuntu-latest 将提供 python3");
 }

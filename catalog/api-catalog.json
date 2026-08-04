@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "catalogVersion": "1.10.0",
+  "catalogVersion": "1.11.0",
   "title": "WQ API 非官方接口目录",
   "description": "以 WorldQuant BRAIN 前端 bundle 静态分析为基线，并通过人工复核的去敏真实响应逐项升级。此目录不是官方 API 承诺；unknown/inferred 字段必须在取得去敏真实响应后再升级。",
   "generatedFrom": {
@@ -437,7 +437,9 @@
           "type": "string",
           "enum": [
             "REGULAR",
-            "SUPER"
+            "SUPER",
+            "RA_PARENT",
+            "RA_CHILD"
           ]
         },
         "author": {
@@ -478,16 +480,19 @@
           "type": "string"
         },
         "dateCreated": {
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         },
         "dateSubmitted": {
           "type": [
             "string",
             "null"
-          ]
+          ],
+          "format": "date-time"
         },
         "dateModified": {
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         },
         "name": {
           "type": [
@@ -547,19 +552,28 @@
           "$ref": "#/schemas/AlphaMetrics"
         },
         "competitions": {
-          "type": "array",
+          "type": [
+            "array",
+            "null"
+          ],
           "items": {
             "$ref": "#/schemas/OpenObject"
           }
         },
         "themes": {
-          "type": "array",
+          "type": [
+            "array",
+            "null"
+          ],
           "items": {
             "$ref": "#/schemas/OpenObject"
           }
         },
         "pyramids": {
-          "type": "array",
+          "type": [
+            "array",
+            "null"
+          ],
           "items": {
             "$ref": "#/schemas/OpenObject"
           }
@@ -735,21 +749,30 @@
     "Recordset": {
       "type": "object",
       "properties": {
-        "name": {
-          "type": "string"
-        },
         "schema": {
-          "type": "object",
-          "additionalProperties": true
+          "$ref": "#/schemas/TabularRecordsetSchema"
         },
         "records": {
-          "type": [
-            "array",
-            "object"
-          ]
+          "type": "array",
+          "description": "每行元素顺序与 schema.properties 一致。",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": [
+                "string",
+                "number",
+                "boolean",
+                "null"
+              ]
+            }
+          }
         }
       },
-      "additionalProperties": true
+      "required": [
+        "schema",
+        "records"
+      ],
+      "additionalProperties": false
     },
     "TagOptionChoice": {
       "oneOf": [
@@ -1877,6 +1900,18 @@
             }
           },
           "additionalProperties": true
+        },
+        "min": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "max": {
+          "type": [
+            "number",
+            "null"
+          ]
         }
       },
       "required": [
@@ -1936,9 +1971,30 @@
         },
         "description": {
           "type": "string"
+        },
+        "documentation": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "level": {
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
-      "additionalProperties": true
+      "required": [
+        "name",
+        "category",
+        "scope",
+        "definition",
+        "description",
+        "documentation",
+        "level"
+      ],
+      "additionalProperties": false
     },
     "OperatorList": {
       "type": "array",
@@ -2460,6 +2516,342 @@
         }
       },
       "additionalProperties": true
+    },
+    "AlphaSummary": {
+      "type": "object",
+      "properties": {
+        "unsubmitted": {
+          "type": "integer"
+        },
+        "active": {
+          "type": "integer"
+        },
+        "decommissioned": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "unsubmitted",
+        "active",
+        "decommissioned"
+      ],
+      "additionalProperties": false
+    },
+    "AlphaPerformanceStats": {
+      "type": "object",
+      "properties": {
+        "bookSize": {
+          "type": "number"
+        },
+        "pnl": {
+          "type": "number"
+        },
+        "longCount": {
+          "type": "integer"
+        },
+        "shortCount": {
+          "type": "integer"
+        },
+        "drawdown": {
+          "type": "number"
+        },
+        "turnover": {
+          "type": "number"
+        },
+        "returns": {
+          "type": "number"
+        },
+        "margin": {
+          "type": "number"
+        },
+        "sharpe": {
+          "type": "number"
+        },
+        "fitness": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "bookSize",
+        "pnl",
+        "longCount",
+        "shortCount",
+        "drawdown",
+        "turnover",
+        "returns",
+        "margin",
+        "sharpe",
+        "fitness"
+      ],
+      "additionalProperties": false
+    },
+    "AlphaPerformancePair": {
+      "type": "object",
+      "properties": {
+        "before": {
+          "$ref": "#/schemas/AlphaPerformanceStats"
+        },
+        "after": {
+          "$ref": "#/schemas/AlphaPerformanceStats"
+        }
+      },
+      "required": [
+        "before",
+        "after"
+      ],
+      "additionalProperties": false
+    },
+    "AlphaPerformanceRecordsetPair": {
+      "type": "object",
+      "properties": {
+        "before": {
+          "$ref": "#/schemas/TabularRecordset"
+        },
+        "after": {
+          "$ref": "#/schemas/TabularRecordset"
+        }
+      },
+      "required": [
+        "before",
+        "after"
+      ],
+      "additionalProperties": false
+    },
+    "AlphaPerformanceComparison": {
+      "type": "object",
+      "properties": {
+        "partitionName": {
+          "type": "string"
+        },
+        "stats": {
+          "$ref": "#/schemas/AlphaPerformancePair"
+        },
+        "yearlyStats": {
+          "$ref": "#/schemas/AlphaPerformanceRecordsetPair"
+        },
+        "pnl": {
+          "$ref": "#/schemas/TabularRecordset"
+        },
+        "partition": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "partitionName",
+        "stats",
+        "yearlyStats",
+        "pnl",
+        "partition"
+      ],
+      "additionalProperties": false
+    },
+    "AlphaTutorialCheck": {
+      "type": "object",
+      "properties": {
+        "step": {
+          "type": "string",
+          "description": "前端消费的教程步骤标识；非教程模式下成功响应可以为空。"
+        }
+      },
+      "additionalProperties": true
+    },
+    "Event": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "ONLINE",
+            "OFFLINE"
+          ]
+        },
+        "category": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "start": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "end": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "register": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "recording": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "venue": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "city": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "country": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "type",
+        "category",
+        "start",
+        "end",
+        "timezone",
+        "language",
+        "description",
+        "register",
+        "recording",
+        "venue",
+        "city",
+        "country"
+      ],
+      "additionalProperties": false
+    },
+    "EventList": {
+      "allOf": [
+        {
+          "$ref": "#/schemas/Paginated"
+        }
+      ],
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/schemas/Event"
+          }
+        }
+      }
+    },
+    "Message": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "ANNOUNCEMENT",
+            "NOTIFICATION"
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "dateCreated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/schemas/OpenObject"
+          }
+        },
+        "read": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "title",
+        "description",
+        "dateCreated",
+        "tags",
+        "read"
+      ],
+      "additionalProperties": false
+    },
+    "MessageList": {
+      "allOf": [
+        {
+          "$ref": "#/schemas/Paginated"
+        }
+      ],
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/schemas/Message"
+          }
+        }
+      }
+    },
+    "MessageSummaryBucket": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer"
+        },
+        "read": {
+          "type": "integer"
+        },
+        "unread": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "count",
+        "read",
+        "unread"
+      ],
+      "additionalProperties": false
+    },
+    "MessageSummary": {
+      "type": "object",
+      "properties": {
+        "announcement": {
+          "$ref": "#/schemas/MessageSummaryBucket"
+        },
+        "notification": {
+          "$ref": "#/schemas/MessageSummaryBucket"
+        }
+      },
+      "required": [
+        "announcement",
+        "notification"
+      ],
+      "additionalProperties": false
     }
   },
   "examples": {
@@ -2508,7 +2900,7 @@
           "id": "USER_ID_EXAMPLE"
         },
         "token": {
-          "expiry": 1700000000.0
+          "expiry": 1700000000
         },
         "permissions": [
           "TUTORIAL"
@@ -3281,6 +3673,550 @@
         "regular": "close",
         "status": "COMPLETE",
         "alpha": "sample-alpha-id-walkthrough"
+      }
+    },
+    "operators": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 只读实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存原始响应；107 项精简为一个通用代表项，算子名称、定义与说明已替换。",
+      "value": [
+        {
+          "name": "example_operator",
+          "category": "Arithmetic",
+          "scope": [
+            "REGULAR",
+            "COMBO",
+            "SELECTION"
+          ],
+          "definition": "example_operator(x)",
+          "description": "Example operator description.",
+          "documentation": null,
+          "level": "ALL"
+        }
+      ]
+    },
+    "alphaSearchResults": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 只读实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存原始响应；Alpha ID、作者、表达式、日期、设置、指标和真实分页数量均已替换或省略。",
+      "value": {
+        "count": 1,
+        "next": null,
+        "previous": null,
+        "results": [
+          {
+            "id": "ALPHA_ID_EXAMPLE",
+            "type": "REGULAR",
+            "author": "USER_ID_EXAMPLE",
+            "settings": {
+              "instrumentType": "EQUITY",
+              "region": "USA",
+              "universe": "TOP3000",
+              "delay": 1,
+              "language": "FASTEXPR",
+              "visualization": false
+            },
+            "regular": {
+              "code": "<redacted-expression>",
+              "description": null,
+              "operatorCount": null
+            },
+            "name": null,
+            "favorite": false,
+            "hidden": false,
+            "color": null,
+            "category": null,
+            "tags": [],
+            "grade": null,
+            "stage": "IS",
+            "status": "UNSUBMITTED"
+          }
+        ]
+      }
+    },
+    "tagAlphas": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 通过现有 Alpha List 只读实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存列表 ID、Alpha ID、作者、表达式、指标或原始响应；示例复用相同的 Alpha 分页结构。",
+      "value": {
+        "count": 1,
+        "next": null,
+        "previous": null,
+        "results": [
+          {
+            "id": "ALPHA_ID_EXAMPLE",
+            "type": "REGULAR",
+            "author": "USER_ID_EXAMPLE",
+            "settings": {
+              "instrumentType": "EQUITY",
+              "region": "USA",
+              "universe": "TOP3000",
+              "delay": 1,
+              "language": "FASTEXPR",
+              "visualization": false
+            },
+            "regular": {
+              "code": "<redacted-expression>",
+              "description": null,
+              "operatorCount": null
+            },
+            "name": null,
+            "favorite": false,
+            "hidden": false,
+            "color": null,
+            "category": null,
+            "tags": [],
+            "grade": null,
+            "stage": "IS",
+            "status": "UNSUBMITTED"
+          }
+        ]
+      }
+    },
+    "alphaQueryOptions": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API OPTIONS 实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "160 KB 响应仅保留用于说明类型、阶段和状态可行域的字段；用户 ID 与原始响应未保存。",
+      "value": {
+        "actions": {
+          "GET": {
+            "type": {
+              "type": "choice",
+              "required": true,
+              "readOnly": false,
+              "label": "Type",
+              "choices": [
+                {
+                  "value": "REGULAR",
+                  "label": "REGULAR"
+                },
+                {
+                  "value": "SUPER",
+                  "label": "SUPER"
+                },
+                {
+                  "value": "RA_PARENT",
+                  "label": "RA_PARENT"
+                },
+                {
+                  "value": "RA_CHILD",
+                  "label": "RA_CHILD"
+                }
+              ]
+            },
+            "stage": {
+              "type": "choice",
+              "required": true,
+              "readOnly": false,
+              "label": "Stage",
+              "choices": [
+                {
+                  "value": "IS",
+                  "label": "IS"
+                },
+                {
+                  "value": "OS",
+                  "label": "OS"
+                },
+                {
+                  "value": "PROD",
+                  "label": "PROD"
+                }
+              ]
+            },
+            "status": {
+              "type": "choice",
+              "required": true,
+              "readOnly": false,
+              "label": "Status",
+              "choices": [
+                {
+                  "value": "UNSUBMITTED",
+                  "label": "UNSUBMITTED"
+                },
+                {
+                  "value": "ACTIVE",
+                  "label": "ACTIVE"
+                },
+                {
+                  "value": "DECOMMISSIONED",
+                  "label": "DECOMMISSIONED"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "alphaChecks": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 只读实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存 Alpha ID、真实检查名称或原始响应；仅保留 name/result 字段以及实测 FAIL 状态。",
+      "value": {
+        "is": {
+          "checks": [
+            {
+              "name": "CHECK_NAME_EXAMPLE",
+              "result": "FAIL"
+            }
+          ]
+        }
+      }
+    },
+    "alphaCorrelation": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 三种相关性只读实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存 Alpha ID、相关 Alpha、指标值或原始响应；记录值已替换，并保留 self/power-pool 响应中存在的 min/max 字段结构。",
+      "value": {
+        "schema": {
+          "name": "correlation",
+          "title": "Correlation",
+          "properties": [
+            {
+              "name": "id",
+              "title": "Id",
+              "type": "string"
+            },
+            {
+              "name": "correlation",
+              "title": "Correlation",
+              "type": "decimal"
+            }
+          ]
+        },
+        "records": [
+          [
+            "ALPHA_ID_EXAMPLE",
+            0.12
+          ]
+        ],
+        "min": 0.12,
+        "max": 0.12
+      }
+    },
+    "alphaRecordsets": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 只读实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存 Alpha ID 或原始响应；recordset 名称和标题属于接口元数据，完整保留。",
+      "value": {
+        "count": 5,
+        "next": null,
+        "previous": null,
+        "results": [
+          {
+            "name": "pnl",
+            "title": "PnL"
+          },
+          {
+            "name": "sharpe",
+            "title": "Sharpe"
+          },
+          {
+            "name": "turnover",
+            "title": "Turnover"
+          },
+          {
+            "name": "daily-pnl",
+            "title": "Daily PnL"
+          },
+          {
+            "name": "yearly-stats",
+            "title": "Yearly Statistics"
+          }
+        ]
+      }
+    },
+    "alphaRecordset": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 五种 recordset 只读实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存 Alpha ID、日期、指标或原始响应；示例记录全部替换为无业务含义的值。",
+      "value": {
+        "schema": {
+          "name": "pnl",
+          "title": "PnL",
+          "properties": [
+            {
+              "name": "date",
+              "title": "Date",
+              "type": "date"
+            },
+            {
+              "name": "pnl",
+              "title": "PnL",
+              "type": "amount"
+            },
+            {
+              "name": "equal-weight-pnl",
+              "title": "Equal Weight PnL",
+              "type": "amount"
+            }
+          ]
+        },
+        "records": [
+          [
+            "2026-01-01",
+            1000,
+            900
+          ]
+        ]
+      }
+    },
+    "alphaPerformanceComparison": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 对未提交 Regular Alpha 的只读实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存 Alpha ID、表达式、分区名称、日期、指标或原始响应；98 KB 响应压缩为覆盖五个顶层字段的代表结构。",
+      "value": {
+        "partitionName": "PARTITION_EXAMPLE",
+        "stats": {
+          "before": {
+            "bookSize": 20000000,
+            "pnl": 100000,
+            "longCount": 100,
+            "shortCount": 95,
+            "drawdown": 0.02,
+            "turnover": 0.3,
+            "returns": 0.1,
+            "margin": 0.001,
+            "sharpe": 1.5,
+            "fitness": 1.1
+          },
+          "after": {
+            "bookSize": 20000000,
+            "pnl": 100000,
+            "longCount": 100,
+            "shortCount": 95,
+            "drawdown": 0.02,
+            "turnover": 0.3,
+            "returns": 0.1,
+            "margin": 0.001,
+            "sharpe": 1.6,
+            "fitness": 1.1
+          }
+        },
+        "yearlyStats": {
+          "before": {
+            "schema": {
+              "name": "yearly-stats",
+              "title": "Yearly Statistics",
+              "properties": [
+                {
+                  "name": "year",
+                  "title": "Year",
+                  "type": "year"
+                },
+                {
+                  "name": "pnl",
+                  "title": "PnL",
+                  "type": "amount"
+                }
+              ]
+            },
+            "records": [
+              [
+                "2025",
+                100000
+              ]
+            ]
+          },
+          "after": {
+            "schema": {
+              "name": "yearly-stats",
+              "title": "Yearly Statistics",
+              "properties": [
+                {
+                  "name": "year",
+                  "title": "Year",
+                  "type": "year"
+                },
+                {
+                  "name": "pnl",
+                  "title": "PnL",
+                  "type": "amount"
+                }
+              ]
+            },
+            "records": [
+              [
+                "2025",
+                100000
+              ]
+            ]
+          }
+        },
+        "pnl": {
+          "schema": {
+            "name": "pnl",
+            "title": "PnL",
+            "properties": [
+              {
+                "name": "date",
+                "title": "Date",
+                "type": "date"
+              },
+              {
+                "name": "before",
+                "title": "Before",
+                "type": "amount"
+              },
+              {
+                "name": "after",
+                "title": "After",
+                "type": "amount"
+              }
+            ]
+          },
+          "records": [
+            [
+              "2026-01-01",
+              1000,
+              1100
+            ]
+          ]
+        },
+        "partition": [
+          "BEFORE",
+          "AFTER",
+          "DIFFERENCE"
+        ]
+      }
+    },
+    "alphaSummary": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 只读实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存账户 Alpha 数量或原始响应；三个计数替换为示例值。",
+      "value": {
+        "unsubmitted": 12,
+        "active": 3,
+        "decommissioned": 1
+      }
+    },
+    "alphaTutorialCheck": {
+      "evidenceLevel": "consumer_confirmed",
+      "source": "raw 前端教程消费代码；实测成功响应为空（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "示例只表达教程模式可能消费的 step 字段；非教程模式成功响应可以为空。",
+      "value": {
+        "step": "TUTORIAL_STEP_EXAMPLE"
+      }
+    },
+    "events": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 只读实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存原始响应；22 项精简为一个代表项，事件 ID、标题、说明、链接、地点和日期均已替换。",
+      "value": {
+        "count": 1,
+        "next": null,
+        "previous": null,
+        "results": [
+          {
+            "id": "EVENT_ID_EXAMPLE",
+            "title": "示例线上活动",
+            "type": "ONLINE",
+            "category": null,
+            "start": "2026-09-01T12:00:00Z",
+            "end": "2026-09-01T13:00:00Z",
+            "timezone": "UTC",
+            "language": "zh-cn",
+            "description": "示例活动说明。",
+            "register": "https://example.com/register",
+            "recording": null,
+            "venue": null,
+            "city": null,
+            "country": "CN"
+          }
+        ]
+      }
+    },
+    "eventOptions": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API OPTIONS 实测响应与前端固定类型选项（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "仅保留筛选器使用的语言、国家和城市字段；未保存完整响应。ONLINE/OFFLINE 来自同版本前端固定选项。",
+      "value": {
+        "actions": {
+          "GET": {
+            "language": {
+              "type": "choice",
+              "required": false,
+              "choices": [
+                {
+                  "value": "en",
+                  "label": "English"
+                },
+                {
+                  "value": "zh-cn",
+                  "label": "简体中文"
+                }
+              ]
+            },
+            "country": {
+              "type": "choice",
+              "required": true,
+              "choices": [
+                {
+                  "value": "CN",
+                  "label": "China"
+                }
+              ]
+            },
+            "city": {
+              "type": "choice",
+              "required": true,
+              "choices": []
+            }
+          }
+        }
+      }
+    },
+    "messages": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 只读实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存消息 ID、标题、正文、日期、真实数量或原始响应；100 项精简为一个通用代表项。",
+      "value": {
+        "count": 1,
+        "next": null,
+        "previous": null,
+        "results": [
+          {
+            "id": "MESSAGE_ID_EXAMPLE",
+            "type": "NOTIFICATION",
+            "title": "示例通知",
+            "description": "示例消息内容。",
+            "dateCreated": "2026-01-01T00:00:00Z",
+            "tags": [],
+            "read": false
+          }
+        ]
+      }
+    },
+    "messageSummary": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 只读实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存真实消息数量或原始响应；各计数均替换为示例值。",
+      "value": {
+        "announcement": {
+          "count": 10,
+          "read": 8,
+          "unread": 2
+        },
+        "notification": {
+          "count": 20,
+          "read": 15,
+          "unread": 5
+        }
       }
     }
   },
@@ -5056,40 +5992,73 @@
           "in": "query",
           "required": false,
           "schema": {
-            "type": "integer"
-          }
+            "type": "integer",
+            "default": 10
+          },
+          "description": "可选；实测非正数或非数字会被忽略并回退到默认每页 10 项。"
         },
         {
           "name": "offset",
           "in": "query",
           "required": false,
           "schema": {
-            "type": "integer"
-          }
+            "type": "integer",
+            "default": 0
+          },
+          "description": "可选；实测负数或非数字会被宽松处理。"
         },
         {
           "name": "order",
           "in": "query",
           "required": false,
           "schema": {
-            "type": "string"
-          }
+            "type": "string",
+            "example": "-dateCreated"
+          },
+          "description": "可选；实测 dateCreated 与 -dateCreated 可用，无效排序字段返回 HTTP 400。"
+        },
+        {
+          "name": "type",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "REGULAR",
+              "SUPER",
+              "RA_PARENT",
+              "RA_CHILD"
+            ]
+          },
+          "description": "可选；无效值返回 HTTP 200 空列表。"
         },
         {
           "name": "stage",
           "in": "query",
           "required": false,
           "schema": {
-            "type": "string"
-          }
+            "type": "string",
+            "enum": [
+              "IS",
+              "OS",
+              "PROD"
+            ]
+          },
+          "description": "可选；无效值返回 HTTP 200 空列表。"
         },
         {
           "name": "status",
           "in": "query",
           "required": false,
           "schema": {
-            "type": "string"
-          }
+            "type": "string",
+            "enum": [
+              "UNSUBMITTED",
+              "ACTIVE",
+              "DECOMMISSIONED"
+            ]
+          },
+          "description": "可选；无效值返回 HTTP 200 空列表。"
         }
       ],
       "response": {
@@ -5097,8 +6066,12 @@
           200
         ],
         "schemaRef": "AlphaList",
-        "evidenceLevel": "decoder_confirmed",
-        "mode": "json"
+        "evidenceLevel": "live_response_confirmed",
+        "mode": "json",
+        "exampleRef": "alphaSearchResults",
+        "errorStatuses": [
+          400
+        ]
       },
       "evidence": [
         {
@@ -5109,9 +6082,25 @@
         }
       ],
       "behavior": {
-        "pagination": "limit_offset"
+        "pagination": "limit_offset",
+        "defaultLimit": 10,
+        "invalidNumericPagination": "falls_back_to_default"
       },
-      "confidence": "high"
+      "confidence": "high",
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_readonly_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "alphaSearchResults",
+        "requestSafety": "仅发送 GET；分页与筛选测试最多每次读取 10 项，未保存表达式或指标。",
+        "observations": [
+          "无查询参数及 limit/offset/order/type/stage/status 组合均完成只读测试。",
+          "type 可行域为 REGULAR、SUPER、RA_PARENT、RA_CHILD；stage 为 IS、OS、PROD；status 为 UNSUBMITTED、ACTIVE、DECOMMISSIONED。",
+          "无效 order 返回 HTTP 400；无效 type/stage/status 返回 HTTP 200 空列表；无效数字分页回退默认值。"
+        ],
+        "sanitization": "未保存 Alpha ID、作者、表达式、日期、设置、指标、真实数量或原始响应。"
+      }
     },
     {
       "operationId": "listTagAlphas",
@@ -5129,47 +6118,81 @@
           "required": true,
           "schema": {
             "type": "string"
-          }
+          },
+          "description": "必填；从 listSelfTags 的 results[].id 取得。"
         },
         {
           "name": "limit",
           "in": "query",
           "required": false,
           "schema": {
-            "type": "integer"
-          }
+            "type": "integer",
+            "default": 10
+          },
+          "description": "可选；实测非正数或非数字会被忽略并回退到默认每页 10 项。"
         },
         {
           "name": "offset",
           "in": "query",
           "required": false,
           "schema": {
-            "type": "integer"
-          }
+            "type": "integer",
+            "default": 0
+          },
+          "description": "可选；实测负数或非数字会被宽松处理。"
         },
         {
           "name": "order",
           "in": "query",
           "required": false,
           "schema": {
-            "type": "string"
-          }
+            "type": "string",
+            "example": "-dateCreated"
+          },
+          "description": "可选；实测 dateCreated 与 -dateCreated 可用，无效排序字段返回 HTTP 400。"
+        },
+        {
+          "name": "type",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "REGULAR",
+              "SUPER",
+              "RA_PARENT",
+              "RA_CHILD"
+            ]
+          },
+          "description": "可选；无效值返回 HTTP 200 空列表。"
         },
         {
           "name": "stage",
           "in": "query",
           "required": false,
           "schema": {
-            "type": "string"
-          }
+            "type": "string",
+            "enum": [
+              "IS",
+              "OS",
+              "PROD"
+            ]
+          },
+          "description": "可选；无效值返回 HTTP 200 空列表。"
         },
         {
           "name": "status",
           "in": "query",
           "required": false,
           "schema": {
-            "type": "string"
-          }
+            "type": "string",
+            "enum": [
+              "UNSUBMITTED",
+              "ACTIVE",
+              "DECOMMISSIONED"
+            ]
+          },
+          "description": "可选；无效值返回 HTTP 200 空列表。"
         }
       ],
       "response": {
@@ -5177,8 +6200,12 @@
           200
         ],
         "schemaRef": "AlphaList",
-        "evidenceLevel": "decoder_confirmed",
-        "mode": "json"
+        "evidenceLevel": "live_response_confirmed",
+        "mode": "json",
+        "exampleRef": "tagAlphas",
+        "errorStatuses": [
+          400
+        ]
       },
       "evidence": [
         {
@@ -5189,9 +6216,25 @@
         }
       ],
       "behavior": {
-        "pagination": "limit_offset"
+        "pagination": "limit_offset",
+        "defaultLimit": 10,
+        "invalidNumericPagination": "falls_back_to_default"
       },
-      "confidence": "high"
+      "confidence": "high",
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_readonly_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "tagAlphas",
+        "requestSafety": "先用已获授权的 listSelfTags 读取现有列表，再发送 GET；账户已有列表，因此未创建或修改资源。",
+        "observations": [
+          "GET /tags/{tagId}/alphas 无查询参数和 limit=1/offset=0/order=-dateCreated 均返回 HTTP 200。",
+          "响应为 count、next、previous、results 分页对象，results 使用 Alpha 结构。",
+          "tagId 为必填路径参数，应从 listSelfTags 的 results[].id 取得。"
+        ],
+        "sanitization": "未保存 Alpha List ID、Alpha ID、作者、表达式、指标、真实数量或原始响应。"
+      }
     },
     {
       "operationId": "getAlpha",
@@ -5456,8 +6499,9 @@
           200
         ],
         "schemaRef": "Options",
-        "evidenceLevel": "consumer_confirmed",
-        "mode": "json"
+        "evidenceLevel": "live_response_confirmed",
+        "mode": "json",
+        "exampleRef": "alphaQueryOptions"
       },
       "evidence": [
         {
@@ -5466,7 +6510,21 @@
           "line": 2828
         }
       ],
-      "confidence": "high"
+      "confidence": "high",
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_readonly_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "alphaQueryOptions",
+        "requestSafety": "仅对用户明确提供的本人 ID 发送 OPTIONS。",
+        "observations": [
+          "OPTIONS /users/{userId}/alphas 返回 HTTP 200 application/json。",
+          "actions.GET 包含 Alpha 完整字段元数据；type、stage、status 的 choices 与列表筛选实测一致。",
+          "OPTIONS 字段 required 描述 Alpha 表示字段，不等同于所有查询参数都必填。"
+        ],
+        "sanitization": "未保存用户 ID 或 160 KB 原始响应；示例只保留三个枚举字段。"
+      }
     },
     {
       "operationId": "submitAlpha",
@@ -5629,8 +6687,9 @@
           200
         ],
         "schemaRef": "AlphaCheckResponse",
-        "evidenceLevel": "decoder_confirmed",
-        "mode": "json"
+        "evidenceLevel": "live_response_confirmed",
+        "mode": "json",
+        "exampleRef": "alphaChecks"
       },
       "evidence": [
         {
@@ -5648,12 +6707,25 @@
       "behavior": {
         "polling": true,
         "retryAfterHeader": true
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_readonly_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "alphaChecks",
+        "requestSafety": "仅对用户明确授权的 Alpha 发送 GET。",
+        "observations": [
+          "GET /alphas/{alphaId}/check 返回 HTTP 200 application/json。",
+          "本次响应为 is.checks，代表项包含 name 与 result，实测 result 为 FAIL。"
+        ],
+        "sanitization": "未保存 Alpha ID、真实检查名称或原始响应。"
       }
     },
     {
       "operationId": "getAlphaCorrelation",
       "domain": "alpha",
-      "summary": "读取 Alpha 自相关或 Power Pool 相关性",
+      "summary": "读取 Alpha 自相关、Power Pool 或生产相关性",
       "method": "GET",
       "path": "/alphas/{alphaId}/correlations/{correlationType}",
       "auth": "cookie_session",
@@ -5676,9 +6748,11 @@
             "type": "string",
             "enum": [
               "self",
-              "power-pool"
+              "power-pool",
+              "prod"
             ]
-          }
+          },
+          "description": "self=自相关，power-pool=Power Pool 相关性，prod=生产相关性；三种取值均已实测。"
         }
       ],
       "response": {
@@ -5686,8 +6760,16 @@
           200
         ],
         "schemaRef": "CorrelationRecordset",
-        "evidenceLevel": "decoder_confirmed",
-        "mode": "json"
+        "evidenceLevel": "live_response_confirmed",
+        "mode": "json",
+        "exampleRef": "alphaCorrelation",
+        "errorStatuses": [
+          401,
+          410,
+          412,
+          429,
+          503
+        ]
       },
       "evidence": [
         {
@@ -5699,49 +6781,7 @@
           "source": "raw/index.6168be46.js",
           "moduleId": "20512",
           "line": 7257
-        }
-      ],
-      "confidence": "high",
-      "behavior": {
-        "polling": true,
-        "retryAfterHeader": true,
-        "handledStatuses": [
-          401,
-          410,
-          412,
-          429,
-          503
-        ]
-      }
-    },
-    {
-      "operationId": "getAlphaProdCorrelation",
-      "domain": "alpha",
-      "summary": "读取 Alpha 生产相关性",
-      "method": "GET",
-      "path": "/alphas/{alphaId}/correlations/prod",
-      "auth": "cookie_session",
-      "apiVersion": "2.0",
-      "sensitivity": "research",
-      "parameters": [
-        {
-          "name": "alphaId",
-          "in": "path",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        }
-      ],
-      "response": {
-        "statuses": [
-          200
-        ],
-        "schemaRef": "CorrelationRecordset",
-        "evidenceLevel": "decoder_confirmed",
-        "mode": "json"
-      },
-      "evidence": [
+        },
         {
           "source": "raw/index.6168be46.js",
           "moduleId": "61300",
@@ -5764,6 +6804,20 @@
           429,
           503
         ]
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_readonly_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "alphaCorrelation",
+        "requestSafety": "仅对用户明确授权的 Alpha 分别读取 self、power-pool、prod。",
+        "observations": [
+          "三种 correlationType 均返回 HTTP 200 application/json。",
+          "self 与 power-pool 使用相同列结构并包含 min/max；prod 的 schema.properties 为 min、max、alphas。",
+          "三种响应均包含 schema 与 records，保留 Retry-After 轮询规则。"
+        ],
+        "sanitization": "未保存 Alpha ID、相关 Alpha、指标值或原始响应。"
       }
     },
     {
@@ -5790,8 +6844,9 @@
           200
         ],
         "schemaRef": "RecordsetList",
-        "evidenceLevel": "decoder_confirmed",
-        "mode": "json"
+        "evidenceLevel": "live_response_confirmed",
+        "mode": "json",
+        "exampleRef": "alphaRecordsets"
       },
       "evidence": [
         {
@@ -5809,6 +6864,19 @@
       "behavior": {
         "polling": true,
         "retryAfterHeader": true
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_readonly_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "alphaRecordsets",
+        "requestSafety": "仅对用户明确授权的 Alpha 发送 GET。",
+        "observations": [
+          "返回 HTTP 200 分页对象。",
+          "当前 results[].name 为 pnl、sharpe、turnover、daily-pnl、yearly-stats。"
+        ],
+        "sanitization": "未保存 Alpha ID 或原始响应；recordset 元数据完整保留。"
       }
     },
     {
@@ -5834,8 +6902,16 @@
           "in": "path",
           "required": true,
           "schema": {
-            "type": "string"
-          }
+            "type": "string",
+            "enum": [
+              "pnl",
+              "sharpe",
+              "turnover",
+              "daily-pnl",
+              "yearly-stats"
+            ]
+          },
+          "description": "从 listAlphaRecordsets 的 results[].name 取得；五种当前返回值均已实测。"
         }
       ],
       "response": {
@@ -5843,8 +6919,13 @@
           200
         ],
         "schemaRef": "Recordset",
-        "evidenceLevel": "consumer_confirmed",
-        "mode": "json"
+        "evidenceLevel": "live_response_confirmed",
+        "mode": "json",
+        "exampleRef": "alphaRecordset",
+        "errorStatuses": [
+          401,
+          404
+        ]
       },
       "evidence": [
         {
@@ -5877,6 +6958,20 @@
           401,
           404
         ]
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_readonly_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "alphaRecordset",
+        "requestSafety": "只读取 listAlphaRecordsets 返回的五种 recordsetType。",
+        "observations": [
+          "五种 recordsetType 均返回 HTTP 200 application/json。",
+          "响应统一为 schema 与 records；每行值顺序对应 schema.properties。",
+          "yearly-stats 有 12 列；pnl、sharpe、turnover、daily-pnl 为时间序列表。"
+        ],
+        "sanitization": "未保存 Alpha ID、日期、指标值或原始响应。"
       }
     },
     {
@@ -5902,9 +6997,13 @@
         "statuses": [
           200
         ],
-        "schemaRef": "OpenObject",
-        "evidenceLevel": "consumer_confirmed",
-        "mode": "json"
+        "schemaRef": "AlphaPerformanceComparison",
+        "evidenceLevel": "live_response_confirmed",
+        "mode": "json",
+        "exampleRef": "alphaPerformanceComparison",
+        "errorStatuses": [
+          400
+        ]
       },
       "evidence": [
         {
@@ -5923,7 +7022,21 @@
           "line": 9106
         }
       ],
-      "confidence": "high"
+      "confidence": "high",
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_readonly_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "alphaPerformanceComparison",
+        "requestSafety": "先对已提交 Alpha 观察只读错误，再改用用户授权的未提交 Regular Alpha；未修改任何 Alpha。",
+        "observations": [
+          "已提交 Alpha 返回 HTTP 400，正文为 Alpha is already submitted。",
+          "未提交 Regular Alpha 返回 HTTP 200，包含 partitionName、stats、yearlyStats、pnl、partition。",
+          "stats 含 before/after 指标；yearlyStats 与 pnl 为表格型 recordset。"
+        ],
+        "sanitization": "未保存 Alpha ID、表达式、分区、日期、指标或 98 KB 原始响应。"
+      }
     },
     {
       "operationId": "getTeamAlphaPerformance",
@@ -6038,9 +7151,10 @@
         "statuses": [
           200
         ],
-        "schemaRef": "OpenObject",
-        "evidenceLevel": "consumer_confirmed",
-        "mode": "json"
+        "schemaRef": "AlphaSummary",
+        "evidenceLevel": "live_response_confirmed",
+        "mode": "json",
+        "exampleRef": "alphaSummary"
       },
       "evidence": [
         {
@@ -6054,7 +7168,20 @@
           "line": 29624
         }
       ],
-      "confidence": "high"
+      "confidence": "high",
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_readonly_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "alphaSummary",
+        "requestSafety": "仅发送 GET /users/self/alphas/summary。",
+        "observations": [
+          "返回 HTTP 200 application/json。",
+          "响应固定包含 unsubmitted、active、decommissioned 三个整数计数。"
+        ],
+        "sanitization": "未保存真实账户计数或原始响应。"
+      }
     },
     {
       "operationId": "getAlphaTutorial",
@@ -6079,9 +7206,13 @@
         "statuses": [
           200
         ],
-        "schemaRef": "OpenObject",
-        "evidenceLevel": "consumer_confirmed",
-        "mode": "json"
+        "schemaRef": "AlphaTutorialCheck",
+        "evidenceLevel": "live_response_confirmed",
+        "mode": "json_or_empty",
+        "exampleRef": "alphaTutorialCheck",
+        "errorStatuses": [
+          412
+        ]
       },
       "evidence": [
         {
@@ -6090,7 +7221,21 @@
           "line": 68130
         }
       ],
-      "confidence": "high"
+      "confidence": "high",
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_readonly_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "alphaTutorialCheck",
+        "requestSafety": "仅对两个用户授权 Alpha 发送 GET；未进入教程或修改 Alpha。",
+        "observations": [
+          "无 regular.code 的 Super Alpha 返回 HTTP 412，正文为 Alpha doesn`t have code。",
+          "含代码的未提交 Regular Alpha 返回 HTTP 200 且响应体为空。",
+          "raw 前端只在教程模式启用该查询，并消费可选的 step 字段。"
+        ],
+        "sanitization": "未保存 Alpha ID、代码、教程状态或原始响应。"
+      }
     },
     {
       "operationId": "getSimulationOptions",
@@ -6371,8 +7516,9 @@
           200
         ],
         "schemaRef": "OperatorList",
-        "evidenceLevel": "consumer_confirmed",
-        "mode": "json"
+        "evidenceLevel": "live_response_confirmed",
+        "mode": "json",
+        "exampleRef": "operators"
       },
       "evidence": [
         {
@@ -6386,7 +7532,21 @@
           "line": 68091
         }
       ],
-      "confidence": "high"
+      "confidence": "high",
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_readonly_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "operators",
+        "requestSafety": "仅发送 GET /operators；未发送查询参数或写请求。",
+        "observations": [
+          "GET /operators 返回 HTTP 200 application/json，实测 107 项。",
+          "每项均包含 name、category、scope、definition、description、documentation、level。",
+          "documentation 与 level 可以为 null。"
+        ],
+        "sanitization": "未保存原始响应；算子列表精简为通用代表项。"
+      }
     },
     {
       "operationId": "listSimulationExamples",
@@ -7555,7 +8715,7 @@
     },
     {
       "operationId": "getSpcSubmissionOptions",
-      "domain": "consultant",
+      "domain": "competitions",
       "summary": "读取 SPC 提交选项",
       "method": "OPTIONS",
       "path": "/competitions/spc/submissions",
@@ -7581,7 +8741,7 @@
     },
     {
       "operationId": "listSpcSubmissions",
-      "domain": "consultant",
+      "domain": "competitions",
       "summary": "分页列出 SPC 提交",
       "method": "GET",
       "path": "/competitions/spc/submissions",
@@ -7628,7 +8788,7 @@
     },
     {
       "operationId": "createSpcSubmission",
-      "domain": "consultant",
+      "domain": "competitions",
       "summary": "创建 SPC 提交",
       "method": "POST",
       "path": "/competitions/spc/submissions",
@@ -7661,7 +8821,7 @@
     },
     {
       "operationId": "getSpcSubmission",
-      "domain": "consultant",
+      "domain": "competitions",
       "summary": "列出某次 SPC submission 的权重历史",
       "method": "GET",
       "path": "/competitions/spc/submissions/{submissionId}",
@@ -7713,7 +8873,7 @@
     },
     {
       "operationId": "patchSpcSubmission",
-      "domain": "consultant",
+      "domain": "competitions",
       "summary": "更新 SPC 提交权重",
       "method": "PATCH",
       "path": "/competitions/spc/submissions/{submissionId}",
@@ -8154,16 +9314,20 @@
           "in": "query",
           "required": false,
           "schema": {
-            "type": "integer"
-          }
+            "type": "integer",
+            "default": 10
+          },
+          "description": "可选；非正数或非数字实测会回退到默认每页 10 项。"
         },
         {
           "name": "offset",
           "in": "query",
           "required": false,
           "schema": {
-            "type": "integer"
-          }
+            "type": "integer",
+            "default": 0
+          },
+          "description": "可选；负数或非数字实测会被宽松处理。"
         },
         {
           "name": "order",
@@ -8171,8 +9335,13 @@
           "required": false,
           "schema": {
             "type": "string",
+            "enum": [
+              "dateCreated",
+              "-dateCreated"
+            ],
             "default": "-dateCreated"
-          }
+          },
+          "description": "可选；无效排序字段返回 HTTP 400。"
         },
         {
           "name": "type",
@@ -8184,16 +9353,30 @@
               "ANNOUNCEMENT",
               "NOTIFICATION"
             ]
-          }
+          },
+          "description": "可选；无效值返回 HTTP 400。"
+        },
+        {
+          "name": "read",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "boolean"
+          },
+          "description": "可选；true=已读，false=未读，无效值返回 HTTP 400。"
         }
       ],
       "response": {
         "statuses": [
           200
         ],
-        "schemaRef": "Paginated",
-        "evidenceLevel": "consumer_confirmed",
-        "mode": "json"
+        "schemaRef": "MessageList",
+        "evidenceLevel": "live_response_confirmed",
+        "mode": "json",
+        "exampleRef": "messages",
+        "errorStatuses": [
+          400
+        ]
       },
       "evidence": [
         {
@@ -8218,9 +9401,25 @@
         }
       ],
       "behavior": {
-        "pagination": "limit_offset"
+        "pagination": "limit_offset",
+        "defaultLimit": 10,
+        "invalidNumericPagination": "falls_back_to_default"
       },
-      "confidence": "high"
+      "confidence": "high",
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_readonly_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "messages",
+        "requestSafety": "仅发送 GET；未调用任何标记已读的 PATCH 接口。",
+        "observations": [
+          "返回 count、next、previous、results 分页对象；字段统计覆盖 100 项。",
+          "type 可选 ANNOUNCEMENT/NOTIFICATION，read 可选 true/false，均不是必填。",
+          "无效 type、read 或 order 返回 HTTP 400；无效数字分页回退默认值。"
+        ],
+        "sanitization": "未保存消息 ID、标题、正文、日期、真实数量或原始响应。"
+      }
     },
     {
       "operationId": "getSelfMessageSummary",
@@ -8235,9 +9434,10 @@
         "statuses": [
           200
         ],
-        "schemaRef": "OpenObject",
-        "evidenceLevel": "consumer_confirmed",
-        "mode": "json"
+        "schemaRef": "MessageSummary",
+        "evidenceLevel": "live_response_confirmed",
+        "mode": "json",
+        "exampleRef": "messageSummary"
       },
       "evidence": [
         {
@@ -8246,7 +9446,20 @@
           "line": 6364
         }
       ],
-      "confidence": "high"
+      "confidence": "high",
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_readonly_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "messageSummary",
+        "requestSafety": "仅发送 GET /users/self/messages/summary。",
+        "observations": [
+          "返回 HTTP 200 application/json。",
+          "announcement 与 notification 均包含 count、read、unread。"
+        ],
+        "sanitization": "未保存真实消息计数或原始响应。"
+      }
     },
     {
       "operationId": "patchMessage",
@@ -8347,8 +9560,9 @@
           "required": false,
           "schema": {
             "type": "integer",
-            "default": 100
-          }
+            "default": 10
+          },
+          "description": "可选；非正数或非数字实测会回退到默认每页 10 项。"
         },
         {
           "name": "order",
@@ -8356,25 +9570,88 @@
           "required": false,
           "schema": {
             "type": "string",
-            "default": "start"
-          }
+            "enum": [
+              "start",
+              "-start"
+            ],
+            "default": "-start"
+          },
+          "description": "可选；无效排序字段返回 HTTP 400。"
         },
         {
           "name": "start>=",
           "in": "query",
           "required": false,
           "schema": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "description": "可选；起始时间下界，无效日期返回 HTTP 400。"
+        },
+        {
+          "name": "type",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "ONLINE",
+              "OFFLINE"
+            ]
+          },
+          "description": "可选；前端固定选项，无效值返回 HTTP 200 空列表。"
+        },
+        {
+          "name": "language",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "en",
+              "zh-cn",
+              "ru",
+              "es",
+              "vi",
+              "ko",
+              "th",
+              "ro",
+              "hu"
+            ]
+          },
+          "description": "可选；可行域来自本次 OPTIONS 实测响应。"
+        },
+        {
+          "name": "country",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "example": "CN"
+          },
+          "description": "可选；可行域随当前活动数据变化，本次 OPTIONS 仅返回 CN。"
+        },
+        {
+          "name": "city",
+          "in": "query",
+          "required": false,
+          "schema": {
             "type": "string"
-          }
+          },
+          "description": "可选；可行域随当前活动数据变化，本次 OPTIONS 未返回城市选项。"
         }
       ],
       "response": {
         "statuses": [
           200
         ],
-        "schemaRef": "Paginated",
-        "evidenceLevel": "consumer_confirmed",
-        "mode": "json"
+        "schemaRef": "EventList",
+        "evidenceLevel": "live_response_confirmed",
+        "mode": "json",
+        "exampleRef": "events",
+        "errorStatuses": [
+          400
+        ]
       },
       "evidence": [
         {
@@ -8388,7 +9665,26 @@
           "line": 48954
         }
       ],
-      "confidence": "high"
+      "confidence": "high",
+      "behavior": {
+        "pagination": "limit_offset",
+        "defaultLimit": 10,
+        "invalidNumericPagination": "falls_back_to_default"
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_readonly_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "events",
+        "requestSafety": "仅发送 GET；参数边界测试均使用 limit=1 或默认分页。",
+        "observations": [
+          "返回 count、next、previous、results 分页对象；本次字段统计覆盖 22 项。",
+          "前端筛选参数为 type、language、country、city；type 固定为 ONLINE/OFFLINE。",
+          "start>= 接受 ISO 日期时间，无效日期或 order 返回 HTTP 400；无效 type 返回 HTTP 200 空列表。"
+        ],
+        "sanitization": "未保存事件 ID、标题、说明、链接、地点、日期或原始响应。"
+      }
     },
     {
       "operationId": "getEventOptions",
@@ -8404,8 +9700,9 @@
           200
         ],
         "schemaRef": "Options",
-        "evidenceLevel": "consumer_confirmed",
-        "mode": "json"
+        "evidenceLevel": "live_response_confirmed",
+        "mode": "json",
+        "exampleRef": "eventOptions"
       },
       "evidence": [
         {
@@ -8414,7 +9711,21 @@
           "line": 49707
         }
       ],
-      "confidence": "high"
+      "confidence": "high",
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_readonly_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "eventOptions",
+        "requestSafety": "仅发送 OPTIONS /events。",
+        "observations": [
+          "返回 HTTP 200 application/json。",
+          "language choices 为 en、zh-cn、ru、es、vi、ko、th、ro、hu。",
+          "国家和城市选项依当前数据变化；本次 country 仅 CN，city 无非空值。"
+        ],
+        "sanitization": "未保存完整 OPTIONS 原始响应；只保留筛选器字段。"
+      }
     },
     {
       "operationId": "listSelfActivities",
