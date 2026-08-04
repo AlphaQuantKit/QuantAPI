@@ -107,11 +107,13 @@ check("GitHub Pages 工作流只发布 site", /path:\s*site/.test(workflow));
 const generator = await import(new URL("../site/assets/app.js", import.meta.url));
 generator.state.catalog = catalog;
 const visibleOperations = generator.visibleOperations();
+const hiddenOperations = catalog.operations.filter((operation) => operation.visibility === "hidden");
 const videoCoursesOperation = catalog.operations.find((operation) => operation.operationId === "listVideoCourses");
 const deprecatedVideoCourseOperation = catalog.operations.find((operation) => operation.operationId === "getVideoCourse");
 const videoCoursesExample = catalog.examples?.videoCourses;
 const videoCourseSchema = catalog.schemas?.VideoCourse;
 const videoSchema = catalog.schemas?.VideoCourseVideo;
+const videoCourseParameters = new Map((videoCoursesOperation?.parameters ?? []).map((parameter) => [parameter.name, parameter]));
 const videoCoursesExampleHtml = generator.responseExampleBlock(videoCoursesOperation?.response?.exampleRef);
 check(
   "视频课程列表已由实测响应确认并提供完整去敏结构",
@@ -119,12 +121,17 @@ check(
     && videoCoursesOperation?.response?.schemaRef === "VideoCourseList"
     && videoCoursesOperation?.response?.exampleRef === "videoCourses"
     && videoCoursesOperation?.verification?.rawSampleStored === false
+    && videoCoursesOperation?.behavior?.pagination === "limit_offset"
+    && videoCourseParameters.get("limit")?.schema?.example === 10
+    && videoCourseParameters.get("offset")?.schema?.example === 0
     && videoCoursesExample?.sanitized === true
     && videoCoursesExample?.value?.results?.[0]?.videos?.[0]?.source === "YouTube"
     && ["id", "category", "videos", "duration", "title", "sequence", "description", "lastModified"].every((field) => videoCourseSchema?.required?.includes(field))
     && ["id", "category", "duration", "title", "uid", "numericalId", "language", "sequence", "source", "description", "transcript", "lastModified"].every((field) => videoSchema?.required?.includes(field))
     && videoCoursesExampleHtml.includes("去敏响应示例")
     && videoCoursesExampleHtml.includes("YOUTUBE_VIDEO_UID")
+    && generator.defaultOperationValues(videoCoursesOperation).params["query:limit"] === "10"
+    && generator.defaultOperationValues(videoCoursesOperation).params["query:offset"] === "0"
 );
 check(
   "废弃视频详情接口保留在数据中但不在网页显示",
@@ -134,8 +141,55 @@ check(
     && deprecatedVideoCourseOperation?.response?.errorStatuses?.includes(404)
     && catalog.operations.includes(deprecatedVideoCourseOperation)
     && !visibleOperations.some((operation) => operation.operationId === "getVideoCourse")
-    && visibleOperations.length === catalog.operations.length - 1
+    && visibleOperations.length === catalog.operations.length - hiddenOperations.length
     && app.includes('operation.visibility !== "hidden"')
+);
+const tutorialOperations = [
+  ["getTutorial", "TutorialDetail", "tutorialDetail"],
+  ["listTutorials", "TutorialList", "tutorialList"],
+  ["getTutorialPage", "TutorialPage", "tutorialPage"]
+];
+check(
+  "三个教程接口展示实测 Schema 与去敏示例",
+  tutorialOperations.every(([operationId, schemaRef, exampleRef]) => {
+    const operation = catalog.operations.find((item) => item.operationId === operationId);
+    const exampleHtml = generator.responseExampleBlock(operation?.response?.exampleRef);
+    return operation?.response?.evidenceLevel === "live_response_confirmed"
+      && operation?.response?.schemaRef === schemaRef
+      && operation?.response?.exampleRef === exampleRef
+      && catalog.examples?.[exampleRef]?.sanitized === true
+      && exampleHtml.includes("去敏响应示例");
+  })
+    && generator.defaultOperationValues(catalog.operations.find((operation) => operation.operationId === "getTutorial"))
+      .params["path:tutorialId"] === "YOUR_TUTORIAL_STEP_SLUG"
+);
+const createAuthenticationOperation = catalog.operations.find((operation) => operation.operationId === "createAuthentication");
+const getAuthenticationOperation = catalog.operations.find((operation) => operation.operationId === "getAuthentication");
+const deleteAuthenticationOperation = catalog.operations.find((operation) => operation.operationId === "deleteAuthentication");
+const createAuthenticationPython = generator.buildPython(createAuthenticationOperation);
+const hiddenAuthenticationIds = ["authenticateBrainLabs", "createAuthenticationPersona", "authenticateWorkday"];
+check(
+  "三个基础认证接口展示实测结构且登录不要求 captcha",
+  [createAuthenticationOperation, getAuthenticationOperation].every((operation) =>
+    operation?.response?.schemaRef === "AuthSession"
+      && operation?.response?.exampleRef === "authenticationSession"
+      && operation?.response?.evidenceLevel === "live_response_confirmed"
+      && operation?.verification?.rawSampleStored === false
+  )
+    && !createAuthenticationOperation?.requestBody
+    && !createAuthenticationPython.includes("captcha")
+    && deleteAuthenticationOperation?.response?.schemaRef === "EmptyObject"
+    && deleteAuthenticationOperation?.response?.exampleRef === "authenticationLogout"
+    && deleteAuthenticationOperation?.response?.evidenceLevel === "live_response_confirmed"
+    && catalog.examples?.authenticationSession?.sanitized === true
+    && catalog.examples?.authenticationLogout?.sanitized === true
+);
+check(
+  "三个特殊认证接口保留在目录但不在网页显示",
+  hiddenAuthenticationIds.every((operationId) =>
+    catalog.operations.some((operation) => operation.operationId === operationId && operation.visibility === "hidden")
+      && !visibleOperations.some((operation) => operation.operationId === operationId)
+  )
 );
 const expandedSearchResults = generator.expandSchemaRefs({ $ref: "#/schemas/SearchResults" });
 const expandedSearchResultsText = JSON.stringify(expandedSearchResults);

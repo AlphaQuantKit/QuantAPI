@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "catalogVersion": "1.4.0",
+  "catalogVersion": "1.6.0",
   "title": "WQ API 非官方接口目录",
   "description": "以 WorldQuant BRAIN 前端 bundle 静态分析为基线，并通过人工复核的去敏真实响应逐项升级。此目录不是官方 API 承诺；unknown/inferred 字段必须在取得去敏真实响应后再升级。",
   "generatedFrom": {
@@ -43,6 +43,11 @@
     "OpenObject": {
       "type": "object",
       "additionalProperties": true
+    },
+    "EmptyObject": {
+      "type": "object",
+      "maxProperties": 0,
+      "additionalProperties": false
     },
     "Empty": {
       "type": "null"
@@ -666,20 +671,55 @@
       ],
       "additionalProperties": false
     },
+    "AuthSessionUser": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "当前登录用户标识；公开示例使用占位符。"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "AuthSessionToken": {
+      "type": "object",
+      "properties": {
+        "expiry": {
+          "type": "number",
+          "description": "会话令牌有效期数值；具体单位未从当前前端代码确认。"
+        }
+      },
+      "required": [
+        "expiry"
+      ],
+      "additionalProperties": false
+    },
     "AuthSession": {
       "type": "object",
       "properties": {
         "user": {
-          "$ref": "#/schemas/OpenObject"
+          "$ref": "#/schemas/AuthSessionUser"
+        },
+        "token": {
+          "$ref": "#/schemas/AuthSessionToken"
         },
         "permissions": {
           "type": "array",
           "items": {
             "type": "string"
-          }
+          },
+          "description": "当前会话拥有的权限名称。"
         }
       },
-      "additionalProperties": true
+      "required": [
+        "user",
+        "token",
+        "permissions"
+      ],
+      "additionalProperties": false
     },
     "UserToken": {
       "type": "object",
@@ -1048,6 +1088,364 @@
         "$ref": "#/schemas/TutorialStep"
       }
     },
+    "TutorialHeadingValue": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string",
+          "description": "标题层级，由前端渲染器解释。"
+        },
+        "content": {
+          "type": "string",
+          "description": "标题文本。"
+        }
+      },
+      "required": [
+        "level",
+        "content"
+      ],
+      "additionalProperties": false
+    },
+    "TutorialImageValue": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "图片标题或替代说明。"
+        },
+        "width": {
+          "type": "integer",
+          "description": "图片原始宽度。"
+        },
+        "height": {
+          "type": "integer",
+          "description": "图片原始高度。"
+        },
+        "fileSize": {
+          "type": "integer",
+          "description": "图片文件大小，单位由服务端定义。"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "图片资源地址。"
+        }
+      },
+      "required": [
+        "title",
+        "width",
+        "height",
+        "fileSize",
+        "url"
+      ],
+      "additionalProperties": false
+    },
+    "TutorialSimulationSettings": {
+      "type": "object",
+      "properties": {
+        "instrumentType": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "universe": {
+          "type": "string"
+        },
+        "delay": {
+          "type": "integer"
+        },
+        "decay": {
+          "type": "integer"
+        },
+        "neutralization": {
+          "type": "string"
+        },
+        "truncation": {
+          "type": "number"
+        },
+        "pasteurization": {
+          "type": "string"
+        },
+        "unitHandling": {
+          "type": "string"
+        },
+        "nanHandling": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string"
+        },
+        "maxTrade": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "instrumentType",
+        "region",
+        "universe",
+        "delay",
+        "decay",
+        "neutralization",
+        "truncation",
+        "pasteurization",
+        "unitHandling",
+        "nanHandling",
+        "language",
+        "maxTrade"
+      ],
+      "additionalProperties": false
+    },
+    "TutorialSimulationExampleValue": {
+      "type": "object",
+      "properties": {
+        "settings": {
+          "$ref": "#/schemas/TutorialSimulationSettings"
+        },
+        "type": {
+          "type": "string",
+          "description": "模拟示例类型。"
+        },
+        "regular": {
+          "type": "string",
+          "description": "示例 Alpha 表达式。"
+        }
+      },
+      "required": [
+        "settings",
+        "type",
+        "regular"
+      ],
+      "additionalProperties": false
+    },
+    "TutorialContentBlock": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "TEXT",
+            "HEADING",
+            "IMAGE",
+            "EQUATION",
+            "SIMULATION_EXAMPLE"
+          ],
+          "description": "内容块类型。TEXT 与 EQUATION 的 value 为字符串；其余类型使用对应对象结构。"
+        },
+        "value": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/schemas/TutorialHeadingValue"
+            },
+            {
+              "$ref": "#/schemas/TutorialImageValue"
+            },
+            {
+              "$ref": "#/schemas/TutorialSimulationExampleValue"
+            }
+          ]
+        },
+        "id": {
+          "type": "string",
+          "description": "内容块标识。"
+        }
+      },
+      "required": [
+        "type",
+        "value",
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "TutorialDetail": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "研究教程详情标识。"
+        },
+        "title": {
+          "type": "string"
+        },
+        "lastModified": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "content": {
+          "type": "array",
+          "items": {
+            "$ref": "#/schemas/TutorialContentBlock"
+          }
+        },
+        "sequence": {
+          "type": "integer"
+        },
+        "category": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "lastModified",
+        "content",
+        "sequence",
+        "category"
+      ],
+      "additionalProperties": false
+    },
+    "TutorialPageSummary": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "duration": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "duration",
+          "description": "页面预计学习时长；实测部分页面为 null。"
+        },
+        "id": {
+          "type": "string",
+          "description": "用于请求 /tutorial-pages/{pageId}。"
+        },
+        "lastModified": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "title",
+        "duration",
+        "id",
+        "lastModified"
+      ],
+      "additionalProperties": false
+    },
+    "TutorialListItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "文档教程标识；不应作为 /tutorial/{tutorialId} 的参数。"
+        },
+        "category": {
+          "type": "string"
+        },
+        "pages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/schemas/TutorialPageSummary"
+          }
+        },
+        "duration": {
+          "type": "string",
+          "format": "duration"
+        },
+        "title": {
+          "type": "string"
+        },
+        "sequence": {
+          "type": "integer"
+        },
+        "lastModified": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "category",
+        "pages",
+        "duration",
+        "title",
+        "sequence",
+        "lastModified"
+      ],
+      "additionalProperties": false
+    },
+    "TutorialList": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer"
+        },
+        "next": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "previous": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/schemas/TutorialListItem"
+          }
+        }
+      },
+      "required": [
+        "count",
+        "next",
+        "previous",
+        "results"
+      ],
+      "additionalProperties": false
+    },
+    "TutorialPage": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "lastModified": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "content": {
+          "type": "array",
+          "items": {
+            "$ref": "#/schemas/TutorialContentBlock"
+          }
+        },
+        "sequence": {
+          "type": "integer"
+        },
+        "category": {
+          "type": "string"
+        },
+        "duration": {
+          "type": "string",
+          "format": "duration"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "lastModified",
+        "content",
+        "sequence",
+        "category",
+        "duration"
+      ],
+      "additionalProperties": false
+    },
     "TutorialSummary": {
       "type": "object",
       "properties": {
@@ -1115,6 +1513,30 @@
         }
       ]
     },
+    "authenticationSession": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存认证信息、Cookie、原始响应或真实用户 ID；用户标识与令牌有效期已替换，权限列表精简为前端代码已确认使用的代表项。",
+      "value": {
+        "user": {
+          "id": "USER_ID_EXAMPLE"
+        },
+        "token": {
+          "expiry": 1700000000.0
+        },
+        "permissions": [
+          "TUTORIAL"
+        ]
+      }
+    },
+    "authenticationLogout": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "DELETE 仅注销本次 Cookie Session；响应为不含字段的空 JSON 对象，未保存 Cookie 或原始响应。",
+      "value": {}
+    },
     "videoCourses": {
       "evidenceLevel": "live_response_confirmed",
       "source": "已登录 API 实测响应（2026-08-04）",
@@ -1151,6 +1573,136 @@
             "lastModified": "2026-01-01T00:00:00Z"
           }
         ]
+      }
+    },
+    "tutorialDetail": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存认证信息、研究教程 slug 或原始响应；标识、标题、正文及时间已替换，content 精简为覆盖实测类型的代表项。",
+      "value": {
+        "id": "RESEARCH_TUTORIAL_EXAMPLE",
+        "title": "示例研究教程",
+        "lastModified": "2026-01-01T00:00:00Z",
+        "content": [
+          {
+            "type": "HEADING",
+            "value": {
+              "level": "H2",
+              "content": "示例章节"
+            },
+            "id": "CONTENT_BLOCK_HEADING"
+          },
+          {
+            "type": "TEXT",
+            "value": "这里是经过替换的教程正文示例。",
+            "id": "CONTENT_BLOCK_TEXT"
+          }
+        ],
+        "sequence": 1,
+        "category": "Research"
+      }
+    },
+    "tutorialList": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存认证信息或原始响应；教程与页面标识、标题及时间已替换，11 项结果精简为一个代表项。",
+      "value": {
+        "count": 11,
+        "next": null,
+        "previous": null,
+        "results": [
+          {
+            "id": "DOCUMENTATION_TUTORIAL_EXAMPLE",
+            "category": "Getting Started",
+            "pages": [
+              {
+                "title": "示例教程页面",
+                "duration": "PT5M",
+                "id": "TUTORIAL_PAGE_EXAMPLE",
+                "lastModified": "2026-01-01T00:00:00Z"
+              },
+              {
+                "title": "可空时长页面",
+                "duration": null,
+                "id": "TUTORIAL_PAGE_NULL_DURATION",
+                "lastModified": "2026-01-01T00:00:00Z"
+              }
+            ],
+            "duration": "PT30M",
+            "title": "示例文档教程",
+            "sequence": 1,
+            "lastModified": "2026-01-01T00:00:00Z"
+          }
+        ]
+      }
+    },
+    "tutorialPage": {
+      "evidenceLevel": "live_response_confirmed",
+      "source": "已登录 API 实测响应（2026-08-04）",
+      "sanitized": true,
+      "sanitization": "未保存认证信息、页面 ID 或原始响应；标识、文本、资源地址及时间已替换，56 个内容块精简为覆盖五种实测类型的代表项。",
+      "value": {
+        "id": "TUTORIAL_PAGE_EXAMPLE",
+        "title": "示例教程页面",
+        "lastModified": "2026-01-01T00:00:00Z",
+        "content": [
+          {
+            "type": "HEADING",
+            "value": {
+              "level": "H2",
+              "content": "示例章节"
+            },
+            "id": "CONTENT_BLOCK_HEADING"
+          },
+          {
+            "type": "TEXT",
+            "value": "这里是经过替换的教程正文示例。",
+            "id": "CONTENT_BLOCK_TEXT"
+          },
+          {
+            "type": "IMAGE",
+            "value": {
+              "title": "示例图片",
+              "width": 1280,
+              "height": 720,
+              "fileSize": 102400,
+              "url": "https://example.com/tutorial-image.png"
+            },
+            "id": "CONTENT_BLOCK_IMAGE"
+          },
+          {
+            "type": "EQUATION",
+            "value": "rank(close)",
+            "id": "CONTENT_BLOCK_EQUATION"
+          },
+          {
+            "type": "SIMULATION_EXAMPLE",
+            "value": {
+              "settings": {
+                "instrumentType": "EQUITY",
+                "region": "USA",
+                "universe": "TOP3000",
+                "delay": 1,
+                "decay": 4,
+                "neutralization": "SUBINDUSTRY",
+                "truncation": 0.08,
+                "pasteurization": "ON",
+                "unitHandling": "VERIFY",
+                "nanHandling": "OFF",
+                "language": "FASTEXPR",
+                "maxTrade": "OFF"
+              },
+              "type": "REGULAR",
+              "regular": "rank(close)"
+            },
+            "id": "CONTENT_BLOCK_SIMULATION"
+          }
+        ],
+        "sequence": 1,
+        "category": "Getting Started",
+        "duration": "PT5M"
       }
     },
     "alpha": {
@@ -1580,12 +2132,26 @@
           204
         ],
         "schemaRef": "AuthSession",
-        "evidenceLevel": "consumer_confirmed",
+        "evidenceLevel": "live_response_confirmed",
+        "exampleRef": "authenticationSession",
         "mode": "json_or_empty",
         "errorStatuses": [
           401,
           404
         ]
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "authenticationSession",
+        "observations": [
+          "使用刚建立的 Cookie Session 请求 GET /authentication，返回 HTTP 200 application/json。",
+          "响应包含 user.id、token.expiry 与 permissions；实测 permissions 为 10 个字符串。",
+          "真实用户 ID、有效期数值、权限全集与 Cookie 均未进入公开产物。"
+        ],
+        "sanitization": "用户 ID、令牌有效期、权限全集、Cookie 和原始响应未进入公开产物。"
       },
       "evidence": [
         {
@@ -1621,7 +2187,8 @@
           201
         ],
         "schemaRef": "AuthSession",
-        "evidenceLevel": "consumer_confirmed",
+        "evidenceLevel": "live_response_confirmed",
+        "exampleRef": "authenticationSession",
         "mode": "json",
         "errorStatuses": [
           400,
@@ -1635,6 +2202,20 @@
           504
         ]
       },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "authenticationSession",
+        "requestBody": "none",
+        "observations": [
+          "POST /authentication 使用 HTTP Basic 且不发送 captcha 或 JSON 请求体，返回 HTTP 201 application/json。",
+          "响应包含 user.id、token.expiry 与 permissions；实测 permissions 为 10 个字符串。",
+          "服务端通过 Set-Cookie 建立会话；认证头、Cookie 和原始响应均未保存。"
+        ],
+        "sanitization": "Basic 凭据、Cookie、用户 ID、令牌有效期、权限全集和原始响应未进入公开产物。"
+      },
       "evidence": [
         {
           "source": "raw/index.6168be46.js",
@@ -1643,12 +2224,7 @@
           "note": "同一模块中的登录流程；具体 POST 调用由动态方法构造"
         }
       ],
-      "confidence": "medium",
-      "requestBody": {
-        "contentType": "application/json",
-        "schemaRef": "CaptchaRequest",
-        "required": true
-      }
+      "confidence": "high"
     },
     {
       "operationId": "deleteAuthentication",
@@ -1664,9 +2240,23 @@
           200,
           204
         ],
-        "schemaRef": "OpenObject",
-        "evidenceLevel": "consumer_confirmed",
+        "schemaRef": "EmptyObject",
+        "evidenceLevel": "live_response_confirmed",
+        "exampleRef": "authenticationLogout",
         "mode": "json_or_empty"
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "authenticationLogout",
+        "observations": [
+          "DELETE /authentication 使用本次测试建立的 Cookie Session，返回 HTTP 200 application/json。",
+          "实测响应体为不含字段的空 JSON 对象 {}。",
+          "raw 中该调用只清除当前登录态；它不是删除用户账号。"
+        ],
+        "sanitization": "Cookie 与原始响应未保存；响应本身不含个人字段。"
       },
       "evidence": [
         {
@@ -1688,6 +2278,7 @@
       "summary": "提交 Persona inquiry 并完成认证",
       "method": "POST",
       "path": "/authentication/persona",
+      "visibility": "hidden",
       "auth": "cookie_session",
       "apiVersion": "2.0",
       "sensitivity": "personal_data",
@@ -1732,6 +2323,7 @@
       "summary": "通过 Workday 认证",
       "method": "POST",
       "path": "/authentication/workday",
+      "visibility": "hidden",
       "auth": "basic",
       "apiVersion": "2.0",
       "sensitivity": "credential",
@@ -1771,6 +2363,7 @@
       "summary": "通过 BrainLabs 认证",
       "method": "POST",
       "path": "/authentication/brainlabs",
+      "visibility": "hidden",
       "auth": "basic",
       "apiVersion": "2.0",
       "sensitivity": "credential",
@@ -6647,7 +7240,7 @@
     {
       "operationId": "getTutorial",
       "domain": "tutorials",
-      "summary": "读取教程详情",
+      "summary": "读取研究教程步骤内容",
       "method": "GET",
       "path": "/tutorial/{tutorialId}",
       "auth": "cookie_session",
@@ -6659,17 +7252,34 @@
           "in": "path",
           "required": true,
           "schema": {
-            "type": "string"
-          }
+            "type": "string",
+            "example": "YOUR_TUTORIAL_STEP_SLUG"
+          },
+          "description": "研究教程步骤 slug，来自 /users/self/tutorial/steps；不要使用 /tutorials 返回的文档教程 id。"
         }
       ],
       "response": {
         "statuses": [
           200
         ],
-        "schemaRef": "OpenObject",
-        "evidenceLevel": "consumer_confirmed",
+        "schemaRef": "TutorialDetail",
+        "evidenceLevel": "live_response_confirmed",
+        "exampleRef": "tutorialDetail",
         "mode": "json"
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "tutorialDetail",
+        "observedContentBlockCount": 12,
+        "observations": [
+          "GET /tutorial/{slug} 返回 HTTP 200 application/json。",
+          "有效路径参数来自 /users/self/tutorial/steps 的 slug，而不是 /tutorials 的 id。",
+          "实测详情包含 12 个 content 块：6 个 HEADING、6 个 TEXT。"
+        ],
+        "sanitization": "认证信息、slug、标识、标题、正文和时间未进入公开产物。"
       },
       "evidence": [
         {
@@ -6683,7 +7293,7 @@
     {
       "operationId": "listTutorials",
       "domain": "tutorials",
-      "summary": "列出教程",
+      "summary": "列出文档教程",
       "method": "GET",
       "path": "/tutorials",
       "auth": "cookie_session",
@@ -6704,9 +7314,24 @@
         "statuses": [
           200
         ],
-        "schemaRef": "Paginated",
-        "evidenceLevel": "consumer_confirmed",
+        "schemaRef": "TutorialList",
+        "evidenceLevel": "live_response_confirmed",
+        "exampleRef": "tutorialList",
         "mode": "json"
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "tutorialList",
+        "observedItemCount": 11,
+        "observations": [
+          "GET /tutorials?limit=50 返回 HTTP 200 application/json。",
+          "响应是 count、next、previous、results 组成的分页对象，实测共有 11 个教程。",
+          "教程的 pages 项提供 /tutorial-pages/{pageId} 所需 id；页面 duration 同时观察到字符串与 null。"
+        ],
+        "sanitization": "认证信息、教程与页面标识、标题和时间未进入公开产物。"
       },
       "evidence": [
         {
@@ -6721,7 +7346,7 @@
     {
       "operationId": "getTutorialPage",
       "domain": "tutorials",
-      "summary": "读取教程页面",
+      "summary": "读取文档教程页面",
       "method": "GET",
       "path": "/tutorial-pages/{pageId}",
       "auth": "cookie_session",
@@ -6741,9 +7366,24 @@
         "statuses": [
           200
         ],
-        "schemaRef": "OpenObject",
-        "evidenceLevel": "consumer_confirmed",
+        "schemaRef": "TutorialPage",
+        "evidenceLevel": "live_response_confirmed",
+        "exampleRef": "tutorialPage",
         "mode": "json"
+      },
+      "verification": {
+        "status": "live_response_confirmed",
+        "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test",
+        "rawSampleStored": false,
+        "exampleRef": "tutorialPage",
+        "observedContentBlockCount": 56,
+        "observations": [
+          "使用 /tutorials 的 pages[].id 请求后返回 HTTP 200 application/json。",
+          "实测页面包含 56 个 content 块：36 个 TEXT、5 个 HEADING、11 个 IMAGE、2 个 EQUATION、2 个 SIMULATION_EXAMPLE。",
+          "SIMULATION_EXAMPLE.settings 已确认 instrumentType、region、universe、delay、decay、neutralization、truncation、pasteurization、unitHandling、nanHandling、language、maxTrade。"
+        ],
+        "sanitization": "认证信息、页面 ID、文本、资源地址和时间未进入公开产物。"
       },
       "evidence": [
         {
@@ -6858,6 +7498,30 @@
       "auth": "cookie_session",
       "apiVersion": "2.0",
       "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "example": 10
+          },
+          "description": "每页返回数量；已在浏览器实际请求中确认 limit=10。"
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "minimum": 0,
+            "example": 0
+          },
+          "description": "结果起始偏移量；offset=10 与 limit=10 表示从第 11 项开始。"
+        }
+      ],
       "response": {
         "statuses": [
           200
@@ -6883,14 +7547,19 @@
       "verification": {
         "status": "live_response_confirmed",
         "verifiedAt": "2026-08-04",
+        "source": "authenticated_live_test_and_user_provided_browser_request",
         "rawSampleStored": false,
         "exampleRef": "videoCourses",
         "sanitization": "认证信息和原始响应未入库；课程、视频标识、标题、说明及时间均已去敏。",
         "observations": [
           "GET /video-courses 返回 HTTP 200 application/json。",
           "响应为分页对象，results 中的课程已包含完整 videos 数组。",
-          "实测 next 指向 /content/api/video-courses 分页地址。"
+          "实测 next 指向 /content/api/video-courses 分页地址。",
+          "浏览器实际请求确认支持 limit 与 offset 偏移分页；已观察 limit=10、offset=10。"
         ]
+      },
+      "behavior": {
+        "pagination": "limit_offset"
       },
       "confidence": "high"
     },

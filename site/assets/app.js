@@ -319,6 +319,7 @@ function bodySample(operation, contentType) {
 
 function parameterDefault(parameter) {
   if (parameter.schema?.default !== undefined) return String(parameter.schema.default);
+  if (parameter.schema?.example !== undefined) return String(parameter.schema.example);
   if (parameter.schema?.enum?.length) return String(parameter.schema.enum[0]);
   if (parameter.in === "path") return valueHint(parameter.name, parameter.schema);
   if (parameter.name === "limit") return "50";
