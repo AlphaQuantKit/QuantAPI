@@ -12,7 +12,9 @@ const dataDir = path.join(siteDir, "data");
 const requiredFiles = [
   path.join(siteDir, "index.html"),
   path.join(siteDir, "assets", "styles.css"),
-  path.join(siteDir, "assets", "app.js")
+  path.join(siteDir, "assets", "app.js"),
+  path.join(siteDir, "assets", "favicon-32.png"),
+  path.join(siteDir, "assets", "quantapi-logo.png")
 ];
 
 for (const file of requiredFiles) {
@@ -39,9 +41,13 @@ const assetVersion = (relativePath) => crypto
 const indexPath = path.join(siteDir, "index.html");
 const appVersion = assetVersion(path.join("assets", "app.js"));
 const stylesVersion = assetVersion(path.join("assets", "styles.css"));
+const faviconVersion = assetVersion(path.join("assets", "favicon-32.png"));
+const logoVersion = assetVersion(path.join("assets", "quantapi-logo.png"));
 const versionedIndex = fs.readFileSync(indexPath, "utf8")
   .replace(/\.\/assets\/styles\.css(?:\?v=[^"']+)?/g, `./assets/styles.css?v=${stylesVersion}`)
-  .replace(/\.\/assets\/app\.js(?:\?v=[^"']+)?/g, `./assets/app.js?v=${appVersion}`);
+  .replace(/\.\/assets\/app\.js(?:\?v=[^"']+)?/g, `./assets/app.js?v=${appVersion}`)
+  .replace(/\.\/assets\/favicon-32\.png(?:\?v=[^"']+)?/g, `./assets/favicon-32.png?v=${faviconVersion}`)
+  .replace(/\.\/assets\/quantapi-logo\.png(?:\?v=[^"']+)?/g, `./assets/quantapi-logo.png?v=${logoVersion}`);
 fs.writeFileSync(indexPath, versionedIndex, "utf8");
 
 fs.writeFileSync(path.join(dataDir, "site-meta.json"), `${JSON.stringify({
@@ -55,6 +61,6 @@ process.stdout.write(`${JSON.stringify({
   output: path.relative(rootDir, siteDir).replaceAll("\\", "/"),
   catalogVersion: catalog.catalogVersion,
   operations: catalog.operations.length,
-  assetVersions: { app: appVersion, styles: stylesVersion },
+  assetVersions: { app: appVersion, styles: stylesVersion, favicon: faviconVersion, logo: logoVersion },
   assets: requiredFiles.length + 3
 }, null, 2)}\n`);

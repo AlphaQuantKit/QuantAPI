@@ -21,6 +21,9 @@ const html = read("site/index.html");
 const app = read("site/assets/app.js");
 const css = read("site/assets/styles.css");
 const workflow = read(".github/workflows/pages.yml");
+const favicon = fs.readFileSync(path.join(siteDir, "assets", "favicon-32.png"));
+const logo = fs.readFileSync(path.join(siteDir, "assets", "quantapi-logo.png"));
+const pngDimensions = (buffer) => ({ width: buffer.readUInt32BE(16), height: buffer.readUInt32BE(20) });
 
 check("站点目录快照与唯一数据源一致", sha256(canonicalCatalog) === sha256(siteCatalog));
 check(
@@ -37,10 +40,21 @@ const missingAssets = assetRefs.filter((reference) => !fs.existsSync(path.resolv
 check("HTML 本地资源引用有效", missingAssets.length === 0, missingAssets.join(", "));
 const appVersion = sha256(app).slice(0, 12);
 const stylesVersion = sha256(css).slice(0, 12);
+const faviconVersion = sha256(favicon).slice(0, 12);
+const logoVersion = sha256(logo).slice(0, 12);
 check(
   "页面资源使用内容哈希避免旧目录名称缓存",
   html.includes(`./assets/app.js?v=${appVersion}`)
     && html.includes(`./assets/styles.css?v=${stylesVersion}`)
+);
+check(
+  "标签页使用 QuantAPI 专用图标",
+  html.includes(`rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32.png?v=${faviconVersion}"`)
+    && html.includes(`rel="apple-touch-icon" href="./assets/quantapi-logo.png?v=${logoVersion}"`)
+    && pngDimensions(favicon).width === 32
+    && pngDimensions(favicon).height === 32
+    && pngDimensions(logo).width === 256
+    && pngDimensions(logo).height === 256
 );
 
 const generatorMarkers = [

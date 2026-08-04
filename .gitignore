@@ -14,7 +14,9 @@
 !/site/index.html
 !/site/assets/
 !/site/assets/app.js
+!/site/assets/favicon-32.png
 !/site/assets/github-invertocat.svg
+!/site/assets/quantapi-logo.png
 !/site/assets/styles.css
 
 # 页面唯一接口数据源
