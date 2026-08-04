@@ -108,12 +108,12 @@ function expandSchemaRefs(value, trail = []) {
       .filter(([key]) => key !== "$ref")
       .map(([key, item]) => [key, expandSchemaRefs(item, trail)]));
     if (trail.includes(name)) {
-      return { "x-wq-ref": ref, "x-wq-circular-ref": true, ...siblings };
+      return { $ref: ref, ...siblings };
     }
     const target = state.catalog?.schemas?.[name];
-    if (!target) return { "x-wq-ref": ref, "x-wq-unresolved-ref": true, ...siblings };
+    if (!target) return { $ref: ref, ...siblings };
     const expanded = expandSchemaRefs(target, [...trail, name]);
-    return { "x-wq-ref": ref, ...expanded, ...siblings };
+    return { ...expanded, ...siblings };
   }
 
   return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, expandSchemaRefs(item, trail)]));
@@ -333,9 +333,12 @@ function renderEndpointList() {
 function schemaBlock(schema, label, resolvedLabel = "Schema") {
   const refCount = countSchemaRefs(schema);
   const shown = expandSchemaRefs(schema);
+  const schemaNote = refCount
+    ? `${refCount} refs · 已递归展开 · x-wq-* 非响应字段`
+    : `${resolvedLabel} · x-wq-* 非响应字段`;
   return `
     <div class="schema-block">
-      <div class="schema-label"><span>${escapeHtml(label)}</span><span>${escapeHtml(refCount ? `${refCount} refs · 已递归展开` : resolvedLabel)}</span></div>
+      <div class="schema-label"><span>${escapeHtml(label)}</span><span>${escapeHtml(schemaNote)}</span></div>
       <pre>${escapeHtml(JSON.stringify(shown, null, 2))}</pre>
     </div>
   `;

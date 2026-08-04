@@ -64,17 +64,23 @@ check("GitHub Pages 工作流只发布 site", /path:\s*site/.test(workflow));
 const generator = await import(new URL("../site/assets/app.js", import.meta.url));
 generator.state.catalog = catalog;
 const expandedSearchResults = generator.expandSchemaRefs({ $ref: "#/schemas/SearchResults" });
+const expandedSearchResultsText = JSON.stringify(expandedSearchResults);
 check(
-  "嵌套 Schema 引用已递归展开",
-  expandedSearchResults["x-wq-ref"] === "#/schemas/SearchResults"
-    && expandedSearchResults.additionalProperties?.["x-wq-ref"] === "#/schemas/Paginated"
-    && expandedSearchResults.additionalProperties?.properties?.results?.items?.["x-wq-ref"] === "#/schemas/OpenObject"
-    && !JSON.stringify(expandedSearchResults).includes('"$ref"')
+  "嵌套 Schema 引用已递归展开且不注入响应字段",
+  expandedSearchResults.type === "object"
+    && expandedSearchResults.additionalProperties?.type === "object"
+    && expandedSearchResults.additionalProperties?.properties?.count?.type === "integer"
+    && expandedSearchResults.additionalProperties?.properties?.results?.items?.type === "object"
+    && !expandedSearchResultsText.includes('"$ref"')
+    && !expandedSearchResultsText.includes('"x-wq-ref"')
+    && !expandedSearchResultsText.includes('"x-wq-circular-ref"')
+    && !expandedSearchResultsText.includes('"x-wq-unresolved-ref"')
 );
 const unresolvedSchemas = Object.entries(catalog.schemas ?? {})
-  .filter(([, schema]) => JSON.stringify(generator.expandSchemaRefs(schema)).includes('"x-wq-unresolved-ref":true'))
+  .filter(([, schema]) => JSON.stringify(generator.expandSchemaRefs(schema)).includes('"$ref"'))
   .map(([name]) => name);
 check("目录中的 Schema 引用均可解析", unresolvedSchemas.length === 0, unresolvedSchemas.join(", "));
+check("Schema 面板注明 x-wq 元数据不是响应字段", app.includes("x-wq-* 非响应字段"));
 const generated = [];
 for (const operation of catalog.operations) {
   generator.state.operationValues.clear();
