@@ -1,0 +1,28 @@
+# 默认忽略仓库中的所有内容，仅放行 GitHub Pages 构建所需文件。
+/*
+
+# Git 与 Pages 配置
+!/.gitignore
+!/.github/
+!/.github/workflows/
+!/.github/workflows/pages.yml
+
+# 页面静态源码
+!/site/
+/site/*
+!/site/.nojekyll
+!/site/index.html
+!/site/assets/
+!/site/assets/app.js
+!/site/assets/styles.css
+
+# 页面唯一接口数据源
+!/catalog/
+/catalog/*
+!/catalog/api-catalog.json
+
+# Pages 构建和验证脚本
+!/tools/
+/tools/*
+!/tools/build-site.mjs
+!/tools/verify-site.mjs

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="WQ API 非官方中文文档与 Python requests 代码生成器" />
+    <meta name="theme-color" content="#f1efe9" />
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'" />
+    <title>WQ API Workbench</title>
+    <link rel="stylesheet" href="./assets/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="WQ API Workbench 首页">
+        <span class="brand-mark">WQ</span>
+        <span>
+          <strong>API Workbench</strong>
+          <small>非官方 · 源码分析版</small>
+        </span>
+      </a>
+
+      <label class="global-search" for="global-search">
+        <span aria-hidden="true">⌕</span>
+        <input id="global-search" type="search" autocomplete="off" placeholder="搜索接口、路径或 operationId…" />
+        <kbd>/</kbd>
+      </label>
+
+      <div class="topbar-meta">
+        <span id="catalog-version">catalog —</span>
+        <span class="status-dot" aria-hidden="true"></span>
+        <span id="catalog-status">正在载入</span>
+      </div>
+    </header>
+
+    <div class="workspace" id="workspace" aria-busy="true">
+      <aside class="nav-pane" aria-label="接口目录">
+        <div class="nav-heading">
+          <div>
+            <span class="eyebrow">API CATALOG</span>
+            <h2>接口目录</h2>
+          </div>
+          <span class="count-pill" id="operation-count">—</span>
+        </div>
+        <nav id="domain-nav" class="domain-nav" aria-label="业务域筛选"></nav>
+        <div class="endpoint-heading">
+          <span id="endpoint-heading">全部接口</span>
+          <button id="clear-search" class="text-button" type="button" hidden>清除</button>
+        </div>
+        <div id="endpoint-list" class="endpoint-list" role="listbox" aria-label="接口列表"></div>
+      </aside>
+
+      <main class="doc-pane" id="doc-pane" tabindex="-1">
+        <div class="loading-state">
+          <span class="loading-orbit" aria-hidden="true"></span>
+          <p>正在读取结构化接口目录…</p>
+        </div>
+      </main>
+
+      <aside class="code-pane" aria-label="请求代码生成器">
+        <div class="code-pane-header">
+          <div>
+            <span class="eyebrow eyebrow-dark">READY TO RUN</span>
+            <h2 id="code-language-title">Python requests</h2>
+          </div>
+          <div class="code-actions">
+            <button id="download-code" class="icon-button" type="button" title="下载 Python 文件" aria-label="下载 Python 文件">↓</button>
+            <button id="copy-code" class="copy-button" type="button">复制代码</button>
+          </div>
+        </div>
+
+        <label class="language-picker" for="language-select">
+          <span>生成语言</span>
+          <select id="language-select">
+            <option value="python">Python requests</option>
+            <option value="javascript">JavaScript fetch</option>
+          </select>
+        </label>
+
+        <p class="code-intro" id="code-intro">选择接口后，这里会生成从认证到请求、错误处理与轮询的完整代码。</p>
+
+        <details class="parameter-drawer" id="parameter-drawer" open>
+          <summary>
+            <span>调用参数</span>
+            <span id="parameter-summary">等待接口</span>
+          </summary>
+          <div id="parameter-form" class="parameter-form"></div>
+        </details>
+
+        <div class="code-toolbar">
+          <span><i></i><span id="code-filename">generated_request.py</span></span>
+          <span id="code-lines">0 lines</span>
+        </div>
+        <pre class="code-block" tabindex="0" aria-label="生成的请求代码"><code id="python-code"># 正在载入接口目录…</code></pre>
+
+        <div class="security-note" id="security-note">
+          <strong id="security-title">GitHub Pages 不接触凭据</strong>
+          <span id="security-copy">Python 使用环境变量；JavaScript 在已登录的 WQ 页面复用 Cookie Session。</span>
+        </div>
+      </aside>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <noscript>此页面需要 JavaScript 才能读取接口目录并生成请求代码。</noscript>
+    <script type="module" src="./assets/app.js"></script>
+  </body>
+</html>

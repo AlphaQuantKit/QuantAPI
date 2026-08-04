@@ -1,0 +1,44 @@
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const toolsDir = path.dirname(fileURLToPath(import.meta.url));
+const rootDir = path.resolve(toolsDir, "..");
+const catalogPath = path.join(rootDir, "catalog", "api-catalog.json");
+const siteDir = path.join(rootDir, "site");
+const dataDir = path.join(siteDir, "data");
+
+const requiredFiles = [
+  path.join(siteDir, "index.html"),
+  path.join(siteDir, "assets", "styles.css"),
+  path.join(siteDir, "assets", "app.js")
+];
+
+for (const file of requiredFiles) {
+  if (!fs.existsSync(file)) throw new Error(`站点文件缺失: ${path.relative(rootDir, file)}`);
+}
+
+const catalog = JSON.parse(fs.readFileSync(catalogPath, "utf8"));
+if (!Array.isArray(catalog.operations) || catalog.operations.length === 0) throw new Error("API 目录没有 operations");
+
+const operationIds = new Set();
+for (const operation of catalog.operations) {
+  if (operationIds.has(operation.operationId)) throw new Error(`重复 operationId: ${operation.operationId}`);
+  operationIds.add(operation.operationId);
+}
+
+fs.mkdirSync(dataDir, { recursive: true });
+fs.copyFileSync(catalogPath, path.join(dataDir, "api-catalog.json"));
+fs.writeFileSync(path.join(dataDir, "site-meta.json"), `${JSON.stringify({
+  generatedAt: new Date().toISOString(),
+  catalogVersion: catalog.catalogVersion,
+  operationCount: catalog.operations.length,
+  domainCount: new Set(catalog.operations.map((operation) => operation.domain)).size
+}, null, 2)}\n`, "utf8");
+
+process.stdout.write(`${JSON.stringify({
+  output: path.relative(rootDir, siteDir).replaceAll("\\", "/"),
+  catalogVersion: catalog.catalogVersion,
+  operations: catalog.operations.length,
+  assets: requiredFiles.length + 3
+}, null, 2)}\n`);

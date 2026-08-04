@@ -1,0 +1,6735 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "catalogVersion": "1.1.0",
+  "title": "WQ API 非官方接口目录",
+  "description": "由 WorldQuant BRAIN 前端 bundle 静态分析得到。此目录不是官方 API 承诺；unknown/inferred 字段必须在取得去敏真实响应后再升级。",
+  "generatedFrom": {
+    "entry": "raw/index.6168be46.js",
+    "bundleHash": "6168be46",
+    "baseUrl": "https://api.worldquantbrain.com",
+    "defaultAccept": "application/json;version=2.0",
+    "audience": "WQ 用户小圈子"
+  },
+  "evidenceLevels": {
+    "fixture_confirmed": "bundle 内置 JSON fixture 直接确认",
+    "decoder_confirmed": "前端运行时解码器确认",
+    "consumer_confirmed": "响应字段消费代码确认",
+    "inferred": "由请求上下文或相邻代码推断",
+    "unknown": "未从当前 bundle 确认"
+  },
+  "authSchemes": {
+    "cookie_session": {
+      "type": "apiKey",
+      "in": "cookie",
+      "name": "sessionid",
+      "publishCredential": false
+    },
+    "basic": {
+      "type": "http",
+      "scheme": "basic",
+      "publishCredential": false
+    },
+    "bearer": {
+      "type": "http",
+      "scheme": "bearer",
+      "publishCredential": false
+    },
+    "none": {
+      "type": "none"
+    }
+  },
+  "schemas": {
+    "OpenObject": {
+      "type": "object",
+      "additionalProperties": true,
+      "x-wq-confidence": "unknown"
+    },
+    "Empty": {
+      "type": "null"
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "detail": {
+          "type": "string"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true,
+      "x-wq-confidence": "consumer_confirmed"
+    },
+    "Paginated": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer"
+        },
+        "next": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "previous": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/schemas/OpenObject"
+          }
+        }
+      },
+      "required": [
+        "count",
+        "results"
+      ],
+      "additionalProperties": true,
+      "x-wq-confidence": "decoder_confirmed"
+    },
+    "Options": {
+      "type": "object",
+      "properties": {
+        "actions": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "actions"
+      ],
+      "additionalProperties": true,
+      "x-wq-confidence": "consumer_confirmed"
+    },
+    "AlphaSettings": {
+      "type": "object",
+      "properties": {
+        "instrumentType": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "universe": {
+          "type": "string"
+        },
+        "delay": {
+          "type": "integer"
+        },
+        "decay": {
+          "type": "integer"
+        },
+        "neutralization": {
+          "type": "string"
+        },
+        "truncation": {
+          "type": "number"
+        },
+        "pasteurization": {
+          "type": "string"
+        },
+        "unitHandling": {
+          "type": "string"
+        },
+        "nanHandling": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string"
+        },
+        "visualization": {
+          "type": "boolean"
+        },
+        "testPeriod": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true,
+      "x-wq-confidence": "fixture_confirmed"
+    },
+    "AlphaMetrics": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "pnl": {
+          "type": "number"
+        },
+        "bookSize": {
+          "type": "number"
+        },
+        "longCount": {
+          "type": "integer"
+        },
+        "shortCount": {
+          "type": "integer"
+        },
+        "turnover": {
+          "type": "number"
+        },
+        "returns": {
+          "type": "number"
+        },
+        "drawdown": {
+          "type": "number"
+        },
+        "margin": {
+          "type": "number"
+        },
+        "fitness": {
+          "type": "number"
+        },
+        "sharpe": {
+          "type": "number"
+        },
+        "startDate": {
+          "type": "string"
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/schemas/OpenObject"
+          }
+        }
+      },
+      "additionalProperties": true,
+      "x-wq-confidence": "fixture_confirmed"
+    },
+    "Alpha": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "author": {
+          "type": "string"
+        },
+        "settings": {
+          "$ref": "#/schemas/AlphaSettings"
+        },
+        "regular": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "description": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "operatorCount": {
+              "type": "integer"
+            }
+          },
+          "additionalProperties": true
+        },
+        "dateCreated": {
+          "type": "string"
+        },
+        "dateSubmitted": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dateModified": {
+          "type": "string"
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "favorite": {
+          "type": "boolean"
+        },
+        "hidden": {
+          "type": "boolean"
+        },
+        "color": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "category": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/schemas/OpenObject"
+          }
+        },
+        "grade": {
+          "type": "string"
+        },
+        "stage": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "is": {
+          "$ref": "#/schemas/AlphaMetrics"
+        },
+        "test": {
+          "$ref": "#/schemas/AlphaMetrics"
+        },
+        "os": {
+          "$ref": "#/schemas/AlphaMetrics"
+        },
+        "prod": {
+          "$ref": "#/schemas/AlphaMetrics"
+        }
+      },
+      "required": [
+        "id",
+        "settings",
+        "status"
+      ],
+      "additionalProperties": true,
+      "x-wq-confidence": "fixture_confirmed"
+    },
+    "AlphaList": {
+      "allOf": [
+        {
+          "$ref": "#/schemas/Paginated"
+        }
+      ],
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/schemas/Alpha"
+          }
+        }
+      },
+      "x-wq-confidence": "decoder_confirmed"
+    },
+    "Simulation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "settings": {
+          "$ref": "#/schemas/AlphaSettings"
+        },
+        "regular": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "alpha": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "progress": {
+          "type": "number"
+        },
+        "details": {
+          "type": "string"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "links": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "location": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "settings",
+        "status"
+      ],
+      "additionalProperties": true,
+      "x-wq-confidence": "fixture_confirmed"
+    },
+    "Recordset": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "schema": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "records": {
+          "type": [
+            "array",
+            "object"
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "x-wq-confidence": "consumer_confirmed"
+    },
+    "PollingState": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "in_progress",
+            "done"
+          ]
+        },
+        "retryAfterMs": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "status"
+      ],
+      "additionalProperties": false,
+      "x-wq-confidence": "consumer_confirmed"
+    },
+    "StringArray": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "x-wq-confidence": "consumer_confirmed"
+    },
+    "CaptchaRequest": {
+      "type": "object",
+      "properties": {
+        "captcha": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "captcha"
+      ],
+      "additionalProperties": false,
+      "x-wq-confidence": "consumer_confirmed"
+    },
+    "ChangeEmailRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "captcha": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "email",
+        "captcha"
+      ],
+      "additionalProperties": false,
+      "x-wq-confidence": "consumer_confirmed"
+    },
+    "ReverifyEmailRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "captcha": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "email",
+        "captcha"
+      ],
+      "additionalProperties": true,
+      "x-wq-confidence": "consumer_confirmed"
+    },
+    "ChangePasswordRequest": {
+      "type": "object",
+      "properties": {
+        "password": {
+          "type": "string"
+        },
+        "confirmation": {
+          "type": "string"
+        },
+        "captcha": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "password",
+        "confirmation",
+        "captcha"
+      ],
+      "additionalProperties": false,
+      "x-wq-confidence": "consumer_confirmed"
+    },
+    "AuthenticationPersonaRequest": {
+      "type": "object",
+      "properties": {
+        "inquiry": {
+          "type": "string"
+        },
+        "captcha": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "inquiry",
+        "captcha"
+      ],
+      "additionalProperties": false,
+      "x-wq-confidence": "consumer_confirmed"
+    },
+    "AuthSession": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/schemas/OpenObject"
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true,
+      "x-wq-confidence": "consumer_confirmed"
+    },
+    "UserToken": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string",
+          "x-wq-sensitive": true
+        }
+      },
+      "required": [
+        "token"
+      ],
+      "additionalProperties": true,
+      "x-wq-confidence": "consumer_confirmed"
+    },
+    "AgreementList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/schemas/OpenObject"
+      },
+      "x-wq-confidence": "consumer_confirmed"
+    },
+    "Achievement": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "achieved": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "value": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "total": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "ratio": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description",
+        "achieved",
+        "value",
+        "total",
+        "ratio"
+      ],
+      "additionalProperties": false,
+      "x-wq-confidence": "decoder_confirmed"
+    },
+    "AchievementList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/schemas/Achievement"
+      },
+      "x-wq-confidence": "decoder_confirmed"
+    },
+    "AlphaCheck": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "result": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "result"
+          ],
+          "additionalProperties": true
+        },
+        {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "number"
+            },
+            "value": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "limit",
+            "value"
+          ],
+          "additionalProperties": true
+        }
+      ],
+      "x-wq-confidence": "decoder_confirmed"
+    },
+    "AlphaCheckResponse": {
+      "type": "object",
+      "properties": {
+        "is": {
+          "type": "object",
+          "properties": {
+            "checks": {
+              "type": "array",
+              "items": {
+                "$ref": "#/schemas/AlphaCheck"
+              }
+            },
+            "selfCorrelation": {
+              "$ref": "#/schemas/CorrelationRecordset"
+            }
+          },
+          "required": [
+            "checks"
+          ],
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "is"
+      ],
+      "additionalProperties": true,
+      "x-wq-confidence": "decoder_confirmed"
+    },
+    "CorrelationRecordset": {
+      "type": "object",
+      "properties": {
+        "records": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {}
+          }
+        },
+        "schema": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "properties": {
+              "type": "array",
+              "items": {
+                "$ref": "#/schemas/OpenObject"
+              }
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "records",
+        "schema"
+      ],
+      "additionalProperties": true,
+      "x-wq-confidence": "decoder_confirmed"
+    },
+    "RecordsetDescriptor": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "title"
+      ],
+      "additionalProperties": false,
+      "x-wq-confidence": "decoder_confirmed"
+    },
+    "RecordsetList": {
+      "allOf": [
+        {
+          "$ref": "#/schemas/Paginated"
+        }
+      ],
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/schemas/RecordsetDescriptor"
+          }
+        }
+      },
+      "x-wq-confidence": "decoder_confirmed"
+    },
+    "Operator": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "definition": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true,
+      "x-wq-confidence": "consumer_confirmed"
+    },
+    "OperatorList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/schemas/Operator"
+      },
+      "x-wq-confidence": "consumer_confirmed"
+    },
+    "DataFieldSummary": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "dataset": {
+          "$ref": "#/schemas/OpenObject"
+        },
+        "category": {
+          "$ref": "#/schemas/OpenObject"
+        },
+        "subcategory": {
+          "$ref": "#/schemas/OpenObject"
+        }
+      },
+      "additionalProperties": true,
+      "x-wq-confidence": "consumer_confirmed"
+    },
+    "DataFieldSummaryList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/schemas/DataFieldSummary"
+      },
+      "x-wq-confidence": "consumer_confirmed"
+    },
+    "DataCategory": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "region": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "datasetCount": {
+          "type": "integer"
+        },
+        "fieldCount": {
+          "type": "integer"
+        },
+        "alphaCount": {
+          "type": "integer"
+        },
+        "valueScore": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": true,
+      "x-wq-confidence": "consumer_confirmed"
+    },
+    "DataCategoryList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/schemas/DataCategory"
+      },
+      "x-wq-confidence": "consumer_confirmed"
+    },
+    "CompetitionLevel": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "additionalProperties": true,
+      "x-wq-confidence": "decoder_confirmed"
+    },
+    "CompetitionLevelList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/schemas/CompetitionLevel"
+      },
+      "x-wq-confidence": "decoder_confirmed"
+    },
+    "SearchResults": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/schemas/Paginated"
+      },
+      "x-wq-confidence": "consumer_confirmed"
+    },
+    "TutorialStep": {
+      "type": "object",
+      "properties": {
+        "slug": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "task": {
+          "type": "string"
+        },
+        "hint": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "answer": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "x-wq-confidence": "consumer_confirmed"
+    },
+    "TutorialStepList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/schemas/TutorialStep"
+      },
+      "x-wq-confidence": "consumer_confirmed"
+    },
+    "TutorialSummary": {
+      "type": "object",
+      "properties": {
+        "active": {
+          "type": "boolean"
+        },
+        "currentStep": {
+          "type": "integer"
+        },
+        "maxUnlockedTutorialStep": {
+          "type": "integer"
+        },
+        "tutorialTotalSteps": {
+          "type": "integer"
+        },
+        "status": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "isTutorialExpired": {
+          "type": "boolean"
+        },
+        "isTutorialModeActive": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true,
+      "x-wq-confidence": "consumer_confirmed"
+    }
+  },
+  "examples": {
+    "alpha": {
+      "evidenceLevel": "fixture_confirmed",
+      "source": "raw/9019.c47c947f.chunk.js#module-49019",
+      "sanitized": true,
+      "sanitization": "author 字段已替换；其余为内置 walkthrough fixture 的精简投影。",
+      "value": {
+        "id": "sample-alpha-id-walkthrough",
+        "type": "REGULAR",
+        "author": "<redacted-fixture-author>",
+        "settings": {
+          "instrumentType": "EQUITY",
+          "region": "USA",
+          "universe": "TOP3000",
+          "delay": 1,
+          "decay": 4,
+          "neutralization": "SUBINDUSTRY",
+          "truncation": 0.08,
+          "pasteurization": "ON",
+          "unitHandling": "VERIFY",
+          "nanHandling": "OFF",
+          "language": "FASTEXPR",
+          "visualization": false,
+          "testPeriod": "P1Y0M0D"
+        },
+        "regular": {
+          "code": "rank(-ts_delta(close,2))",
+          "description": null,
+          "operatorCount": 3
+        },
+        "dateCreated": "2023-03-20T13:08:10-04:00",
+        "dateSubmitted": null,
+        "dateModified": "2023-03-20T17:08:10-04:00",
+        "name": null,
+        "favorite": false,
+        "hidden": false,
+        "color": null,
+        "category": null,
+        "tags": [],
+        "grade": "AVERAGE",
+        "stage": "IS",
+        "status": "UNSUBMITTED",
+        "is": {
+          "pnl": 13883372,
+          "bookSize": 20000000,
+          "longCount": 1535,
+          "shortCount": 1501,
+          "turnover": 0.6427,
+          "returns": 0.1411,
+          "drawdown": 0.0219,
+          "margin": 0.00439,
+          "fitness": 1.33,
+          "sharpe": 2.83,
+          "startDate": "2011-04-07",
+          "checks": [
+            {
+              "name": "LOW_SHARPE",
+              "result": "PASS",
+              "limit": 1.58,
+              "value": 2.83
+            }
+          ]
+        },
+        "test": {
+          "pnl": 765767,
+          "bookSize": 20000000,
+          "longCount": 1549,
+          "shortCount": 1539,
+          "turnover": 0.9489,
+          "returns": 0.0754,
+          "drawdown": 0.0706,
+          "margin": 0.000159,
+          "fitness": 0.22,
+          "sharpe": 0.78,
+          "startDate": "2020-02-12"
+        },
+        "os": null,
+        "prod": null,
+        "competitions": null,
+        "themes": null,
+        "team": null
+      }
+    },
+    "simulation": {
+      "evidenceLevel": "fixture_confirmed",
+      "source": "raw/2067.13e330f4.chunk.js#module-62067",
+      "value": {
+        "id": "sample-simulation-id-walkthrough",
+        "type": "REGULAR",
+        "settings": {
+          "instrumentType": "EQUITY",
+          "region": "USA",
+          "universe": "TOP3000",
+          "delay": 1,
+          "decay": 4,
+          "neutralization": "SUBINDUSTRY",
+          "risk": "NONE",
+          "truncation": 0.08,
+          "pasteurization": "ON",
+          "unitHandling": "VERIFY",
+          "nanHandling": "OFF",
+          "language": "FASTEXPR",
+          "visualization": false
+        },
+        "regular": "close",
+        "status": "COMPLETE",
+        "alpha": "sample-alpha-id-walkthrough"
+      }
+    }
+  },
+  "operations": [
+    {
+      "operationId": "getUserRegistrationOptions",
+      "domain": "authentication",
+      "summary": "读取注册字段及枚举",
+      "method": "OPTIONS",
+      "path": "/users",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Options",
+        "evidenceLevel": "decoder_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "54210",
+          "line": 317
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "createUser",
+      "domain": "authentication",
+      "summary": "注册用户",
+      "method": "POST",
+      "path": "/users",
+      "auth": "none",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "requestBody": {
+        "contentType": "application/json",
+        "schemaRef": "OpenObject",
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          201
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json",
+        "errorStatuses": [
+          405,
+          409
+        ]
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "92392",
+          "line": 1482
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "verifyEmail",
+      "domain": "authentication",
+      "summary": "使用 Bearer 验证邮箱",
+      "method": "POST",
+      "path": "/user/email/verify",
+      "auth": "bearer",
+      "apiVersion": "2.0",
+      "sensitivity": "credential",
+      "requestBody": {
+        "contentType": "application/json",
+        "schemaRef": "CaptchaRequest",
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json",
+        "errorStatuses": [
+          401
+        ]
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "54210",
+          "line": 485
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "changeEmail",
+      "domain": "authentication",
+      "summary": "更换邮箱",
+      "method": "POST",
+      "path": "/user/email/change",
+      "auth": "basic",
+      "apiVersion": "2.0",
+      "sensitivity": "credential",
+      "requestBody": {
+        "contentType": "application/json",
+        "schemaRef": "ChangeEmailRequest",
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          200,
+          204
+        ],
+        "schemaRef": "Empty",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "empty",
+        "errorStatuses": [
+          400,
+          401
+        ]
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "54210",
+          "line": 547
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "reverifyEmail",
+      "domain": "authentication",
+      "summary": "重新发送邮箱验证",
+      "method": "POST",
+      "path": "/user/email/reverify",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "response": {
+        "statuses": [
+          200,
+          204
+        ],
+        "schemaRef": "Empty",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "empty"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "54210",
+          "line": 950
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "50135",
+          "line": 4284
+        }
+      ],
+      "confidence": "high",
+      "requestBody": {
+        "contentType": "application/json",
+        "schemaRef": "ReverifyEmailRequest",
+        "required": true
+      }
+    },
+    {
+      "operationId": "forgotPassword",
+      "domain": "authentication",
+      "summary": "发起忘记密码流程",
+      "method": "POST",
+      "path": "/user/password/forgot",
+      "auth": "none",
+      "apiVersion": "2.0",
+      "sensitivity": "credential",
+      "requestBody": {
+        "contentType": "application/json",
+        "schemaRef": "OpenObject",
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          200,
+          204
+        ],
+        "schemaRef": "Empty",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "empty",
+        "errorStatuses": [
+          400
+        ]
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "50135",
+          "line": 4153
+        }
+      ],
+      "confidence": "medium"
+    },
+    {
+      "operationId": "changePassword",
+      "domain": "authentication",
+      "summary": "修改密码",
+      "method": "POST",
+      "path": "/user/password/change",
+      "auth": "basic",
+      "apiVersion": "2.0",
+      "sensitivity": "credential",
+      "requestBody": {
+        "contentType": "application/json",
+        "schemaRef": "ChangePasswordRequest",
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          200,
+          204
+        ],
+        "schemaRef": "Empty",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "empty",
+        "errorStatuses": [
+          400,
+          401
+        ]
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "50135",
+          "line": 4210
+        }
+      ],
+      "confidence": "medium"
+    },
+    {
+      "operationId": "resetPassword",
+      "domain": "authentication",
+      "summary": "用重置凭据设置新密码",
+      "method": "POST",
+      "path": "/user/password/reset",
+      "auth": "bearer",
+      "apiVersion": "2.0",
+      "sensitivity": "credential",
+      "requestBody": {
+        "contentType": "application/json",
+        "schemaRef": "OpenObject",
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          200,
+          204
+        ],
+        "schemaRef": "Empty",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "empty",
+        "errorStatuses": [
+          400,
+          401
+        ]
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "50135",
+          "line": 4349
+        }
+      ],
+      "confidence": "medium"
+    },
+    {
+      "operationId": "createUserToken",
+      "domain": "authentication",
+      "summary": "签发用户 Token",
+      "method": "POST",
+      "path": "/user/token",
+      "auth": "basic",
+      "apiVersion": "2.0",
+      "sensitivity": "credential",
+      "response": {
+        "statuses": [
+          200,
+          201
+        ],
+        "schemaRef": "UserToken",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "54210",
+          "line": 898
+        }
+      ],
+      "confidence": "medium"
+    },
+    {
+      "operationId": "getAuthentication",
+      "domain": "authentication",
+      "summary": "读取当前认证状态",
+      "method": "GET",
+      "path": "/authentication",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "response": {
+        "statuses": [
+          200,
+          204
+        ],
+        "schemaRef": "AuthSession",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json_or_empty",
+        "errorStatuses": [
+          401,
+          404
+        ]
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "50135",
+          "line": 4098
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "50135",
+          "line": 4623
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "50135",
+          "line": 4790
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "createAuthentication",
+      "domain": "authentication",
+      "summary": "建立 Cookie Session",
+      "method": "POST",
+      "path": "/authentication",
+      "auth": "basic",
+      "apiVersion": "2.0",
+      "sensitivity": "credential",
+      "response": {
+        "statuses": [
+          200,
+          201
+        ],
+        "schemaRef": "AuthSession",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json",
+        "errorStatuses": [
+          400,
+          401,
+          403,
+          429,
+          500,
+          501,
+          502,
+          503,
+          504
+        ]
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "50135",
+          "line": 4623,
+          "note": "同一模块中的登录流程；具体 POST 调用由动态方法构造"
+        }
+      ],
+      "confidence": "medium",
+      "requestBody": {
+        "contentType": "application/json",
+        "schemaRef": "CaptchaRequest",
+        "required": true
+      }
+    },
+    {
+      "operationId": "deleteAuthentication",
+      "domain": "authentication",
+      "summary": "注销当前会话",
+      "method": "DELETE",
+      "path": "/authentication",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "credential",
+      "response": {
+        "statuses": [
+          200,
+          204
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json_or_empty"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "50135",
+          "line": 3878
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "50135",
+          "line": 4746
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "createAuthenticationPersona",
+      "domain": "authentication",
+      "summary": "提交 Persona inquiry 并完成认证",
+      "method": "POST",
+      "path": "/authentication/persona",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "response": {
+        "statuses": [
+          200,
+          201
+        ],
+        "errorStatuses": [
+          400,
+          401,
+          403,
+          429,
+          500,
+          501,
+          502,
+          503,
+          504
+        ],
+        "schemaRef": "AuthSession",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "50135",
+          "line": 4705
+        }
+      ],
+      "confidence": "high",
+      "accept": "application/json",
+      "requestBody": {
+        "contentType": "application/json",
+        "schemaRef": "AuthenticationPersonaRequest",
+        "required": true
+      }
+    },
+    {
+      "operationId": "authenticateWorkday",
+      "domain": "authentication",
+      "summary": "通过 Workday 认证",
+      "method": "POST",
+      "path": "/authentication/workday",
+      "auth": "basic",
+      "apiVersion": "2.0",
+      "sensitivity": "credential",
+      "requestBody": {
+        "contentType": "application/json",
+        "schemaRef": "CaptchaRequest",
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          200,
+          201
+        ],
+        "errorStatuses": [
+          400,
+          401
+        ],
+        "schema": {
+          "type": "string",
+          "description": "成功时前端按 SAML XML 文本处理。"
+        },
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "text"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "54210",
+          "line": 715
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "authenticateBrainLabs",
+      "domain": "authentication",
+      "summary": "通过 BrainLabs 认证",
+      "method": "POST",
+      "path": "/authentication/brainlabs",
+      "auth": "basic",
+      "apiVersion": "2.0",
+      "sensitivity": "credential",
+      "requestBody": {
+        "contentType": "application/json",
+        "schemaRef": "CaptchaRequest",
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          200,
+          201
+        ],
+        "errorStatuses": [
+          400,
+          401
+        ],
+        "schema": {
+          "type": "string",
+          "description": "成功时前端按 SAML XML 文本处理。"
+        },
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "text"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "54210",
+          "line": 810
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getConfiguration",
+      "domain": "account",
+      "summary": "读取平台配置",
+      "method": "GET",
+      "path": "/configuration",
+      "auth": "none",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "50135",
+          "line": 4010
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getUser",
+      "domain": "account",
+      "summary": "读取用户",
+      "method": "GET",
+      "path": "/users/{userId}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "50135",
+          "line": 4043
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "patchSelfUser",
+      "domain": "account",
+      "summary": "更新当前用户",
+      "method": "PATCH",
+      "path": "/users/self",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "requestBody": {
+        "required": true,
+        "contents": {
+          "application/json": {
+            "schemaRef": "OpenObject"
+          },
+          "multipart/form-data": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user": {
+                  "type": "string",
+                  "description": "JSON.stringify(user)"
+                },
+                "image": {
+                  "type": "string",
+                  "format": "binary"
+                },
+                "resume": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "required": [
+                "user"
+              ],
+              "additionalProperties": false
+            }
+          }
+        }
+      },
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "54210",
+          "line": 1018,
+          "note": "支持 JSON 或包含 user/image/resume 的 multipart body"
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 68289
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "deleteSelfUser",
+      "domain": "account",
+      "summary": "删除当前账户",
+      "method": "DELETE",
+      "path": "/users/self",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "destructive",
+      "response": {
+        "statuses": [
+          204
+        ],
+        "schemaRef": "Empty",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "empty",
+        "errorStatuses": [
+          400,
+          401,
+          500,
+          501,
+          502,
+          503,
+          504
+        ]
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "54210",
+          "line": 608
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getSimulationSettings",
+      "domain": "account",
+      "summary": "读取用户模拟默认设置",
+      "method": "GET",
+      "path": "/users/{userId}/settings/simulation",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "50135",
+          "line": 3977
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "updateSimulationSettings",
+      "domain": "account",
+      "summary": "更新用户模拟默认设置",
+      "method": "POST",
+      "path": "/users/{userId}/settings/simulation",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": {
+        "contentType": "application/json",
+        "schemaRef": "OpenObject",
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          200,
+          204
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json_or_empty"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "50135",
+          "line": 3916
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "listSelfAgreements",
+      "domain": "account",
+      "summary": "列出当前用户协议状态",
+      "method": "GET",
+      "path": "/users/self/agreements",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "legal",
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "AgreementList",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "50135",
+          "line": 4404
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getUserProfile",
+      "domain": "account",
+      "summary": "读取用户公开档案",
+      "method": "GET",
+      "path": "/users/{userId}/profile",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "76099",
+          "line": 6506
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getUserAchievements",
+      "domain": "account",
+      "summary": "读取用户成就",
+      "method": "GET",
+      "path": "/users/{userId}/achievements",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "AchievementList",
+        "evidenceLevel": "decoder_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "76099",
+          "line": 6540
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "54618",
+          "line": 29450
+        },
+        {
+          "source": "raw/9790.ce2062bc.chunk.js",
+          "moduleId": "9790",
+          "offset": 1876,
+          "formattedLine": 94
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getPublicAgreement",
+      "domain": "agreements",
+      "summary": "读取公开协议正文",
+      "method": "GET",
+      "path": "/agreements/{agreementId}/agreement",
+      "auth": "none",
+      "apiVersion": "2.0",
+      "sensitivity": "legal",
+      "parameters": [
+        {
+          "name": "agreementId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "83916",
+          "line": 1722
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67608
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getTeamAgreement",
+      "domain": "agreements",
+      "summary": "读取团队协议正文",
+      "method": "GET",
+      "path": "/teams/{teamId}/agreement",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "legal",
+      "parameters": [
+        {
+          "name": "teamId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "83916",
+          "line": 1614
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getCompetitionAgreement",
+      "domain": "agreements",
+      "summary": "读取比赛协议正文",
+      "method": "GET",
+      "path": "/competitions/{competitionId}/agreement",
+      "auth": "none",
+      "apiVersion": "2.0",
+      "sensitivity": "legal",
+      "parameters": [
+        {
+          "name": "competitionId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "83916",
+          "line": 1758
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67608
+        }
+      ],
+      "confidence": "high",
+      "authAlternatives": [
+        "none",
+        "cookie_session"
+      ]
+    },
+    {
+      "operationId": "acceptResourceAgreement",
+      "domain": "agreements",
+      "summary": "接受资源协议",
+      "method": "POST",
+      "path": "/{resourceType}/{resourceId}/accept",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "legal",
+      "parameters": [
+        {
+          "name": "resourceType",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "agreements",
+              "competitions",
+              "teams"
+            ]
+          }
+        },
+        {
+          "name": "resourceId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200,
+          204
+        ],
+        "schemaRef": "Empty",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "empty",
+        "errorStatuses": [
+          400
+        ]
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "83916",
+          "line": 1645
+        }
+      ],
+      "confidence": "medium"
+    },
+    {
+      "operationId": "rejectResourceAgreement",
+      "domain": "agreements",
+      "summary": "拒绝资源协议",
+      "method": "POST",
+      "path": "/{resourceType}/{resourceId}/reject",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "legal",
+      "parameters": [
+        {
+          "name": "resourceType",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "agreements",
+              "competitions",
+              "teams"
+            ]
+          }
+        },
+        {
+          "name": "resourceId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200,
+          204
+        ],
+        "schemaRef": "Empty",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "empty",
+        "errorStatuses": [
+          400
+        ]
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "83916",
+          "line": 1645
+        }
+      ],
+      "confidence": "medium"
+    },
+    {
+      "operationId": "getTagOptions",
+      "domain": "tags",
+      "summary": "读取标签创建选项",
+      "method": "OPTIONS",
+      "path": "/tags",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Options",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "54175",
+          "line": 1893
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "createTag",
+      "domain": "tags",
+      "summary": "创建标签",
+      "method": "POST",
+      "path": "/tags",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "requestBody": {
+        "contentType": "application/json",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "LIST"
+            },
+            "name": {
+              "type": "string"
+            },
+            "alphas": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "type",
+            "name",
+            "alphas"
+          ],
+          "additionalProperties": false
+        },
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          200,
+          201
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "54175",
+          "line": 1824
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "listSelfTags",
+      "domain": "tags",
+      "summary": "分页列出当前用户标签",
+      "method": "GET",
+      "path": "/users/self/tags",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 9
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 0
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Paginated",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "54175",
+          "line": 1933
+        }
+      ],
+      "behavior": {
+        "pagination": "limit_offset"
+      },
+      "confidence": "high"
+    },
+    {
+      "operationId": "getTag",
+      "domain": "tags",
+      "summary": "读取标签",
+      "method": "GET",
+      "path": "/tags/{tagId}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "tagId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "54175",
+          "line": 2108
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "patchTag",
+      "domain": "tags",
+      "summary": "更新标签",
+      "method": "PATCH",
+      "path": "/tags/{tagId}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "tagId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": {
+        "contentType": "application/json",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "op": {
+              "type": "string"
+            },
+            "alphas": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "54175",
+          "line": 1867
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "deleteTag",
+      "domain": "tags",
+      "summary": "删除标签",
+      "method": "DELETE",
+      "path": "/tags/{tagId}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "destructive",
+      "parameters": [
+        {
+          "name": "tagId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          204
+        ],
+        "schemaRef": "Empty",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "empty"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "54175",
+          "line": 2215
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getTagInnerCorrelation",
+      "domain": "tags",
+      "summary": "读取标签内部相关性",
+      "method": "GET",
+      "path": "/tags/{tagId}/correlations/inner",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "tagId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Recordset",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "54175",
+          "line": 2020
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getTagSelfCorrelation",
+      "domain": "tags",
+      "summary": "读取标签自相关性",
+      "method": "GET",
+      "path": "/tags/{tagId}/correlations/self",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "tagId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Recordset",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "54175",
+          "line": 2064
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "listAlphas",
+      "domain": "alpha",
+      "summary": "筛选并分页列出当前用户 Alpha",
+      "method": "GET",
+      "path": "/users/self/alphas",
+      "auth": "cookie_session",
+      "apiVersion": "4.0",
+      "sensitivity": "research",
+      "parameters": [
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "order",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "stage",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "status",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "AlphaList",
+        "evidenceLevel": "decoder_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "61300",
+          "line": 2573,
+          "note": "URL 在局部变量 h 中动态构造"
+        }
+      ],
+      "behavior": {
+        "pagination": "limit_offset"
+      },
+      "confidence": "high"
+    },
+    {
+      "operationId": "listTagAlphas",
+      "domain": "alpha",
+      "summary": "筛选并分页列出标签中的 Alpha",
+      "method": "GET",
+      "path": "/tags/{tagId}/alphas",
+      "auth": "cookie_session",
+      "apiVersion": "4.0",
+      "sensitivity": "research",
+      "parameters": [
+        {
+          "name": "tagId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "order",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "stage",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "status",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "AlphaList",
+        "evidenceLevel": "decoder_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "61300",
+          "line": 2573,
+          "note": "动态基路径也覆盖 tags/{id}/alphas、alphas/{id}/alphas 与 simulations/super-selection"
+        }
+      ],
+      "behavior": {
+        "pagination": "limit_offset"
+      },
+      "confidence": "high"
+    },
+    {
+      "operationId": "getAlpha",
+      "domain": "alpha",
+      "summary": "读取 Alpha 详情",
+      "method": "GET",
+      "path": "/alphas/{alphaId}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "research",
+      "parameters": [
+        {
+          "name": "alphaId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Alpha",
+        "exampleRef": "alpha",
+        "evidenceLevel": "fixture_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "61300",
+          "line": 2871
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "61300",
+          "line": 2915
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "20512",
+          "line": 7349
+        },
+        {
+          "source": "raw/9019.c47c947f.chunk.js",
+          "moduleId": "49019",
+          "offset": 0
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "patchAlpha",
+      "domain": "alpha",
+      "summary": "更新 Alpha 元数据或设置",
+      "method": "PATCH",
+      "path": "/alphas/{alphaId}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "research",
+      "parameters": [
+        {
+          "name": "alphaId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": {
+        "contentType": "application/json",
+        "schemaRef": "OpenObject",
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "61300",
+          "line": 2686
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "61300",
+          "line": 2742
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "20512",
+          "line": 7741
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "bulkPatchAlphas",
+      "domain": "alpha",
+      "summary": "批量更新 Alpha",
+      "method": "PATCH",
+      "path": "/alphas",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "research",
+      "requestBody": {
+        "contentType": "application/json",
+        "schema": {
+          "type": "array",
+          "items": {
+            "$ref": "#/schemas/OpenObject"
+          }
+        },
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          200,
+          204
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json_or_empty"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "61300",
+          "line": 2785
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "listRelatedAlphas",
+      "domain": "alpha",
+      "summary": "读取相关/派生 Alpha",
+      "method": "GET",
+      "path": "/alphas/{alphaId}/alphas",
+      "auth": "cookie_session",
+      "apiVersion": "4.0",
+      "sensitivity": "research",
+      "parameters": [
+        {
+          "name": "alphaId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 5
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "AlphaList",
+        "evidenceLevel": "decoder_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "61300",
+          "line": 2495
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "20512",
+          "line": 7877
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getUserAlphaOptions",
+      "domain": "alpha",
+      "summary": "读取用户 Alpha 查询选项",
+      "method": "OPTIONS",
+      "path": "/users/{userId}/alphas",
+      "auth": "cookie_session",
+      "apiVersion": "4.0",
+      "sensitivity": "research",
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Options",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "61300",
+          "line": 2828
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "submitAlpha",
+      "domain": "alpha",
+      "summary": "提交 Alpha",
+      "method": "POST",
+      "path": "/alphas/{alphaId}/submit",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "submission",
+      "parameters": [
+        {
+          "name": "alphaId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200,
+          201,
+          202,
+          204
+        ],
+        "schemaRef": "AlphaCheckResponse",
+        "evidenceLevel": "decoder_confirmed",
+        "mode": "json_or_empty",
+        "errorStatuses": [
+          401,
+          429,
+          500
+        ]
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "61300",
+          "line": 3002
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "20512",
+          "line": 7631
+        }
+      ],
+      "behavior": {
+        "poll": "pollAlphaSubmission",
+        "retryAfterHeader": true
+      },
+      "confidence": "high"
+    },
+    {
+      "operationId": "pollAlphaSubmission",
+      "domain": "alpha",
+      "summary": "轮询 Alpha 提交状态",
+      "method": "GET",
+      "path": "/alphas/{alphaId}/submit",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "submission",
+      "parameters": [
+        {
+          "name": "alphaId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200,
+          202
+        ],
+        "schemaRef": "AlphaCheckResponse",
+        "evidenceLevel": "decoder_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "61300",
+          "line": 3002
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "20512",
+          "line": 7631
+        }
+      ],
+      "behavior": {
+        "polling": true,
+        "retryAfterHeader": true
+      },
+      "confidence": "high"
+    },
+    {
+      "operationId": "getAlphaChecks",
+      "domain": "alpha",
+      "summary": "读取 Alpha 检查结果",
+      "method": "GET",
+      "path": "/alphas/{alphaId}/check",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "research",
+      "parameters": [
+        {
+          "name": "alphaId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "AlphaCheckResponse",
+        "evidenceLevel": "decoder_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "61300",
+          "line": 3082
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "20512",
+          "line": 7505
+        }
+      ],
+      "confidence": "high",
+      "behavior": {
+        "polling": true,
+        "retryAfterHeader": true
+      }
+    },
+    {
+      "operationId": "getAlphaCorrelation",
+      "domain": "alpha",
+      "summary": "读取 Alpha 自相关或 Power Pool 相关性",
+      "method": "GET",
+      "path": "/alphas/{alphaId}/correlations/{correlationType}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "research",
+      "parameters": [
+        {
+          "name": "alphaId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "correlationType",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "self",
+              "power-pool"
+            ]
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "CorrelationRecordset",
+        "evidenceLevel": "decoder_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "61300",
+          "line": 3170
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "20512",
+          "line": 7257
+        }
+      ],
+      "confidence": "high",
+      "behavior": {
+        "polling": true,
+        "retryAfterHeader": true,
+        "handledStatuses": [
+          401,
+          410,
+          412,
+          429,
+          503
+        ]
+      }
+    },
+    {
+      "operationId": "getAlphaProdCorrelation",
+      "domain": "alpha",
+      "summary": "读取 Alpha 生产相关性",
+      "method": "GET",
+      "path": "/alphas/{alphaId}/correlations/prod",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "research",
+      "parameters": [
+        {
+          "name": "alphaId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "CorrelationRecordset",
+        "evidenceLevel": "decoder_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "61300",
+          "line": 3241
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "20512",
+          "line": 7156
+        }
+      ],
+      "confidence": "high",
+      "behavior": {
+        "polling": true,
+        "retryAfterHeader": true,
+        "handledStatuses": [
+          401,
+          410,
+          412,
+          429,
+          503
+        ]
+      }
+    },
+    {
+      "operationId": "listAlphaRecordsets",
+      "domain": "alpha",
+      "summary": "列出 Alpha 可用 recordset",
+      "method": "GET",
+      "path": "/alphas/{alphaId}/recordsets",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "research",
+      "parameters": [
+        {
+          "name": "alphaId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "RecordsetList",
+        "evidenceLevel": "decoder_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "61300",
+          "line": 3425
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "20512",
+          "line": 7073
+        }
+      ],
+      "confidence": "high",
+      "behavior": {
+        "polling": true,
+        "retryAfterHeader": true
+      }
+    },
+    {
+      "operationId": "getAlphaRecordset",
+      "domain": "alpha",
+      "summary": "读取 Alpha 指定 recordset",
+      "method": "GET",
+      "path": "/alphas/{alphaId}/recordsets/{recordsetType}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "research",
+      "parameters": [
+        {
+          "name": "alphaId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "recordsetType",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Recordset",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "61300",
+          "line": 3348
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "20512",
+          "line": 6996
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67916
+        },
+        {
+          "source": "raw/5997.5e4882b8.chunk.js",
+          "moduleId": null,
+          "offset": 0,
+          "note": "turnover recordset fixture"
+        }
+      ],
+      "confidence": "high",
+      "behavior": {
+        "polling": true,
+        "retryAfterHeader": true,
+        "handledStatuses": [
+          401,
+          404
+        ]
+      }
+    },
+    {
+      "operationId": "getSelfAlphaPerformance",
+      "domain": "alpha",
+      "summary": "读取个人 Alpha 前后表现",
+      "method": "GET",
+      "path": "/users/self/alphas/{alphaId}/before-and-after-performance",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "research",
+      "parameters": [
+        {
+          "name": "alphaId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "61300",
+          "line": 3306
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "20512",
+          "line": 7837
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "49965",
+          "line": 9106
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getTeamAlphaPerformance",
+      "domain": "alpha",
+      "summary": "读取团队 Alpha 前后表现",
+      "method": "GET",
+      "path": "/teams/{teamId}/alphas/{alphaId}/before-and-after-performance",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "research",
+      "parameters": [
+        {
+          "name": "teamId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "alphaId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "49965",
+          "line": 9106
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "61300",
+          "line": 3306,
+          "note": "同一动态 URL 构造器按 teamId/scoringCompetition 选择个人、团队或比赛路径"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getCompetitionAlphaPerformance",
+      "domain": "alpha",
+      "summary": "读取比赛 Alpha 前后表现",
+      "method": "GET",
+      "path": "/competitions/{competitionId}/alphas/{alphaId}/before-and-after-performance",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "research",
+      "parameters": [
+        {
+          "name": "competitionId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "alphaId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "49965",
+          "line": 9106
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "61300",
+          "line": 3306,
+          "note": "同一动态 URL 构造器按 teamId/scoringCompetition 选择个人、团队或比赛路径"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getSelfAlphaSummary",
+      "domain": "alpha",
+      "summary": "读取当前用户 Alpha 汇总",
+      "method": "GET",
+      "path": "/users/self/alphas/summary",
+      "auth": "cookie_session",
+      "apiVersion": "4.0",
+      "sensitivity": "research",
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "61300",
+          "line": 3496
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "54618",
+          "line": 29624
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getAlphaTutorial",
+      "domain": "alpha",
+      "summary": "读取 Alpha 教程内容",
+      "method": "GET",
+      "path": "/alphas/{alphaId}/tutorial",
+      "auth": "cookie_session",
+      "apiVersion": "3.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "alphaId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 68130
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getSimulationOptions",
+      "domain": "simulation",
+      "summary": "读取 Simulation POST 选项",
+      "method": "OPTIONS",
+      "path": "/simulations",
+      "auth": "cookie_session",
+      "apiVersion": "3.0",
+      "sensitivity": "none",
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Options",
+        "evidenceLevel": "decoder_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "37151",
+          "line": 5985
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "createSimulation",
+      "domain": "simulation",
+      "summary": "创建一个或多个模拟",
+      "method": "POST",
+      "path": "/simulations",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "research",
+      "requestBody": {
+        "contentType": "application/json",
+        "schema": {
+          "oneOf": [
+            {
+              "$ref": "#/schemas/OpenObject"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/schemas/OpenObject"
+              }
+            }
+          ]
+        },
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          201,
+          202
+        ],
+        "schemaRef": "Empty",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "headers",
+        "headers": {
+          "Location": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        },
+        "errorStatuses": [
+          400,
+          403,
+          409,
+          429,
+          503
+        ]
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "25726",
+          "line": 8464
+        }
+      ],
+      "behavior": {
+        "locationHeader": true,
+        "poll": "getSimulation"
+      },
+      "confidence": "high"
+    },
+    {
+      "operationId": "getSimulation",
+      "domain": "simulation",
+      "summary": "读取或轮询 Simulation",
+      "method": "GET",
+      "path": "/simulations/{simulationId}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "research",
+      "parameters": [
+        {
+          "name": "simulationId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200,
+          202
+        ],
+        "schemaRef": "Simulation",
+        "exampleRef": "simulation",
+        "evidenceLevel": "fixture_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "25726",
+          "line": 8207
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "25726",
+          "line": 8340
+        },
+        {
+          "source": "raw/2067.13e330f4.chunk.js",
+          "moduleId": "62067",
+          "offset": 0
+        }
+      ],
+      "behavior": {
+        "polling": true,
+        "retryAfterHeader": true
+      },
+      "confidence": "high"
+    },
+    {
+      "operationId": "deleteSimulation",
+      "domain": "simulation",
+      "summary": "删除 Simulation",
+      "method": "DELETE",
+      "path": "/simulations/{simulationId}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "destructive",
+      "parameters": [
+        {
+          "name": "simulationId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "StringArray",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json",
+        "errorStatuses": [
+          401,
+          404
+        ]
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "25726",
+          "line": 8136
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getSimulationSuperSelection",
+      "domain": "simulation",
+      "summary": "获取 Super Selection 建议",
+      "method": "GET",
+      "path": "/simulations/super-selection",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "research",
+      "parameters": [
+        {
+          "name": "settings.instrumentType",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "settings.region",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "settings.delay",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "selection",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 10
+          }
+        },
+        {
+          "name": "selectionLimit",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "selectionHandling",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "AlphaList",
+        "evidenceLevel": "decoder_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "20512",
+          "line": 7968
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "listOperators",
+      "domain": "operators",
+      "summary": "列出表达式算子",
+      "method": "GET",
+      "path": "/operators",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OperatorList",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "37151",
+          "line": 5802
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 68091
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "listSimulationExamples",
+      "domain": "simulation",
+      "summary": "列出模拟示例",
+      "method": "GET",
+      "path": "/suggest/examples",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 50
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Paginated",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "37151",
+          "line": 5939
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getExpressionFieldsSummary",
+      "domain": "data",
+      "summary": "读取全部表达式字段摘要",
+      "method": "GET",
+      "path": "/data-fields/summary",
+      "auth": "cookie_session",
+      "apiVersion": "3.0",
+      "sensitivity": "none",
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schema": {
+          "type": "array",
+          "items": {
+            "$ref": "#/schemas/OpenObject"
+          }
+        },
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json",
+        "schemaRef": "DataFieldSummaryList"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "37151",
+          "line": 5837
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getSuggestedFields",
+      "domain": "data",
+      "summary": "读取组合及选择语言字段",
+      "method": "GET",
+      "path": "/suggest/fields",
+      "auth": "cookie_session",
+      "apiVersion": "4.0",
+      "sensitivity": "none",
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schema": {
+          "type": "object",
+          "properties": {
+            "combo": {
+              "type": "array",
+              "items": {
+                "$ref": "#/schemas/OpenObject"
+              }
+            },
+            "selection": {
+              "type": "array",
+              "items": {
+                "$ref": "#/schemas/OpenObject"
+              }
+            }
+          },
+          "additionalProperties": true
+        },
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "37151",
+          "line": 5853
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "listDatasets",
+      "domain": "data",
+      "summary": "筛选并分页列出数据集",
+      "method": "GET",
+      "path": "/data-sets",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "instrumentType",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "region",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "delay",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "universe",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Paginated",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67800
+        }
+      ],
+      "behavior": {
+        "pagination": "limit_offset"
+      },
+      "confidence": "high"
+    },
+    {
+      "operationId": "getDataset",
+      "domain": "data",
+      "summary": "读取数据集详情",
+      "method": "GET",
+      "path": "/data-sets/{datasetId}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "datasetId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67761
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "searchDatasets",
+      "domain": "data",
+      "summary": "搜索数据集",
+      "method": "GET",
+      "path": "/data-sets/search",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "query",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Paginated",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67852
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "listDataFields",
+      "domain": "data",
+      "summary": "筛选并分页列出数据字段",
+      "method": "GET",
+      "path": "/data-fields",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "apiVersions": [
+        "2.0",
+        "3.0"
+      ],
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "dataset.id",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "search",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "instrumentType",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "region",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "delay",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "universe",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Paginated",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "37151",
+          "line": 5837,
+          "note": "version=3.0 字段加载"
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67813
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67826
+        }
+      ],
+      "behavior": {
+        "pagination": "limit_offset"
+      },
+      "confidence": "high"
+    },
+    {
+      "operationId": "getDataField",
+      "domain": "data",
+      "summary": "读取数据字段详情",
+      "method": "GET",
+      "path": "/data-fields/{fieldId}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "fieldId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67774
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "visualizeDataField",
+      "domain": "data",
+      "summary": "生成数据字段可视化",
+      "method": "POST",
+      "path": "/data-fields/{fieldId}/visualize",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "fieldId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "instrumentType",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "default": "EQUITY"
+          }
+        },
+        {
+          "name": "region",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "delay",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "universe",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200,
+          201,
+          202
+        ],
+        "schemaRef": "Empty",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "text_or_empty",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67787
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "listDataCategories",
+      "domain": "data",
+      "summary": "列出数据分类",
+      "method": "GET",
+      "path": "/data-categories",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "DataCategoryList",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67839
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "listCompetitions",
+      "domain": "competitions",
+      "summary": "分页列出比赛",
+      "method": "GET",
+      "path": "/competitions",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "endDate",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          },
+          "description": "源码还会使用 endDate< 与 endDate!< 过滤语法"
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Paginated",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "36890",
+          "line": 5498
+        }
+      ],
+      "behavior": {
+        "pagination": "limit_offset"
+      },
+      "confidence": "high"
+    },
+    {
+      "operationId": "getCompetition",
+      "domain": "competitions",
+      "summary": "读取比赛详情",
+      "method": "GET",
+      "path": "/competitions/{competitionId}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "competitionId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "36890",
+          "line": 5463
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67865
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "listCompetitionLevels",
+      "domain": "competitions",
+      "summary": "列出比赛等级",
+      "method": "GET",
+      "path": "/competition-levels",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "CompetitionLevelList",
+        "evidenceLevel": "decoder_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "36890",
+          "line": 5546
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "listUserCompetitions",
+      "domain": "competitions",
+      "summary": "列出用户参加的比赛",
+      "method": "GET",
+      "path": "/users/{userId}/competitions",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Paginated",
+        "evidenceLevel": "decoder_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "36890",
+          "line": 4993
+        },
+        {
+          "source": "raw/9790.ce2062bc.chunk.js",
+          "moduleId": "9790",
+          "offset": 2551,
+          "formattedLine": 133
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "acceptCompetition",
+      "domain": "competitions",
+      "summary": "接受比赛协议并加入比赛",
+      "method": "POST",
+      "path": "/competitions/{competitionId}/accept",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "legal",
+      "parameters": [
+        {
+          "name": "competitionId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200,
+          204
+        ],
+        "schemaRef": "Empty",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "empty",
+        "errorStatuses": [
+          400,
+          401,
+          500
+        ]
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "36890",
+          "line": 5036
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getCompetitionBoardOptions",
+      "domain": "competitions",
+      "summary": "读取比赛榜单筛选选项",
+      "method": "OPTIONS",
+      "path": "/competitions/{competitionId}/boards/{boardType}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "competitionId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "boardType",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "leader",
+              "university",
+              "genius",
+              "prize",
+              "referral",
+              "power-pool"
+            ]
+          }
+        },
+        {
+          "name": "board",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Options",
+        "evidenceLevel": "decoder_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "36890",
+          "line": 5347
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "36890",
+          "line": 5348
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "36890",
+          "line": 5423
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "listCompetitionBoard",
+      "domain": "competitions",
+      "summary": "分页读取比赛榜单",
+      "method": "GET",
+      "path": "/competitions/{competitionId}/boards/{boardType}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "competitionId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "boardType",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "leader",
+              "university",
+              "genius",
+              "prize",
+              "referral",
+              "power-pool"
+            ]
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "order",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "aggregate",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "board",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Paginated",
+        "evidenceLevel": "decoder_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "36890",
+          "line": 5106
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "36890",
+          "line": 5147
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "36890",
+          "line": 5180
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "36890",
+          "line": 5224
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "36890",
+          "line": 5308
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67991
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 68007
+        }
+      ],
+      "behavior": {
+        "pagination": "limit_offset"
+      },
+      "confidence": "high"
+    },
+    {
+      "operationId": "getConsultantBoardOptions",
+      "domain": "consultant",
+      "summary": "读取顾问榜单筛选选项",
+      "method": "OPTIONS",
+      "path": "/consultant/boards/{boardType}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "boardType",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "spc",
+              "power-pool"
+            ]
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Options",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "36890",
+          "line": 5423
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67747
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 68276
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "listConsultantBoard",
+      "domain": "consultant",
+      "summary": "分页读取顾问榜单",
+      "method": "GET",
+      "path": "/consultant/boards/{boardType}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "boardType",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "leader",
+              "spc",
+              "power-pool",
+              "referral"
+            ]
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "order",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "aggregate",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "board",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "user",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Paginated",
+        "evidenceLevel": "decoder_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "36890",
+          "line": 5269
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "36890",
+          "line": 5308
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "50135",
+          "line": 4820
+        },
+        {
+          "source": "raw/9790.ce2062bc.chunk.js",
+          "moduleId": "9790",
+          "offset": 535
+        }
+      ],
+      "behavior": {
+        "pagination": "limit_offset"
+      },
+      "confidence": "high"
+    },
+    {
+      "operationId": "listCompetitionSubmissions",
+      "domain": "competitions",
+      "summary": "列出比赛文件提交",
+      "method": "GET",
+      "path": "/competitions/{competitionId}/submissions",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "submission",
+      "parameters": [
+        {
+          "name": "competitionId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Paginated",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67633
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "createCompetitionSubmission",
+      "domain": "competitions",
+      "summary": "上传比赛提交文件",
+      "method": "POST",
+      "path": "/competitions/{competitionId}/submissions",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "submission",
+      "parameters": [
+        {
+          "name": "competitionId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": {
+        "contentType": "multipart/form-data",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "submission": {
+              "type": "string",
+              "description": "JSON 字符串，含 description"
+            },
+            "file": {
+              "type": "string",
+              "format": "binary"
+            }
+          },
+          "required": [
+            "submission",
+            "file"
+          ]
+        },
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          200,
+          201,
+          202
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67643
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getSpcSubmissionOptions",
+      "domain": "consultant",
+      "summary": "读取 SPC 提交选项",
+      "method": "OPTIONS",
+      "path": "/competitions/spc/submissions",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "submission",
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Options",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67708
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "listSpcSubmissions",
+      "domain": "consultant",
+      "summary": "分页列出 SPC 提交",
+      "method": "GET",
+      "path": "/competitions/spc/submissions",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "submission",
+      "parameters": [
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Paginated",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67655
+        }
+      ],
+      "behavior": {
+        "pagination": "limit_offset"
+      },
+      "confidence": "high"
+    },
+    {
+      "operationId": "createSpcSubmission",
+      "domain": "consultant",
+      "summary": "创建 SPC 提交",
+      "method": "POST",
+      "path": "/competitions/spc/submissions",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "submission",
+      "requestBody": {
+        "contentType": "application/json",
+        "schemaRef": "OpenObject",
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          200,
+          201,
+          202
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67677
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getSpcSubmission",
+      "domain": "consultant",
+      "summary": "列出某次 SPC submission 的权重历史",
+      "method": "GET",
+      "path": "/competitions/spc/submissions/{submissionId}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "submission",
+      "parameters": [
+        {
+          "name": "submissionId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Paginated",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67732
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "patchSpcSubmission",
+      "domain": "consultant",
+      "summary": "更新 SPC 提交权重",
+      "method": "PATCH",
+      "path": "/competitions/spc/submissions/{submissionId}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "submission",
+      "parameters": [
+        {
+          "name": "submissionId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": {
+        "contentType": "application/json",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "weight": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "weight"
+          ],
+          "additionalProperties": false
+        },
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          200,
+          201,
+          202
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67691
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getConsultantSummary",
+      "domain": "consultant",
+      "summary": "读取用户顾问摘要",
+      "method": "GET",
+      "path": "/users/{userId}/consultant/summary",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 68020
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "createProtoUser",
+      "domain": "consultant",
+      "summary": "创建 proto-user",
+      "method": "POST",
+      "path": "/proto-user",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "requestBody": {
+        "contentType": "application/json",
+        "schemaRef": "OpenObject",
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          200,
+          201,
+          202
+        ],
+        "schemaRef": "Empty",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "text_or_empty",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67966
+        }
+      ],
+      "confidence": "medium"
+    },
+    {
+      "operationId": "listSelfTeams",
+      "domain": "teams",
+      "summary": "列出当前用户团队",
+      "method": "GET",
+      "path": "/users/self/teams",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "parameters": [
+        {
+          "name": "status",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          },
+          "description": "多个状态用 %1F 连接"
+        },
+        {
+          "name": "members.self.status",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "order",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "-dateCreated"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Paginated",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "39047",
+          "line": 8763
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getTeamOptions",
+      "domain": "teams",
+      "summary": "读取团队更新选项",
+      "method": "OPTIONS",
+      "path": "/teams/{teamId}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "teamId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Options",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "60253",
+          "line": 50779
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "createTeam",
+      "domain": "teams",
+      "summary": "创建团队",
+      "method": "POST",
+      "path": "/teams",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "requestBody": {
+        "contentType": "application/json",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "members": {
+              "type": "array",
+              "items": {
+                "$ref": "#/schemas/OpenObject"
+              }
+            }
+          },
+          "additionalProperties": true
+        },
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          200,
+          201
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json",
+        "errorStatuses": [
+          400
+        ]
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "39047",
+          "line": 9022
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "patchTeam",
+      "domain": "teams",
+      "summary": "更新团队",
+      "method": "PATCH",
+      "path": "/teams/{teamId}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "parameters": [
+        {
+          "name": "teamId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": {
+        "contentType": "application/json",
+        "schemaRef": "OpenObject",
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json",
+        "errorStatuses": [
+          400
+        ]
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "39047",
+          "line": 8951
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "changeTeamState",
+      "domain": "teams",
+      "summary": "接受、拒绝或终止团队关系",
+      "method": "POST",
+      "path": "/teams/{teamId}/{action}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "legal",
+      "parameters": [
+        {
+          "name": "teamId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "action",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "accept",
+              "reject",
+              "terminate"
+            ]
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200,
+          204
+        ],
+        "schemaRef": "Empty",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "empty",
+        "errorStatuses": [
+          400,
+          404
+        ]
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "39047",
+          "line": 8828
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "searchPlatform",
+      "domain": "search",
+      "summary": "全局搜索",
+      "method": "GET",
+      "path": "/search",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "query",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "type",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "SearchResults",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "90897",
+          "line": 6183
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "90897",
+          "line": 6223
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "listSelfMessages",
+      "domain": "messages",
+      "summary": "分页列出当前用户消息",
+      "method": "GET",
+      "path": "/users/self/messages",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "parameters": [
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "offset",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "name": "order",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "-dateCreated"
+          }
+        },
+        {
+          "name": "type",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "ANNOUNCEMENT",
+              "NOTIFICATION"
+            ]
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Paginated",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "30297",
+          "line": 6297
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "30297",
+          "line": 6332
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "54618",
+          "line": 29780
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "54618",
+          "line": 30104
+        }
+      ],
+      "behavior": {
+        "pagination": "limit_offset"
+      },
+      "confidence": "high"
+    },
+    {
+      "operationId": "getSelfMessageSummary",
+      "domain": "messages",
+      "summary": "读取当前用户消息摘要",
+      "method": "GET",
+      "path": "/users/self/messages/summary",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "30297",
+          "line": 6364
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "patchMessage",
+      "domain": "messages",
+      "summary": "更新消息状态",
+      "method": "PATCH",
+      "path": "/messages/{messageId}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "parameters": [
+        {
+          "name": "messageId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "requestBody": {
+        "contentType": "application/json",
+        "schema": {
+          "type": "object",
+          "properties": {
+            "read": {
+              "const": true
+            }
+          },
+          "required": [
+            "read"
+          ],
+          "additionalProperties": false
+        },
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "30297",
+          "line": 6399
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "patchSelfMessageSummary",
+      "domain": "messages",
+      "summary": "批量更新消息摘要状态",
+      "method": "PATCH",
+      "path": "/users/self/messages/summary",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "requestBody": {
+        "contentType": "application/json",
+        "schemaRef": "OpenObject",
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "30297",
+          "line": 6440
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "listEvents",
+      "domain": "events",
+      "summary": "筛选并列出事件",
+      "method": "GET",
+      "path": "/events",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 100
+          }
+        },
+        {
+          "name": "order",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "default": "start"
+          }
+        },
+        {
+          "name": "start>=",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Paginated",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "54618",
+          "line": 29948
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "95853",
+          "line": 48954
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getEventOptions",
+      "domain": "events",
+      "summary": "读取事件筛选选项",
+      "method": "OPTIONS",
+      "path": "/events",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Options",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "95853",
+          "line": 49707
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "listSelfActivities",
+      "domain": "activity",
+      "summary": "列出当前用户活动分类",
+      "method": "GET",
+      "path": "/users/self/activities",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Paginated",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "64503",
+          "line": 6646
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getSelfActivity",
+      "domain": "activity",
+      "summary": "读取当前用户某类活动",
+      "method": "GET",
+      "path": "/users/self/activities/{activityName}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "parameters": [
+        {
+          "name": "activityName",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "64503",
+          "line": 6669
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "listActivityReferrals",
+      "domain": "activity",
+      "summary": "读取推荐活动",
+      "method": "GET",
+      "path": "/users/self/activities/referrals",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "parameters": [
+        {
+          "name": "order",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Paginated",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67621
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getActivityDiversity",
+      "domain": "activity",
+      "summary": "读取活动多样性",
+      "method": "GET",
+      "path": "/users/self/activities/diversity",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "parameters": [
+        {
+          "name": "grouping",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "多个维度用逗号连接"
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67879
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getActivityPyramidAlphas",
+      "domain": "activity",
+      "summary": "读取 Pyramid Alpha 活动",
+      "method": "GET",
+      "path": "/users/self/activities/pyramid-alphas",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "parameters": [
+        {
+          "name": "startDate",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "endDate",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67895
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getActivityPyramidMultipliers",
+      "domain": "activity",
+      "summary": "读取 Pyramid 倍数",
+      "method": "GET",
+      "path": "/users/self/activities/pyramid-multipliers",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67908
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getActivitySimulations",
+      "domain": "activity",
+      "summary": "读取指定日期后的模拟活动",
+      "method": "GET",
+      "path": "/users/self/activities/simulations",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "parameters": [
+        {
+          "name": "date>=",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          },
+          "default": "2024-03-19"
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Recordset",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67927
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67940
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getActivitySubmissions",
+      "domain": "activity",
+      "summary": "读取指定日期后的提交活动",
+      "method": "GET",
+      "path": "/users/self/activities/submissions",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "parameters": [
+        {
+          "name": "date>=",
+          "in": "query",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Recordset",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 67953
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getConsultantPerformance",
+      "domain": "activity",
+      "summary": "读取顾问表现",
+      "method": "GET",
+      "path": "/users/{userId}/consultant",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "64503",
+          "line": 6611,
+          "note": "路径由权限动态选择 consultant 或 researcher"
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getResearcherPerformance",
+      "domain": "activity",
+      "summary": "读取用户研究者表现",
+      "method": "GET",
+      "path": "/users/{userId}/researcher",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "64503",
+          "line": 6611
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getOsmosisSummary",
+      "domain": "tutorials",
+      "summary": "读取 Osmosis 摘要",
+      "method": "GET",
+      "path": "/users/{userId}/osmosis/summary",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "default": "self"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 68033
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "createOsmosisScalePoints",
+      "domain": "tutorials",
+      "summary": "启动 Osmosis scale-points 计算",
+      "method": "POST",
+      "path": "/users/{userId}/osmosis/scale-points",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "default": "self"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200,
+          201,
+          202
+        ],
+        "schemaRef": "Empty",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "text_or_empty",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 68043
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "pollOsmosisScalePoints",
+      "domain": "tutorials",
+      "summary": "轮询 Osmosis scale-points 计算",
+      "method": "GET",
+      "path": "/users/{userId}/osmosis/scale-points/ALL",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "default": "self"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200,
+          204
+        ],
+        "schemaRef": "Empty",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "headers"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 68068
+        }
+      ],
+      "behavior": {
+        "polling": true,
+        "retryAfterHeader": true,
+        "clientDerivedResult": {
+          "status": [
+            "in_progress",
+            "done"
+          ],
+          "retryAfterMs": "由 Retry-After 解析"
+        }
+      },
+      "confidence": "high"
+    },
+    {
+      "operationId": "getTutorialSummary",
+      "domain": "tutorials",
+      "summary": "读取研究教程摘要",
+      "method": "GET",
+      "path": "/users/self/tutorial/summary",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "TutorialSummary",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 68117
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "patchTutorialSummary",
+      "domain": "tutorials",
+      "summary": "更新研究教程进度或启用状态",
+      "method": "PATCH",
+      "path": "/users/self/tutorial/summary",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "requestBody": {
+        "contentType": "application/json",
+        "schema": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "currentStep": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "currentStep"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "active": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "active"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "TutorialSummary",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 68160
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 68176
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "createTutorialSummary",
+      "domain": "tutorials",
+      "summary": "初始化研究教程摘要",
+      "method": "POST",
+      "path": "/users/self/tutorial/summary",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "requestBody": {
+        "contentType": "application/json",
+        "schema": {
+          "type": "object",
+          "additionalProperties": false
+        },
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          200,
+          201
+        ],
+        "schemaRef": "TutorialSummary",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 68191
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "listTutorialSteps",
+      "domain": "tutorials",
+      "summary": "列出研究教程步骤",
+      "method": "GET",
+      "path": "/users/self/tutorial/steps",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "TutorialStepList",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 68204
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getTutorial",
+      "domain": "tutorials",
+      "summary": "读取教程详情",
+      "method": "GET",
+      "path": "/tutorial/{tutorialId}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "tutorialId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 68144
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "listTutorials",
+      "domain": "tutorials",
+      "summary": "列出教程",
+      "method": "GET",
+      "path": "/tutorials",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "default": 50
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Paginated",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/8178.5b756d2d.chunk.js",
+          "moduleId": "22985",
+          "offset": 1448,
+          "formattedLine": 72
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getTutorialPage",
+      "domain": "tutorials",
+      "summary": "读取教程页面",
+      "method": "GET",
+      "path": "/tutorial-pages/{pageId}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "pageId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/8178.5b756d2d.chunk.js",
+          "moduleId": "22985",
+          "offset": 1901,
+          "formattedLine": 101
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getConsultantTutorialSummary",
+      "domain": "tutorials",
+      "summary": "读取顾问教程摘要",
+      "method": "GET",
+      "path": "/users/self/consultant/tutorial/summary",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "TutorialSummary",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 68217
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "patchConsultantTutorialSummary",
+      "domain": "tutorials",
+      "summary": "更新顾问教程进度或启用状态",
+      "method": "PATCH",
+      "path": "/users/self/consultant/tutorial/summary",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "personal_data",
+      "requestBody": {
+        "contentType": "application/json",
+        "schema": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "currentStep": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "currentStep"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "active": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "active"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "required": true
+      },
+      "response": {
+        "statuses": [
+          200,
+          201,
+          202
+        ],
+        "schemaRef": "Empty",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "text_or_empty",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "evidence": [
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 68232
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 68249
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "listVideoCourses",
+      "domain": "tutorials",
+      "summary": "列出视频课程",
+      "method": "GET",
+      "path": "/video-courses",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "response": {
+        "statuses": [
+          200
+        ],
+        "schemaRef": "Paginated",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json"
+      },
+      "evidence": [
+        {
+          "source": "raw/765.f175e73d.chunk.js",
+          "moduleId": "93668",
+          "offset": 1420,
+          "formattedLine": 72
+        },
+        {
+          "source": "raw/index.6168be46.js",
+          "moduleId": "34470",
+          "line": 68263
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "operationId": "getVideoCourse",
+      "domain": "tutorials",
+      "summary": "读取视频课程",
+      "method": "GET",
+      "path": "/video-courses/{courseId}",
+      "auth": "cookie_session",
+      "apiVersion": "2.0",
+      "sensitivity": "none",
+      "parameters": [
+        {
+          "name": "courseId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "response": {
+        "statuses": [
+          200,
+          302
+        ],
+        "schemaRef": "OpenObject",
+        "evidenceLevel": "consumer_confirmed",
+        "mode": "json_or_redirect"
+      },
+      "evidence": [
+        {
+          "source": "raw/765.f175e73d.chunk.js",
+          "moduleId": "93668",
+          "offset": 1855,
+          "formattedLine": 101
+        }
+      ],
+      "behavior": {
+        "redirect": true
+      },
+      "confidence": "high"
+    }
+  ],
+  "knownGaps": [
+    {
+      "id": "chunk-6286-unavailable",
+      "description": "学习首页动态 chunk 6286.0d15b88f.chunk.js 由服务器返回 403，无法审计其中潜在调用。",
+      "impact": "可能遗漏只在该学习首页 chunk 中出现的接口。",
+      "status": "needs_source"
+    },
+    {
+      "id": "source-maps-unavailable",
+      "description": "同版本 source map 返回 403。",
+      "impact": "证据使用 bundle 文件、Webpack 模块号、原始偏移和格式化行号。",
+      "status": "accepted"
+    },
+    {
+      "id": "live-response-samples",
+      "description": "除 Alpha、Simulation 和部分 recordset 外，当前没有去敏真实响应。",
+      "impact": "相关响应 Schema 保持宽松，证据级别为 consumer_confirmed/inferred/unknown。",
+      "status": "needs_samples"
+    },
+    {
+      "id": "declared-but-not-invoked-urls",
+      "description": "常量模块还声明了 /suggest/expression、/suggest/fastexpr 与 /achievements，但当前版本没有对应请求调用点。",
+      "impact": "无法可靠确认方法、参数与响应，因此未伪装成可调用 operation；若后续 chunk 或 HAR 出现调用再升级。",
+      "status": "needs_evidence"
+    }
+  ],
+  "sourceReview": {
+    "completedAt": "2026-08-04",
+    "scope": "逐调用点复核当前 raw 中 68 个 JS 实体/声明项、1775 个 Webpack 模块与 190 个网络调用；165 个 WQ API 调用点逐一回看调用前后字段消费、状态分支及轮询逻辑。",
+    "reviewRule": "方法、URL、鉴权、Accept/版本、参数、请求体、成功体、错误状态和 Retry-After/Location 均以调用点及相邻消费者为准；没有解码器或 fixture 的字段不升级为 confirmed。",
+    "report": "audit/source-review.md"
+  }
+}
