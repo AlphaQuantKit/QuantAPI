@@ -167,7 +167,21 @@ const createAuthenticationOperation = catalog.operations.find((operation) => ope
 const getAuthenticationOperation = catalog.operations.find((operation) => operation.operationId === "getAuthentication");
 const deleteAuthenticationOperation = catalog.operations.find((operation) => operation.operationId === "deleteAuthentication");
 const createAuthenticationPython = generator.buildPython(createAuthenticationOperation);
-const hiddenAuthenticationIds = ["authenticateBrainLabs", "createAuthenticationPersona", "authenticateWorkday"];
+const hiddenAuthenticationIds = [
+  "authenticateBrainLabs",
+  "createAuthenticationPersona",
+  "authenticateWorkday",
+  "changeEmail",
+  "reverifyEmail",
+  "verifyEmail",
+  "changePassword",
+  "forgotPassword",
+  "resetPassword",
+  "createUserToken",
+  "createUser",
+  "patchSelfUser",
+  "deleteSelfUser"
+];
 check(
   "三个基础认证接口展示实测结构且登录不要求 captcha",
   [createAuthenticationOperation, getAuthenticationOperation].every((operation) =>
@@ -185,7 +199,7 @@ check(
     && catalog.examples?.authenticationLogout?.sanitized === true
 );
 check(
-  "三个特殊认证接口保留在目录但不在网页显示",
+  "高敏感认证与账户接口保留在目录但不在网页显示",
   hiddenAuthenticationIds.every((operationId) =>
     catalog.operations.some((operation) => operation.operationId === operationId && operation.visibility === "hidden")
       && !visibleOperations.some((operation) => operation.operationId === operationId)
