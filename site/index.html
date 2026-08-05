@@ -10,7 +10,7 @@
     <title>WQ API Workbench</title>
     <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32.png?v=ac9ae6d6875f" />
     <link rel="apple-touch-icon" href="./assets/quantapi-logo.png?v=19fd43f07782" />
-    <link rel="stylesheet" href="./assets/styles.css?v=ad6ae40216fa" />
+    <link rel="stylesheet" href="./assets/styles.css?v=0ea64f985da7" />
   </head>
   <body>
     <header class="topbar">
@@ -111,8 +111,15 @@
       </aside>
     </div>
 
+    <footer class="site-footer" aria-label="网站访问统计">
+      <span class="visitor-stat" id="visitor-stat" hidden>
+        累计访问 <strong id="visitor-count" aria-live="polite">—</strong> 次
+      </span>
+    </footer>
+
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <noscript>此页面需要 JavaScript 才能读取接口目录并生成请求代码。</noscript>
-    <script type="module" src="./assets/app.js?v=b9a62316b7f3"></script>
+    <script data-goatcounter="https://huahua.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+    <script type="module" src="./assets/app.js?v=d6737bb99c1c"></script>
   </body>
 </html>

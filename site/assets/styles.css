@@ -18,6 +18,7 @@
   --sans: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
   --shadow: 0 12px 34px rgba(30, 39, 55, 0.08);
   --topbar-height: 72px;
+  --footer-height: 30px;
 }
 
 * {
@@ -260,7 +261,29 @@ kbd {
 .workspace {
   display: grid;
   grid-template-columns: 288px minmax(420px, 1fr) minmax(410px, 32vw);
-  height: calc(100vh - var(--topbar-height));
+  height: calc(100vh - var(--topbar-height) - var(--footer-height));
+}
+
+.site-footer {
+  display: flex;
+  height: var(--footer-height);
+  align-items: center;
+  justify-content: center;
+  border-top: 1px solid var(--line);
+  background: var(--paper-raised);
+  color: var(--ink-muted);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.025em;
+}
+
+.visitor-stat[hidden] {
+  display: none;
+}
+
+.visitor-stat strong {
+  color: var(--accent);
+  font-weight: 750;
 }
 
 .nav-pane,
@@ -1286,13 +1309,13 @@ noscript {
   .workspace {
     grid-template-columns: 235px minmax(0, 1fr);
     height: auto;
-    min-height: calc(100vh - var(--topbar-height));
+    min-height: calc(100vh - var(--topbar-height) - var(--footer-height));
   }
 
   .nav-pane {
     position: sticky;
     top: 0;
-    height: calc(100vh - var(--topbar-height));
+    height: calc(100vh - var(--topbar-height) - var(--footer-height));
   }
 
   .doc-pane,
@@ -1334,6 +1357,10 @@ noscript {
 
   .workspace {
     display: block;
+  }
+
+  .site-footer {
+    position: relative;
   }
 
   .nav-pane {

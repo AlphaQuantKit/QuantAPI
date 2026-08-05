@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "catalogVersion": "1.15.2",
+  "catalogVersion": "1.15.3",
   "title": "WQ API 非官方接口目录",
   "description": "以 WorldQuant BRAIN 前端 bundle 静态分析为基线，并通过人工复核的去敏真实响应逐项升级。此目录不是官方 API 承诺；unknown/inferred 字段必须在取得去敏真实响应后再升级。",
   "generatedFrom": {

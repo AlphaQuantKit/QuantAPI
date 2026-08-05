@@ -109,6 +109,22 @@ check(
     && app.includes('elements.downloadMarkdown.disabled = false')
     && css.includes(".catalog-download")
 );
+check(
+  "页脚使用 GoatCounter 统计并安全显示累计访问量",
+  html.includes('<footer class="site-footer" aria-label="网站访问统计">')
+    && html.includes('id="visitor-stat" hidden')
+    && html.includes('id="visitor-count" aria-live="polite"')
+    && html.includes('data-goatcounter="https://huahua.goatcounter.com/count"')
+    && html.includes('async src="https://gc.zgo.at/count.js"')
+    && app.includes('const GOATCOUNTER_TOTAL_URL = "https://huahua.goatcounter.com/counter/TOTAL.json"')
+    && app.includes('credentials: "omit"')
+    && app.includes("elements.visitorStat.hidden = false")
+    && app.includes("elements.visitorStat.hidden = true")
+    && css.includes("--footer-height: 30px")
+    && css.includes("calc(100vh - var(--topbar-height) - var(--footer-height))")
+    && !html.includes("goatcounter.com/api/")
+    && !app.includes("Authorization: Bearer")
+);
 check("页面已移除 QUICK TEST 与本地测试器", !html.includes("QUICK TEST") && !html.includes("LOCAL ONLY") && !app.includes("LocalTester"));
 check(
   "右侧代码面板使用统一浅色主题",
@@ -761,8 +777,8 @@ const superSelectionOperation = catalog.operations.find((operation) => operation
 const createProtoUserOperation = catalog.operations.find((operation) => operation.operationId === "createProtoUser");
 const searchPlatformOperation = catalog.operations.find((operation) => operation.operationId === "searchPlatform");
 check(
-  "catalog 1.15.2 固化本轮实测覆盖率与剩余接口",
-  catalog.catalogVersion === "1.15.2"
+  "catalog 1.15.3 固化本轮实测覆盖率与剩余接口",
+  catalog.catalogVersion === "1.15.3"
     && visibleOperations.length === 93
     && liveConfirmedVisibleOperations.length === 92
     && JSON.stringify(remainingVisibleOperationIds) === JSON.stringify(["searchPlatform"])
@@ -779,7 +795,7 @@ const hiddenMarkdownSections = hiddenOperations.filter((operation) =>
 );
 check(
   "Markdown 下载内容完整且排除隐藏接口",
-  visibleCatalogMarkdown.startsWith("# WQ API Catalog 1.15.2")
+  visibleCatalogMarkdown.startsWith("# WQ API Catalog 1.15.3")
     && visibleCatalogMarkdown.includes("共 93 个前端可见接口")
     && visibleMarkdownSections.length === visibleOperations.length
     && hiddenMarkdownSections.length === 0

@@ -19,6 +19,7 @@ const DOMAIN_LABELS = {
 
 const DOMAIN_ORDER = Object.keys(DOMAIN_LABELS);
 const BASE_URL = "https://api.worldquantbrain.com";
+const GOATCOUNTER_TOTAL_URL = "https://huahua.goatcounter.com/counter/TOTAL.json";
 
 const SENSITIVITY_DESCRIPTIONS = {
   none: "未发现额外的敏感信息或高风险副作用。",
@@ -58,6 +59,8 @@ const elements = typeof document === "undefined" ? {} : {
   catalogStatus: document.querySelector("#catalog-status"),
   statusDot: document.querySelector(".status-dot"),
   downloadMarkdown: document.querySelector("#download-markdown"),
+  visitorStat: document.querySelector("#visitor-stat"),
+  visitorCount: document.querySelector("#visitor-count"),
   docPane: document.querySelector("#doc-pane"),
   parameterForm: document.querySelector("#parameter-form"),
   parameterSummary: document.querySelector("#parameter-summary"),
@@ -1341,6 +1344,23 @@ function downloadVisibleCatalogMarkdown() {
   showToast(`${visibleOperations().length} 个接口的 Markdown 已生成`);
 }
 
+async function loadVisitorCount() {
+  try {
+    const response = await fetch(GOATCOUNTER_TOTAL_URL, {
+      cache: "no-store",
+      credentials: "omit"
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const payload = await response.json();
+    const count = String(payload.count ?? "").trim();
+    if (!/^\d[\d,.\s]*$/.test(count)) throw new Error("invalid visitor count");
+    elements.visitorCount.textContent = count;
+    elements.visitorStat.hidden = false;
+  } catch {
+    elements.visitorStat.hidden = true;
+  }
+}
+
 function bindEvents() {
   elements.domainNav.addEventListener("click", (event) => {
     const button = event.target.closest("[data-domain]");
@@ -1415,6 +1435,7 @@ function bindEvents() {
 
 async function initialize() {
   bindEvents();
+  void loadVisitorCount();
   try {
     const response = await fetch("./data/api-catalog.json", { cache: "no-cache" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
