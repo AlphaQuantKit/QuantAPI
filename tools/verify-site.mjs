@@ -116,6 +116,8 @@ check(
     && html.includes('id="visitor-count" aria-live="polite"')
     && html.includes('data-goatcounter="https://huahua.goatcounter.com/count"')
     && html.includes('async src="https://gc.zgo.at/count.js"')
+    && html.includes("connect-src 'self' https://huahua.goatcounter.com")
+    && html.includes("script-src 'self' https://gc.zgo.at")
     && app.includes('const GOATCOUNTER_TOTAL_URL = "https://huahua.goatcounter.com/counter/TOTAL.json"')
     && app.includes('credentials: "omit"')
     && app.includes("elements.visitorStat.hidden = false")
